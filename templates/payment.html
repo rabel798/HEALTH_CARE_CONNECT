@@ -1,0 +1,181 @@
+{% extends 'layout.html' %}
+
+{% block title %}Payment - Dr. Richa's Eye Clinic{% endblock %}
+
+{% block content %}
+<!-- Payment Hero -->
+<section class="hero" style="background: linear-gradient(rgba(0, 123, 255, 0.85), rgba(0, 123, 255, 0.85)), url('https://images.unsplash.com/photo-1635012641245-0adf659dac97');">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 offset-lg-2 fade-in">
+                <h1>Complete Your Payment</h1>
+                <p>Secure payment processing for your appointment</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Payment Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 offset-lg-2 fade-in">
+                <div class="card border-0 shadow">
+                    <div class="card-body p-4">
+                        <h3 class="card-title text-primary mb-4 text-center">Appointment Summary</h3>
+                        
+                        <div class="row mb-4">
+                            <div class="col-md-6 mb-3 mb-md-0">
+                                <h5>Patient Information</h5>
+                                <p class="mb-1"><strong>Name:</strong> {{ appointment.patient.full_name }}</p>
+                                <p class="mb-1"><strong>Mobile:</strong> {{ appointment.patient.mobile_number }}</p>
+                                <p class="mb-0"><strong>Age:</strong> {{ appointment.patient.age }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h5>Appointment Details</h5>
+                                <p class="mb-1"><strong>Date:</strong> {{ appointment.appointment_date.strftime('%B %d, %Y') }}</p>
+                                <p class="mb-1"><strong>Time:</strong> {{ appointment.appointment_time.strftime('%I:%M %p') }}</p>
+                                <p class="mb-0"><strong>Type:</strong> Initial Consultation</p>
+                            </div>
+                        </div>
+                        
+                        <div class="table-responsive mb-4">
+                            <table class="table table-bordered">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Service</th>
+                                        <th class="text-end">Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Initial Consultation Fee</td>
+                                        <td class="text-end">₹500.00</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Total</th>
+                                        <th class="text-end">₹500.00</th>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <form method="POST" action="{{ url_for('payment') }}" class="needs-validation" novalidate>
+                            {{ form.csrf_token }}
+                            
+                            <h5 class="mb-3">Select Payment Method</h5>
+                            {{ form.payment_method(style="display: none;") }}
+                            
+                            <div class="payment-method-selector mb-4">
+                                <div class="payment-method-card" data-method="upi">
+                                    <i class="fas fa-mobile-alt"></i>
+                                    <p class="mb-0">UPI</p>
+                                </div>
+                                <div class="payment-method-card" data-method="credit_card">
+                                    <i class="far fa-credit-card"></i>
+                                    <p class="mb-0">Credit Card</p>
+                                </div>
+                                <div class="payment-method-card" data-method="debit_card">
+                                    <i class="fas fa-credit-card"></i>
+                                    <p class="mb-0">Debit Card</p>
+                                </div>
+                                <div class="payment-method-card" data-method="cash">
+                                    <i class="fas fa-money-bill-wave"></i>
+                                    <p class="mb-0">Cash</p>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="" id="terms" required>
+                                    <label class="form-check-label" for="terms">
+                                        I agree to the payment terms and conditions
+                                    </label>
+                                    <div class="invalid-feedback">
+                                        You must agree before submitting.
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="text-center">
+                                <div class="loader"></div>
+                                <button type="submit" class="btn btn-primary btn-lg">Complete Payment</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Payment Security -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 offset-lg-2 fade-in">
+                <div class="row">
+                    <div class="col-md-4 mb-4 mb-md-0 text-center">
+                        <div class="mb-3">
+                            <i class="fas fa-lock fa-3x text-primary"></i>
+                        </div>
+                        <h4>Secure Payments</h4>
+                        <p>All payment information is encrypted and processed securely.</p>
+                    </div>
+                    
+                    <div class="col-md-4 mb-4 mb-md-0 text-center">
+                        <div class="mb-3">
+                            <i class="fas fa-shield-alt fa-3x text-primary"></i>
+                        </div>
+                        <h4>Data Protection</h4>
+                        <p>Your personal and payment information is protected by advanced security measures.</p>
+                    </div>
+                    
+                    <div class="col-md-4 text-center">
+                        <div class="mb-3">
+                            <i class="fas fa-receipt fa-3x text-primary"></i>
+                        </div>
+                        <h4>Digital Receipt</h4>
+                        <p>Receive a detailed payment receipt via email for your records.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Payment Policy -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 offset-lg-2 fade-in">
+                <div class="card border-0 shadow">
+                    <div class="card-body p-4">
+                        <h3 class="text-primary mb-4 text-center">Payment & Cancellation Policy</h3>
+                        
+                        <div class="mb-4">
+                            <h5>Payment Terms</h5>
+                            <ul>
+                                <li>Full payment is required to confirm your appointment.</li>
+                                <li>The consultation fee is non-refundable but can be adjusted against future appointments.</li>
+                                <li>Additional charges may apply for special tests or procedures performed during your visit.</li>
+                                <li>Insurance claims are the patient's responsibility, but we provide all necessary documentation.</li>
+                            </ul>
+                        </div>
+                        
+                        <div>
+                            <h5>Cancellation & Rescheduling</h5>
+                            <ul>
+                                <li>Appointments can be rescheduled up to 24 hours before the scheduled time without penalty.</li>
+                                <li>Cancellations made less than 24 hours in advance may incur a cancellation fee.</li>
+                                <li>No-shows will be charged the full consultation fee.</li>
+                                <li>For emergencies and special circumstances, please contact us directly to discuss options.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

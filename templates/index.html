@@ -1,0 +1,223 @@
+{% extends 'layout.html' %}
+
+{% block title %}Dr. Richa's Eye Clinic - Professional Eye Care Services{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 offset-lg-2 fade-in">
+                <h1>Your Vision, Our Priority</h1>
+                <p>Welcome to Dr. Richa's Eye Clinic, where we provide comprehensive eye care using the latest technology and personalized treatment plans for all ages.</p>
+                <a href="{{ url_for('appointment') }}" class="btn btn-light btn-lg">Book an Appointment</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Clinic Overview -->
+<section class="py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 mb-4 mb-lg-0 fade-in">
+                <h2 class="mb-4">About Our Clinic</h2>
+                <p>Dr. Richa's Eye Clinic is a state-of-the-art facility dedicated to providing exceptional eye care services. Our clinic is equipped with advanced diagnostic and treatment technologies to address all your vision needs.</p>
+                <p>With a team of highly skilled professionals led by Dr. Richa, we are committed to maintaining and improving your eye health through personalized care and treatment plans.</p>
+                <div class="d-flex align-items-center mt-4">
+                    <div class="me-4">
+                        <i class="fas fa-user-md fa-2x text-primary"></i>
+                        <h5 class="mt-2 mb-0">Expert Doctors</h5>
+                    </div>
+                    <div class="me-4">
+                        <i class="fas fa-stethoscope fa-2x text-primary"></i>
+                        <h5 class="mt-2 mb-0">Quality Care</h5>
+                    </div>
+                    <div>
+                        <i class="fas fa-hospital fa-2x text-primary"></i>
+                        <h5 class="mt-2 mb-0">Modern Facility</h5>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 fade-in">
+                <div class="rounded overflow-hidden shadow">
+                    <img src="https://images.unsplash.com/photo-1481277542470-605612bd2d61" alt="Modern Eye Clinic Interior" class="img-fluid w-100">
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Services Overview -->
+<section class="bg-light py-5">
+    <div class="container">
+        <div class="text-center mb-5 fade-in">
+            <h2 class="mb-3">Our Services</h2>
+            <p class="lead">Comprehensive eye care services for all your vision needs</p>
+        </div>
+        <div class="row">
+            <div class="col-md-4 mb-4 fade-in">
+                <div class="service-card">
+                    <img src="https://images.unsplash.com/photo-1635012641245-0adf659dac97" alt="Comprehensive Eye Examination" class="card-img-top">
+                    <div class="card-body">
+                        <h4 class="card-title">Comprehensive Eye Examination</h4>
+                        <p class="card-text">Complete evaluation of your vision and eye health using advanced diagnostic equipment.</p>
+                        <a href="{{ url_for('services') }}" class="btn btn-outline-primary">Learn More</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4 fade-in">
+                <div class="service-card">
+                    <img src="https://images.unsplash.com/photo-1635012861357-4742bd877c0c" alt="Cataract Surgery" class="card-img-top">
+                    <div class="card-body">
+                        <h4 class="card-title">Cataract Surgery</h4>
+                        <p class="card-text">State-of-the-art cataract removal and lens replacement procedures for clearer vision.</p>
+                        <a href="{{ url_for('services') }}" class="btn btn-outline-primary">Learn More</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4 fade-in">
+                <div class="service-card">
+                    <img src="https://images.unsplash.com/photo-1634982839177-9ccc2cf896c5" alt="Glaucoma Management" class="card-img-top">
+                    <div class="card-body">
+                        <h4 class="card-title">Glaucoma Management</h4>
+                        <p class="card-text">Early detection and comprehensive management of glaucoma to preserve your vision.</p>
+                        <a href="{{ url_for('services') }}" class="btn btn-outline-primary">Learn More</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="text-center mt-3 fade-in">
+            <a href="{{ url_for('services') }}" class="btn btn-primary">View All Services</a>
+        </div>
+    </div>
+</section>
+
+<!-- Doctor's Profile -->
+<section class="doctor-profile py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-5 mb-4 mb-lg-0 fade-in">
+                <div class="doctor-image">
+                    <img src="https://images.unsplash.com/photo-1591019479261-1a103585c559" alt="Dr. Richa" class="img-fluid">
+                </div>
+            </div>
+            <div class="col-lg-7 fade-in">
+                <h2 class="mb-4">Meet Dr. Richa</h2>
+                <p class="lead mb-4">Experienced Ophthalmologist with a focus on patient-centered care</p>
+                <p>Dr. Richa is a board-certified ophthalmologist with over 15 years of experience in comprehensive eye care. She completed her medical education at AIIMS and specialized in Ophthalmology, followed by advanced training in microsurgical techniques.</p>
+                <p>She has performed thousands of successful eye surgeries and is known for her gentle approach and commitment to patient satisfaction. Dr. Richa stays at the forefront of advancements in eye care through ongoing education and research.</p>
+                <div class="mt-4">
+                    <h5>Specializations:</h5>
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-check-circle text-success me-2"></i> Cataract Surgery</li>
+                        <li><i class="fas fa-check-circle text-success me-2"></i> Glaucoma Management</li>
+                        <li><i class="fas fa-check-circle text-success me-2"></i> Diabetic Eye Care</li>
+                        <li><i class="fas fa-check-circle text-success me-2"></i> Pediatric Ophthalmology</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5 fade-in">
+            <h2 class="mb-3">What Our Patients Say</h2>
+            <p class="lead">Read testimonials from satisfied patients</p>
+        </div>
+        <div class="row">
+            {% if reviews %}
+                {% for review in reviews %}
+                <div class="col-md-4 mb-4 fade-in">
+                    <div class="review-card">
+                        <div class="stars">
+                            {% for i in range(review.rating) %}
+                                <i class="fas fa-star"></i>
+                            {% endfor %}
+                            {% for i in range(5 - review.rating) %}
+                                <i class="far fa-star"></i>
+                            {% endfor %}
+                        </div>
+                        <p class="review-text mb-3">{{ review.review_text }}</p>
+                        <p class="patient-name">- {{ review.patient_name }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="col-12 text-center">
+                    <p>No reviews yet. Be the first to share your experience!</p>
+                </div>
+            {% endif %}
+        </div>
+        <div class="text-center mt-3 fade-in">
+            <a href="{{ url_for('reviews') }}" class="btn btn-outline-primary">Read More Reviews</a>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="bg-primary text-white py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8 fade-in">
+                <h2 class="mb-3">Ready to Schedule Your Eye Exam?</h2>
+                <p class="lead mb-0">Book an appointment today and take the first step towards better vision.</p>
+            </div>
+            <div class="col-lg-4 text-lg-end mt-4 mt-lg-0 fade-in">
+                <a href="{{ url_for('appointment') }}" class="btn btn-light btn-lg">Book Appointment</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Clinic Gallery -->
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5 fade-in">
+            <h2 class="mb-3">Our Clinic Gallery</h2>
+            <p class="lead">Take a look at our modern facility and equipment</p>
+        </div>
+        <div class="row gallery">
+            <div class="col-md-4 fade-in">
+                <div class="gallery-item">
+                    <img src="https://images.unsplash.com/photo-1445510861639-5651173bc5d5" alt="Clinic Reception Area">
+                    <div class="gallery-caption">Reception Area</div>
+                </div>
+            </div>
+            <div class="col-md-4 fade-in">
+                <div class="gallery-item">
+                    <img src="https://images.unsplash.com/photo-1533090161767-e6ffed986c88" alt="Waiting Room">
+                    <div class="gallery-caption">Patient Waiting Area</div>
+                </div>
+            </div>
+            <div class="col-md-4 fade-in">
+                <div class="gallery-item">
+                    <img src="https://images.unsplash.com/photo-1597764690523-15bea4c581c9" alt="Eye Examination">
+                    <div class="gallery-caption">Examination Room</div>
+                </div>
+            </div>
+            <div class="col-md-4 fade-in">
+                <div class="gallery-item">
+                    <img src="https://images.unsplash.com/photo-1635012641245-0adf659dac97" alt="Diagnostic Equipment">
+                    <div class="gallery-caption">Advanced Diagnostic Equipment</div>
+                </div>
+            </div>
+            <div class="col-md-4 fade-in">
+                <div class="gallery-item">
+                    <img src="https://images.unsplash.com/photo-1550792436-181701c71f63" alt="Patient Consultation">
+                    <div class="gallery-caption">Doctor Consultation</div>
+                </div>
+            </div>
+            <div class="col-md-4 fade-in">
+                <div class="gallery-item">
+                    <img src="https://images.unsplash.com/photo-1584515933487-779824d29309" alt="Medical Team">
+                    <div class="gallery-caption">Our Medical Team</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

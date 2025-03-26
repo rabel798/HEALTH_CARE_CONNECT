@@ -1,0 +1,188 @@
+{% extends 'layout.html' %}
+
+{% block title %}Appointment Successfully Booked - Dr. Richa's Eye Clinic{% endblock %}
+
+{% block content %}
+<!-- Success Hero -->
+<section class="hero" style="background: linear-gradient(rgba(40, 167, 69, 0.85), rgba(40, 167, 69, 0.85)), url('https://images.unsplash.com/photo-1597764690523-15bea4c581c9');">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 offset-lg-2 fade-in">
+                <h1>Appointment Confirmed!</h1>
+                <p>Your appointment has been successfully booked and confirmed</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Success Content -->
+<section class="success-page py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 offset-lg-2 text-center fade-in">
+                <div class="success-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h2 class="mb-4">Thank You for Choosing Dr. Richa's Eye Clinic</h2>
+                <p class="lead mb-5">Your appointment has been successfully booked and payment has been processed. We look forward to providing you with excellent eye care services.</p>
+                
+                <div class="card border-0 shadow mb-5">
+                    <div class="card-body p-4">
+                        <h4 class="card-title text-primary mb-4">Appointment Details</h4>
+                        <div class="row">
+                            <div class="col-md-6 text-md-end">
+                                <p><strong>Confirmation Number:</strong></p>
+                                <p><strong>Date:</strong></p>
+                                <p><strong>Time:</strong></p>
+                                <p><strong>Location:</strong></p>
+                            </div>
+                            <div class="col-md-6 text-md-start">
+                                <p id="confirmation-number"></p>
+                                <p id="appointment-date"></p>
+                                <p id="appointment-time"></p>
+                                <p>123 Health Avenue, Delhi</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <h3 class="mb-4">What's Next?</h3>
+                
+                <div class="row mb-5">
+                    <div class="col-md-4 mb-4 mb-md-0">
+                        <div class="card border-0 shadow h-100">
+                            <div class="card-body p-4 text-center">
+                                <i class="far fa-calendar-check fa-3x text-primary mb-3"></i>
+                                <h5>Appointment Reminder</h5>
+                                <p class="mb-0">You'll receive a reminder 24 hours before your scheduled appointment via SMS or email.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4 mb-4 mb-md-0">
+                        <div class="card border-0 shadow h-100">
+                            <div class="card-body p-4 text-center">
+                                <i class="fas fa-clipboard-list fa-3x text-primary mb-3"></i>
+                                <h5>Preparation</h5>
+                                <p class="mb-0">Please bring any previous medical records, prescriptions, and a list of current medications.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <div class="card border-0 shadow h-100">
+                            <div class="card-body p-4 text-center">
+                                <i class="fas fa-map-marker-alt fa-3x text-primary mb-3"></i>
+                                <h5>Directions</h5>
+                                <p class="mb-0">Plan to arrive 15 minutes early. Click below for directions to our clinic.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mb-5">
+                    <div class="col-md-6 mb-3 mb-md-0">
+                        <a href="{{ url_for('index') }}" class="btn btn-outline-primary btn-lg w-100">
+                            <i class="fas fa-home me-2"></i> Return to Home
+                        </a>
+                    </div>
+                    <div class="col-md-6">
+                        <a href="{{ url_for('location') }}" class="btn btn-primary btn-lg w-100">
+                            <i class="fas fa-directions me-2"></i> Get Directions
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="alert alert-info" role="alert">
+                    <i class="fas fa-info-circle me-2"></i> A confirmation email with these details has been sent to your email address (if provided).
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Additional Resources -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 offset-lg-2 text-center mb-5 fade-in">
+                <h3>Preparing For Your Visit</h3>
+                <p class="lead">Review these resources before your appointment</p>
+            </div>
+        </div>
+        
+        <div class="row fade-in">
+            <div class="col-md-4 mb-4">
+                <div class="card border-0 shadow h-100">
+                    <div class="card-body p-4">
+                        <h4 class="card-title text-primary mb-3">What to Expect</h4>
+                        <p>Learn about what happens during your first eye examination at Dr. Richa's Eye Clinic and how to prepare.</p>
+                        <ul class="mb-0">
+                            <li>Vision testing procedures</li>
+                            <li>Eye pressure measurement</li>
+                            <li>Retinal examination</li>
+                            <li>Consultation with Dr. Richa</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4">
+                <div class="card border-0 shadow h-100">
+                    <div class="card-body p-4">
+                        <h4 class="card-title text-primary mb-3">After Dilation</h4>
+                        <p>If your eyes will be dilated during the examination, here's what you should know:</p>
+                        <ul class="mb-0">
+                            <li>Temporary blurry vision (4-6 hours)</li>
+                            <li>Increased sensitivity to light</li>
+                            <li>Difficulty focusing on near objects</li>
+                            <li>Arrange for transportation if possible</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4">
+                <div class="card border-0 shadow h-100">
+                    <div class="card-body p-4">
+                        <h4 class="card-title text-primary mb-3">Eye Care Tips</h4>
+                        <p>Simple ways to maintain healthy eyes between appointments:</p>
+                        <ul class="mb-0">
+                            <li>Follow the 20-20-20 rule during screen time</li>
+                            <li>Wear sunglasses outdoors</li>
+                            <li>Stay hydrated and eat eye-healthy foods</li>
+                            <li>Use proper lighting for reading</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Custom Script for Success Page -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Generate random confirmation number
+    const confirmationNumber = 'DC' + Math.floor(100000 + Math.random() * 900000);
+    document.getElementById('confirmation-number').textContent = confirmationNumber;
+    
+    // Get and format current date + 7 days (for example appointment)
+    const now = new Date();
+    const appointmentDate = new Date(now);
+    appointmentDate.setDate(now.getDate() + 7);
+    
+    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    document.getElementById('appointment-date').textContent = appointmentDate.toLocaleDateString('en-US', options);
+    
+    // Set random time (10 AM - 4 PM)
+    const hours = Math.floor(Math.random() * 6) + 10;
+    const minutes = [0, 30][Math.floor(Math.random() * 2)];
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    const displayHours = hours > 12 ? hours - 12 : hours;
+    
+    document.getElementById('appointment-time').textContent = 
+        `${displayHours}:${minutes === 0 ? '00' : minutes} ${ampm}`;
+});
+</script>
+{% endblock %}

@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 60" width="200" height="60">
+  <!-- Background Rectangle -->
+  <rect width="200" height="60" rx="8" fill="#ffffff"/>
+  
+  <!-- Eye Symbol -->
+  <ellipse cx="40" cy="30" rx="22" ry="15" fill="#ffffff" stroke="#007bff" stroke-width="3"/>
+  <circle cx="40" cy="30" r="8" fill="#007bff"/>
+  <circle cx="43" cy="27" r="3" fill="#ffffff"/>
+  
+  <!-- Text: Dr. Richa's -->
+  <text x="70" y="30" font-family="Montserrat, sans-serif" font-size="18" font-weight="700" fill="#007bff">Dr. Richa's</text>
+  
+  <!-- Text: Eye Clinic -->
+  <text x="70" y="50" font-family="Montserrat, sans-serif" font-size="16" font-weight="500" fill="#333333">Eye Clinic</text>
+  
+  <!-- Small Tagline -->
+  <text x="70" y="15" font-family="Montserrat, sans-serif" font-size="10" font-style="italic" fill="#17a2b8">Your Vision, Our Priority</text>
+</svg>

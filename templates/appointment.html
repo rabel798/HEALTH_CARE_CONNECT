@@ -1,0 +1,253 @@
+{% extends 'layout.html' %}
+
+{% block title %}Book an Appointment - Dr. Richa's Eye Clinic{% endblock %}
+
+{% block content %}
+<!-- Appointment Hero -->
+<section class="hero" style="background: linear-gradient(rgba(0, 123, 255, 0.85), rgba(0, 123, 255, 0.85)), url('https://images.unsplash.com/photo-1591019479261-1a103585c559');">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 offset-lg-2 fade-in">
+                <h1>Book an Appointment</h1>
+                <p>Schedule your visit to Dr. Richa's Eye Clinic</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Appointment Form Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 offset-lg-2 text-center mb-5 fade-in">
+                <h2>Schedule Your Visit</h2>
+                <p class="lead">Fill out the form below to request an appointment at Dr. Richa's Eye Clinic. We'll confirm your appointment via phone or email.</p>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-lg-8 offset-lg-2 fade-in">
+                <div class="appointment-form">
+                    <form method="POST" action="{{ url_for('appointment') }}" class="needs-validation" novalidate>
+                        {{ form.csrf_token }}
+                        
+                        <div class="row mb-4">
+                            <div class="col-md-6 mb-3 mb-md-0">
+                                <label for="full_name" class="form-label">Full Name <span class="text-danger">*</span></label>
+                                {{ form.full_name(class="form-control", placeholder="Enter your full name", required=true) }}
+                                <div class="invalid-feedback">Please enter your full name.</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="mobile_number" class="form-label">Mobile Number <span class="text-danger">*</span></label>
+                                {{ form.mobile_number(class="form-control", placeholder="Enter your mobile number", required=true) }}
+                                <div class="invalid-feedback">Please enter a valid mobile number.</div>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-4">
+                            <div class="col-md-6 mb-3 mb-md-0">
+                                <label for="email" class="form-label">Email Address</label>
+                                {{ form.email(class="form-control", placeholder="Enter your email address") }}
+                                <div class="invalid-feedback">Please enter a valid email address.</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="age" class="form-label">Age <span class="text-danger">*</span></label>
+                                {{ form.age(class="form-control", placeholder="Enter your age", required=true) }}
+                                <div class="invalid-feedback">Please enter a valid age.</div>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-4">
+                            <div class="col-md-6 mb-3 mb-md-0">
+                                <label for="appointment_date" class="form-label">Preferred Date <span class="text-danger">*</span></label>
+                                {{ form.appointment_date(class="form-control", type="date", value=default_date, min=default_date, required=true) }}
+                                <div class="invalid-feedback">Please select a preferred date.</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="appointment_time" class="form-label">Preferred Time <span class="text-danger">*</span></label>
+                                {{ form.appointment_time(class="form-control", type="hidden", required=true) }}
+                                <div id="time-slots-container">
+                                    <p class="text-muted small">Please select a date to see available time slots</p>
+                                </div>
+                                <div class="time-slots-loader spinner-border text-primary" role="status" style="display: none;">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <div class="invalid-feedback">Please select a preferred time.</div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="primary_issue" class="form-label">Primary Eye Issue</label>
+                            {{ form.primary_issue(class="form-control", placeholder="Briefly describe your eye concern", rows=3) }}
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="referral_info" class="form-label">Referral Information (if any)</label>
+                            {{ form.referral_info(class="form-control", placeholder="How did you hear about us?") }}
+                        </div>
+                        
+                        <div class="mb-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="" id="terms" required>
+                                <label class="form-check-label" for="terms">
+                                    I agree to the <a href="#" data-bs-toggle="modal" data-bs-target="#termsModal">terms and conditions</a> and consent to the processing of my personal data
+                                </label>
+                                <div class="invalid-feedback">
+                                    You must agree before submitting.
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center">
+                            <div class="loader"></div>
+                            <button type="submit" class="btn btn-primary btn-lg">Book Appointment</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Terms and Conditions Modal -->
+<div class="modal fade" id="termsModal" tabindex="-1" aria-labelledby="termsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="termsModalLabel">Terms and Conditions</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <h6>Appointment Policy</h6>
+                <p>By scheduling an appointment with Dr. Richa's Eye Clinic, you agree to the following:</p>
+                <ul>
+                    <li>Please arrive 15 minutes before your scheduled appointment time.</li>
+                    <li>A cancellation fee may apply for appointments canceled with less than 24 hours' notice.</li>
+                    <li>We reserve the right to reschedule appointments in case of emergencies.</li>
+                </ul>
+                
+                <h6>Data Privacy</h6>
+                <p>We are committed to protecting your privacy:</p>
+                <ul>
+                    <li>Personal information collected will be used solely for providing medical services.</li>
+                    <li>Your information will not be shared with third parties without your consent, except as required by law.</li>
+                    <li>You have the right to access, modify, or delete your personal information.</li>
+                </ul>
+                
+                <h6>Payment Policy</h6>
+                <p>The following payment terms apply:</p>
+                <ul>
+                    <li>Consultation fees are due at the time of service.</li>
+                    <li>We accept cash, debit cards, credit cards, and UPI payments.</li>
+                    <li>For procedures and surgeries, a deposit may be required at the time of scheduling.</li>
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">I Understand</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Appointment Information -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 offset-lg-2 fade-in">
+                <div class="card border-0 shadow">
+                    <div class="card-body p-4">
+                        <h3 class="card-title text-primary mb-4 text-center">Important Appointment Information</h3>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <div class="d-flex">
+                                    <div class="me-3">
+                                        <i class="fas fa-clipboard-list fa-2x text-primary"></i>
+                                    </div>
+                                    <div>
+                                        <h5>What to Bring</h5>
+                                        <ul class="mb-0">
+                                            <li>Previous medical records</li>
+                                            <li>Current medication list</li>
+                                            <li>Insurance information (if applicable)</li>
+                                            <li>Current eyeglasses or contact lenses</li>
+                                            <li>Sunglasses for after dilation</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-4">
+                                <div class="d-flex">
+                                    <div class="me-3">
+                                        <i class="fas fa-clock fa-2x text-primary"></i>
+                                    </div>
+                                    <div>
+                                        <h5>Duration</h5>
+                                        <ul class="mb-0">
+                                            <li>Initial consultations: 45-60 minutes</li>
+                                            <li>Follow-up appointments: 20-30 minutes</li>
+                                            <li>Please plan your schedule accordingly</li>
+                                            <li>Consider transportation arrangements if your eyes will be dilated</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-4 mb-md-0">
+                                <div class="d-flex">
+                                    <div class="me-3">
+                                        <i class="fas fa-rupee-sign fa-2x text-primary"></i>
+                                    </div>
+                                    <div>
+                                        <h5>Payment Information</h5>
+                                        <ul class="mb-0">
+                                            <li>Consultation fee: ₹500 - ₹1,500</li>
+                                            <li>Multiple payment options available</li>
+                                            <li>Insurance verification before appointment recommended</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="d-flex">
+                                    <div class="me-3">
+                                        <i class="fas fa-eye fa-2x text-primary"></i>
+                                    </div>
+                                    <div>
+                                        <h5>After Dilation</h5>
+                                        <ul class="mb-0">
+                                            <li>Vision may be blurry for 4-6 hours</li>
+                                            <li>Sensitivity to light is common</li>
+                                            <li>Avoid driving immediately after</li>
+                                            <li>Consider having someone accompany you</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="bg-primary text-white py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8 fade-in">
+                <h2 class="mb-3">Need Urgent Eye Care?</h2>
+                <p class="lead mb-0">For eye emergencies, please contact us directly at +91-0987654321</p>
+            </div>
+            <div class="col-lg-4 text-lg-end mt-4 mt-lg-0 fade-in">
+                <a href="tel:+910987654321" class="btn btn-light btn-lg">
+                    <i class="fas fa-phone-alt me-2"></i> Emergency Contact
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

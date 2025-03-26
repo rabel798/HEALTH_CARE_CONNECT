@@ -1,0 +1,170 @@
+{% extends 'layout.html' %}
+
+{% block title %}Patient Reviews & Testimonials - Dr. Richa's Eye Clinic{% endblock %}
+
+{% block content %}
+<!-- Reviews Hero -->
+<section class="hero" style="background: linear-gradient(rgba(0, 123, 255, 0.85), rgba(0, 123, 255, 0.85)), url('https://images.unsplash.com/photo-1550792436-181701c71f63');">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 offset-lg-2 fade-in">
+                <h1>Patient Reviews</h1>
+                <p>Read about experiences from our satisfied patients</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Reviews Overview -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 offset-lg-2 text-center fade-in">
+                <h2 class="mb-4">What Our Patients Say</h2>
+                <p class="lead">At Dr. Richa's Eye Clinic, patient satisfaction is our priority. Here's what our patients have to say about their experiences with us.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Reviews Display -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row">
+            {% if reviews %}
+                {% for review in reviews %}
+                <div class="col-lg-6 mb-4 fade-in">
+                    <div class="review-card">
+                        <div class="stars mb-3">
+                            {% for i in range(review.rating) %}
+                                <i class="fas fa-star"></i>
+                            {% endfor %}
+                            {% for i in range(5 - review.rating) %}
+                                <i class="far fa-star"></i>
+                            {% endfor %}
+                        </div>
+                        <p class="review-text mb-3">"{{ review.review_text }}"</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <p class="patient-name mb-0">- {{ review.patient_name }}</p>
+                            <small class="text-muted">{{ review.created_at.strftime('%B %d, %Y') }}</small>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="col-12 text-center">
+                    <p>No reviews available yet. Be the first to share your experience!</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<!-- Submit Review Form -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 offset-lg-2 text-center mb-5 fade-in">
+                <h2>Share Your Experience</h2>
+                <p class="lead">Your feedback helps us improve and helps other patients make informed decisions.</p>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-lg-8 offset-lg-2 fade-in">
+                <div class="card border-0 shadow">
+                    <div class="card-body p-4">
+                        <form method="POST" action="{{ url_for('reviews') }}" class="needs-validation" novalidate>
+                            {{ form.csrf_token }}
+                            
+                            <div class="mb-4">
+                                <label for="patient_name" class="form-label">Your Name</label>
+                                {{ form.patient_name(class="form-control", placeholder="Enter your name", required=true) }}
+                                <div class="invalid-feedback">
+                                    Please provide your name.
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label class="form-label">Your Rating</label>
+                                <div class="stars-display mb-2">
+                                    <i class="far fa-star text-warning"></i>
+                                    <i class="far fa-star text-warning"></i>
+                                    <i class="far fa-star text-warning"></i>
+                                    <i class="far fa-star text-warning"></i>
+                                    <i class="far fa-star text-warning"></i>
+                                </div>
+                                <div class="rating-group">
+                                    {{ form.rating(class="form-select rating-input") }}
+                                </div>
+                                <div class="invalid-feedback">
+                                    Please select a rating.
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label for="review_text" class="form-label">Your Review</label>
+                                {{ form.review_text(class="form-control", rows=5, placeholder="Share your experience at our clinic", required=true) }}
+                                <div class="invalid-feedback">
+                                    Please share your experience.
+                                </div>
+                            </div>
+                            
+                            <div class="text-center">
+                                <div class="loader"></div>
+                                <button type="submit" class="btn btn-primary btn-lg">Submit Review</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Review Guidelines -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 offset-lg-2 fade-in">
+                <h3 class="mb-4 text-center">Review Guidelines</h3>
+                
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title text-primary">What to Include in Your Review</h5>
+                        <ul class="mb-0">
+                            <li>Your overall experience with our clinic</li>
+                            <li>Quality of care received</li>
+                            <li>Interactions with staff and doctors</li>
+                            <li>Clinic environment and cleanliness</li>
+                            <li>Wait times and appointment scheduling experience</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title text-primary">Review Moderation</h5>
+                        <p class="mb-0">All reviews are moderated before being published to ensure they adhere to our guidelines. We value authentic feedback and aim to display a balanced representation of patient experiences. Please note that reviews containing personal information, offensive language, or unrelated content will not be published.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="bg-primary text-white py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8 fade-in">
+                <h2 class="mb-3">Ready to Experience Our Care?</h2>
+                <p class="lead mb-0">Join our satisfied patients by scheduling your appointment today.</p>
+            </div>
+            <div class="col-lg-4 text-lg-end mt-4 mt-lg-0 fade-in">
+                <a href="{{ url_for('appointment') }}" class="btn btn-light btn-lg">Book an Appointment</a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
