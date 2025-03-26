@@ -1,0 +1,158 @@
+# Project Requirements: Dr. Richa's Eye Clinic Digital Platform
+
+## Technical Stack
+- Language: Python
+- Framework: Django
+- Frontend: HTML5, CSS3, JavaScript, Bootstrap
+- Database: PostgreSQL
+
+## Website Tabs
+1. Home Page
+   - Clinic Overview
+   - Services List
+   - Vision Statement
+   - Doctor's Profile with Photo
+
+2. Location Page
+   - Integrated Map
+   - Clinic Address
+   - Contact Information
+   - Directions
+
+3. Services Page
+   - Detailed Services List
+   - Brief Description of Each Service
+   - Pricing (Optional)
+
+4. Reviews Section
+   - Patient Testimonials
+   - Rating System
+   - Option to Submit New Review
+
+5. Appointment Booking
+   - Online Booking Form
+   - Date/Time Selection
+   - Patient Information Capture
+
+## Photography and Visual Content Guidelines
+### Photo Content Requirements
+1. Image Types
+   - Clinic Interior (2-3 professional shots)
+   - Modern, clean medical equipment
+   - Doctor's professional portrait
+   - Staff group photo (optional)
+   - Patient care and consultation scenes
+
+2. Image Characteristics
+   - High-resolution (minimum 1920x1080)
+   - Professional, clean aesthetic
+   - Natural lighting
+   - Authentic representation of clinic environment
+   - Diversity in patient representation
+
+3. Visual Storytelling
+   - Showcase clinic's modern infrastructure
+   - Highlight patient comfort and care
+   - Demonstrate professional yet welcoming atmosphere
+   - Avoid stock photos, prefer actual clinic images
+
+4. Technical Specifications
+   - JPEG/WebP format
+   - Compressed for web performance
+   - Responsive design compatibility
+   - Alt text for accessibility
+   - Consistent color grading
+
+### Interactive Visual Elements
+- Subtle hover effects
+- Image galleries with smooth transitions
+- 360-degree clinic tour (optional)
+- Short video testimonials
+- Informative infographics about eye health
+
+## Patient Management Software Requirements
+### Patient Entry Module
+- Capture Details:
+  - Full Name
+  - Mobile Number
+  - Age
+  - Primary Eye Issue
+  - Appointment Date/Time
+  - Referral Information (if applicable)
+
+### Medical Record Management
+1. Optometrist Review
+   - Left Eye Assessment
+   - Right Eye Assessment
+
+2. Doctor Review
+   - Detailed Examination Notes
+   - Left Eye Findings
+   - Right Eye Findings
+   - Additional Remarks
+
+### Payment Integration
+- Multiple Payment Options:
+  - UPI
+  - Credit Card
+  - Debit Card
+  - Cash
+- Secure Transaction Processing
+- Payment Receipt Generation
+
+## Google Search Optimization (SEO) Requirements
+1. On-Page SEO Optimization
+   - Keyword-rich content
+   - Optimized meta titles and descriptions
+   - Header tag hierarchy (H1, H2, H3)
+   - Alt text for images
+   - Internal linking structure
+
+2. Technical SEO
+   - Mobile responsiveness
+   - Fast page load speed
+   - SSL certification
+   - XML sitemap generation
+   - Robots.txt configuration
+
+3. Local SEO Strategies
+   - Google My Business listing
+   - Local keywords integration
+   - Location-based content
+   - NAP (Name, Address, Phone) consistency
+   - Schema markup for local business
+
+4. Content Strategy
+   - Regular blog posts about eye health
+   - Patient education resources
+   - Location-specific service pages
+   - FAQ section with optimized content
+
+5. Off-Page SEO
+   - Google Business Profile optimization
+   - Local directory listings
+   - Backlink strategy from healthcare websites
+   - Patient review management
+
+## Security Requirements
+- Secure User Authentication
+- Data Encryption
+- GDPR Compliance
+- Secure Payment Gateway
+
+## API Integration Guidelines
+1. Payment API
+   - Use Stripe
+   - Implement Test Mode First
+   - Secure API Key Management
+
+2. Maps API
+   - Use OpenStreetMap
+   - Implement Clinic Location Marker
+   - Provide Directions Feature
+
+3. Reminder Service
+   - Implement SMS/Email Reminders
+
+## Reference Website
+https://www.narayananethralaya.org/
