@@ -87,16 +87,14 @@
                             
                             <div class="mb-4">
                                 <label class="form-label">Your Rating</label>
-                                <div class="stars-display mb-2">
-                                    <i class="far fa-star text-warning"></i>
-                                    <i class="far fa-star text-warning"></i>
-                                    <i class="far fa-star text-warning"></i>
-                                    <i class="far fa-star text-warning"></i>
-                                    <i class="far fa-star text-warning"></i>
+                                <div class="star-rating mb-2">
+                                    <i class="far fa-star text-warning star-btn" data-rating="1"></i>
+                                    <i class="far fa-star text-warning star-btn" data-rating="2"></i>
+                                    <i class="far fa-star text-warning star-btn" data-rating="3"></i>
+                                    <i class="far fa-star text-warning star-btn" data-rating="4"></i>
+                                    <i class="far fa-star text-warning star-btn" data-rating="5"></i>
                                 </div>
-                                <div class="rating-group">
-                                    {{ form.rating(class="form-select rating-input") }}
-                                </div>
+                                {{ form.rating(type="hidden", class="rating-input") }}
                                 <div class="invalid-feedback">
                                     Please select a rating.
                                 </div>

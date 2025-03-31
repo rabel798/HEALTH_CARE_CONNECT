@@ -75,34 +75,45 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Review star rating functionality
-    const ratingInputs = document.querySelectorAll('.rating-input');
-    if (ratingInputs.length > 0) {
-        ratingInputs.forEach(input => {
-            input.addEventListener('change', function() {
-                // Update the displayed stars
-                const ratingValue = this.value;
-                const starsContainer = document.querySelector('.stars-display');
-                
-                if (starsContainer) {
-                    starsContainer.innerHTML = '';
-                    
-                    // Add filled stars
-                    for (let i = 0; i < ratingValue; i++) {
-                        const star = document.createElement('i');
-                        star.className = 'fas fa-star text-warning';
-                        starsContainer.appendChild(star);
-                    }
-                    
-                    // Add empty stars
-                    for (let i = ratingValue; i < 5; i++) {
-                        const star = document.createElement('i');
-                        star.className = 'far fa-star text-warning';
-                        starsContainer.appendChild(star);
-                    }
-                }
+    // Interactive star rating
+    const starContainer = document.querySelector('.star-rating');
+    const ratingInput = document.querySelector('.rating-input');
+    
+    if (starContainer && ratingInput) {
+        const stars = starContainer.querySelectorAll('.star-btn');
+        
+        // Hover effect
+        stars.forEach(star => {
+            star.addEventListener('mouseover', function() {
+                const rating = this.dataset.rating;
+                updateStars(rating, true);
             });
         });
+        
+        // Mouse leave - reset to selected rating
+        starContainer.addEventListener('mouseleave', function() {
+            const rating = ratingInput.value || 0;
+            updateStars(rating, false);
+        });
+        
+        // Click to set rating
+        stars.forEach(star => {
+            star.addEventListener('click', function() {
+                const rating = this.dataset.rating;
+                ratingInput.value = rating;
+                updateStars(rating, false);
+            });
+        });
+        
+        function updateStars(rating, isHover) {
+            stars.forEach((star, index) => {
+                if (index < rating) {
+                    star.className = 'fas fa-star text-warning star-btn';
+                } else {
+                    star.className = 'far fa-star text-warning star-btn';
+                }
+            });
+        }
     }
 
     // Handle form submissions with validation
