@@ -78,9 +78,48 @@
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg sticky-top">
         <div class="container">
-            <a class="navbar-brand" href="{{ url_for('index') }}">
+            <a class="navbar-brand" href="{{ url_for('index') }}" id="clinic-logo">
                 <img src="{{ url_for('static', filename='assets/logo.svg') }}" alt="Dr. Richa's Eye Clinic" height="40">
             </a>
+            <script>
+                // Add special click handler for doctor access - clicking on logo 5 times quickly shows admin login
+                document.addEventListener('DOMContentLoaded', function() {
+                    const logo = document.getElementById('clinic-logo');
+                    let clickCount = 0;
+                    let clickTimer = null;
+                    
+                    logo.addEventListener('click', function(e) {
+                        // If regular navigation, let it proceed
+                        if (clickCount === 0) {
+                            return;
+                        }
+                        
+                        // For rapid clicks, prevent navigation and count
+                        e.preventDefault();
+                        clickCount++;
+                        
+                        // Reset click count after 2 seconds of inactivity
+                        clearTimeout(clickTimer);
+                        clickTimer = setTimeout(() => { clickCount = 0; }, 2000);
+                        
+                        // If clicked 5 times, redirect to admin login
+                        if (clickCount >= 5) {
+                            clickCount = 0;
+                            window.location.href = "{{ url_for('admin_login') }}";
+                        }
+                    });
+                    
+                    // First click initiator - click once to start the pattern
+                    logo.addEventListener('dblclick', function(e) {
+                        e.preventDefault();
+                        clickCount = 1;
+                        
+                        // Reset after 2 seconds if pattern not completed
+                        clearTimeout(clickTimer);
+                        clickTimer = setTimeout(() => { clickCount = 0; }, 2000);
+                    });
+                });
+            </script>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -101,6 +140,47 @@
                     <li class="nav-item">
                         <a class="nav-link btn btn-primary text-white px-3 ms-lg-2" href="{{ url_for('appointment') }}">Book Appointment</a>
                     </li>
+                    
+                    {% if current_user.is_authenticated %}
+                        {% if current_user.__class__.__name__ == 'Patient' %}
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-user me-1"></i> {{ current_user.full_name }}
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                    <li><a class="dropdown-item" href="{{ url_for('patient_dashboard') }}">Dashboard</a></li>
+                                    <li><a class="dropdown-item" href="{{ url_for('patient_appointments') }}">My Appointments</a></li>
+                                    <li><a class="dropdown-item" href="{{ url_for('patient_medical_records') }}">Medical Records</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" href="{{ url_for('patient_logout') }}">Logout</a></li>
+                                </ul>
+                            </li>
+                        {% else %}
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-user-md me-1"></i> Dr. Richa
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                    <li><a class="dropdown-item" href="{{ url_for('admin_dashboard') }}">Dashboard</a></li>
+                                    <li><a class="dropdown-item" href="{{ url_for('admin_appointments') }}">Manage Appointments</a></li>
+                                    <li><a class="dropdown-item" href="{{ url_for('admin_patients') }}">Patients</a></li>
+                                    <li><a class="dropdown-item" href="{{ url_for('admin_reviews') }}">Reviews</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" href="{{ url_for('admin_logout') }}">Logout</a></li>
+                                </ul>
+                            </li>
+                        {% endif %}
+                    {% else %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-user-circle me-1"></i> Account
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                <li><a class="dropdown-item" href="{{ url_for('patient_login') }}">Patient Login</a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('patient_register') }}">Register</a></li>
+                            </ul>
+                        </li>
+                    {% endif %}
                 </ul>
             </div>
         </div>

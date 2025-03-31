@@ -1,0 +1,60 @@
+{% extends 'layout.html' %}
+
+{% block title %}Doctor Login - Dr. Richa's Eye Clinic{% endblock %}
+
+{% block content %}
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card shadow-sm">
+                    <div class="card-body p-4 p-md-5">
+                        <div class="text-center mb-4">
+                            <img src="{{ url_for('static', filename='assets/logo.svg') }}" alt="Dr. Richa's Eye Clinic" height="60" class="mb-3">
+                            <h2 class="card-title mb-1">Doctor Login Portal</h2>
+                            <p class="text-muted">Access patient records and clinic management</p>
+                        </div>
+                        
+                        <form method="POST" action="{{ url_for('admin_login') }}">
+                            {{ form.hidden_tag() }}
+                            
+                            <div class="mb-3">
+                                {{ form.username.label(class="form-label") }}
+                                {{ form.username(class="form-control", placeholder="Enter username") }}
+                                {% if form.username.errors %}
+                                    <div class="text-danger">
+                                        {% for error in form.username.errors %}
+                                            <small>{{ error }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="mb-4">
+                                {{ form.password.label(class="form-label") }}
+                                {{ form.password(class="form-control", placeholder="Enter password") }}
+                                {% if form.password.errors %}
+                                    <div class="text-danger">
+                                        {% for error in form.password.errors %}
+                                            <small>{{ error }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="d-grid">
+                                {{ form.submit(class="btn btn-primary py-2") }}
+                            </div>
+                        </form>
+                        
+                        <div class="text-center mt-4">
+                            <p class="text-muted"><small>This portal is exclusively for clinic staff.</small></p>
+                            <p class="text-muted"><small>For patients, please use the <a href="{{ url_for('patient_login') }}">patient login</a> instead.</small></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

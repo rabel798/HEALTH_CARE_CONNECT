@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, IntegerField, TextAreaField, DateField, TimeField, SelectField, SubmitField
-from wtforms.validators import DataRequired, Email, Length, NumberRange, Optional
+from wtforms import StringField, IntegerField, TextAreaField, DateField, TimeField, SelectField, SubmitField, PasswordField, HiddenField
+from wtforms.validators import DataRequired, Email, Length, NumberRange, Optional, EqualTo
 
 class AppointmentForm(FlaskForm):
     full_name = StringField('Full Name', validators=[DataRequired(), Length(min=3, max=100)])
@@ -30,5 +30,38 @@ class ReviewForm(FlaskForm):
 
 class AdminLoginForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired(), Length(min=3, max=64)])
-    password = StringField('Password', validators=[DataRequired(), Length(min=8, max=128)])
+    password = PasswordField('Password', validators=[DataRequired(), Length(min=8, max=128)])
     submit = SubmitField('Login')
+
+class PatientLoginForm(FlaskForm):
+    email = StringField('Email', validators=[DataRequired(), Email(), Length(max=100)])
+    password = PasswordField('Password', validators=[DataRequired(), Length(min=8, max=128)])
+    submit = SubmitField('Login')
+
+class PatientRegistrationForm(FlaskForm):
+    full_name = StringField('Full Name', validators=[DataRequired(), Length(min=3, max=100)])
+    mobile_number = StringField('Mobile Number', validators=[DataRequired(), Length(min=10, max=15)])
+    email = StringField('Email', validators=[DataRequired(), Email(), Length(max=100)])
+    age = IntegerField('Age', validators=[DataRequired(), NumberRange(min=1, max=120)])
+    password = PasswordField('Password', validators=[
+        DataRequired(),
+        Length(min=8, max=128),
+        EqualTo('confirm_password', message='Passwords must match')
+    ])
+    confirm_password = PasswordField('Confirm Password', validators=[DataRequired()])
+    submit = SubmitField('Register')
+
+class OTPVerificationForm(FlaskForm):
+    email = HiddenField('Email')
+    otp = StringField('OTP Code', validators=[DataRequired(), Length(min=6, max=6)])
+    submit = SubmitField('Verify OTP')
+
+class PrescriptionForm(FlaskForm):
+    diagnosis = TextAreaField('Diagnosis', validators=[DataRequired()])
+    left_eye_findings = TextAreaField('Left Eye Findings', validators=[Optional()])
+    right_eye_findings = TextAreaField('Right Eye Findings', validators=[Optional()])
+    prescribed_medications = TextAreaField('Prescribed Medications', validators=[Optional()])
+    prescribed_eyewear = TextAreaField('Prescribed Eyewear', validators=[Optional()])
+    follow_up_instructions = TextAreaField('Follow-up Instructions', validators=[Optional()])
+    next_appointment_recommendation = StringField('Next Appointment', validators=[Optional()])
+    submit = SubmitField('Save Prescription')

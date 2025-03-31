@@ -1,0 +1,239 @@
+{% extends 'layout.html' %}
+
+{% block title %}Appointment Details - Dr. Richa's Eye Clinic{% endblock %}
+
+{% block content %}
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-3 mb-4">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body text-center">
+                        <div class="avatar-circle bg-primary text-white mb-3">
+                            <i class="fas fa-user-md fa-2x"></i>
+                        </div>
+                        <h5 class="card-title">Dr. Richa</h5>
+                        <p class="card-text text-muted">Ophthalmologist</p>
+                    </div>
+                </div>
+                
+                <div class="list-group shadow-sm">
+                    <a href="{{ url_for('admin_dashboard') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-home me-2"></i> Dashboard
+                    </a>
+                    <a href="{{ url_for('admin_appointments') }}" class="list-group-item list-group-item-action active">
+                        <i class="fas fa-calendar-check me-2"></i> Appointments
+                    </a>
+                    <a href="{{ url_for('admin_patients') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-users me-2"></i> Patients
+                    </a>
+                    <a href="{{ url_for('admin_reviews') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-star me-2"></i> Reviews
+                    </a>
+                </div>
+            </div>
+            
+            <div class="col-lg-9">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <a href="{{ url_for('admin_appointments') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-1"></i> Back to Appointments
+                    </a>
+                    
+                    <div>
+                        {% if appointment.status == 'scheduled' %}
+                            <form method="POST" action="{{ url_for('admin_appointment_view', appointment_id=appointment.id) }}" class="d-inline">
+                                <input type="hidden" name="action" value="complete">
+                                <button type="submit" class="btn btn-success me-2">
+                                    <i class="fas fa-check me-1"></i> Mark as Completed
+                                </button>
+                            </form>
+                            
+                            <form method="POST" action="{{ url_for('admin_appointment_view', appointment_id=appointment.id) }}" class="d-inline">
+                                <input type="hidden" name="action" value="cancel">
+                                <button type="submit" class="btn btn-danger">
+                                    <i class="fas fa-times me-1"></i> Cancel Appointment
+                                </button>
+                            </form>
+                        {% elif appointment.status == 'completed' %}
+                            <a href="{{ url_for('admin_add_prescription', appointment_id=appointment.id) }}" class="btn btn-primary">
+                                {% if has_medical_record %}
+                                    <i class="fas fa-edit me-1"></i> Edit Prescription
+                                {% else %}
+                                    <i class="fas fa-file-medical me-1"></i> Add Prescription
+                                {% endif %}
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Appointment Details</h5>
+                        <span class="badge {% if appointment.status == 'scheduled' %}bg-info{% elif appointment.status == 'completed' %}bg-success{% elif appointment.status == 'cancelled' %}bg-danger{% endif %}">
+                            {{ appointment.status|title }}
+                        </span>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <table class="table table-borderless">
+                                    <tr>
+                                        <th class="ps-0" style="width: 150px;">Date</th>
+                                        <td>{{ appointment.appointment_date.strftime('%d %B, %Y') }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="ps-0">Time</th>
+                                        <td>{{ appointment.appointment_time.strftime('%I:%M %p') }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="ps-0">Booked On</th>
+                                        <td>{{ appointment.created_at.strftime('%d %b, %Y at %I:%M %p') }}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="col-md-6">
+                                <table class="table table-borderless">
+                                    <tr>
+                                        <th class="ps-0" style="width: 150px;">Primary Issue</th>
+                                        <td>{{ appointment.primary_issue or 'Not specified' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="ps-0">Referral</th>
+                                        <td>{{ appointment.referral_info or 'None' }}</td>
+                                    </tr>
+                                    {% if appointment.payment %}
+                                    <tr>
+                                        <th class="ps-0">Payment</th>
+                                        <td>
+                                            <span class="badge {% if appointment.payment.status == 'completed' %}bg-success{% elif appointment.payment.status == 'pending' %}bg-warning{% else %}bg-danger{% endif %}">
+                                                {{ appointment.payment.status|title }}
+                                            </span>
+                                            via {{ appointment.payment.payment_method|title }}
+                                        </td>
+                                    </tr>
+                                    {% endif %}
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Patient Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <table class="table table-borderless">
+                                    <tr>
+                                        <th class="ps-0" style="width: 150px;">Full Name</th>
+                                        <td>{{ appointment.patient.full_name }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="ps-0">Age</th>
+                                        <td>{{ appointment.patient.age }} years</td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="col-md-6">
+                                <table class="table table-borderless">
+                                    <tr>
+                                        <th class="ps-0" style="width: 150px;">Mobile Number</th>
+                                        <td>{{ appointment.patient.mobile_number }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="ps-0">Email</th>
+                                        <td>{{ appointment.patient.email or 'Not provided' }}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-2">
+                            <a href="{{ url_for('admin_patient_view', patient_id=appointment.patient.id) }}" class="btn btn-outline-primary">
+                                <i class="fas fa-user me-1"></i> View Patient Profile
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                {% if has_medical_record %}
+                <div class="card shadow-sm">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Medical Record</h5>
+                        <a href="{{ url_for('admin_add_prescription', appointment_id=appointment.id) }}" class="btn btn-sm btn-primary">
+                            <i class="fas fa-edit me-1"></i> Edit Record
+                        </a>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-4">
+                            <h6 class="border-bottom pb-2 mb-3">Diagnosis</h6>
+                            <p>{{ medical_record.diagnosis or 'No diagnosis recorded.' }}</p>
+                        </div>
+                        
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <h6 class="border-bottom pb-2 mb-3">Left Eye Findings</h6>
+                                <p>{{ medical_record.left_eye_findings or 'No findings recorded.' }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="border-bottom pb-2 mb-3">Right Eye Findings</h6>
+                                <p>{{ medical_record.right_eye_findings or 'No findings recorded.' }}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <h6 class="border-bottom pb-2 mb-3">Prescribed Medications</h6>
+                            <p>{{ medical_record.prescribed_medications or 'No medications prescribed.' }}</p>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <h6 class="border-bottom pb-2 mb-3">Prescribed Eyewear</h6>
+                            <p>{{ medical_record.prescribed_eyewear or 'No eyewear prescribed.' }}</p>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <h6 class="border-bottom pb-2 mb-3">Follow-up Instructions</h6>
+                            <p>{{ medical_record.follow_up_instructions or 'No follow-up instructions provided.' }}</p>
+                        </div>
+                        
+                        <div>
+                            <h6 class="border-bottom pb-2 mb-3">Next Appointment Recommendation</h6>
+                            <p>{{ medical_record.next_appointment_recommendation or 'No recommendation for next appointment.' }}</p>
+                        </div>
+                    </div>
+                </div>
+                {% elif appointment.status == 'completed' %}
+                <div class="card shadow-sm">
+                    <div class="card-body text-center py-5">
+                        <div class="mb-3">
+                            <i class="fas fa-file-medical fa-3x text-secondary"></i>
+                        </div>
+                        <h5>No Medical Record Added</h5>
+                        <p class="text-muted">This appointment is marked as completed but no medical record has been added yet.</p>
+                        <a href="{{ url_for('admin_add_prescription', appointment_id=appointment.id) }}" class="btn btn-primary mt-2">
+                            <i class="fas fa-plus-circle me-1"></i> Add Prescription
+                        </a>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .avatar-circle {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto;
+    }
+</style>
+{% endblock %}

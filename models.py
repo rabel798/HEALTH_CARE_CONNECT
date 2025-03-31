@@ -1,14 +1,30 @@
 from datetime import datetime
 from app import db
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import UserMixin
 
-class Patient(db.Model):
+class Patient(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     full_name = db.Column(db.String(100), nullable=False)
     mobile_number = db.Column(db.String(15), nullable=False)
     email = db.Column(db.String(100), nullable=True)
     age = db.Column(db.Integer, nullable=False)
+    password_hash = db.Column(db.String(256), nullable=True)
+    is_registered = db.Column(db.Boolean, default=False)
     appointments = db.relationship('Appointment', backref='patient', lazy=True)
+    
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+        self.is_registered = True
+    
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
+    
+    def get_id(self):
+        return str(self.id)
+    
+    def is_active(self):
+        return self.is_registered
     
     def __repr__(self):
         return f'<Patient {self.full_name}>'
@@ -40,6 +56,13 @@ class MedicalRecord(db.Model):
     left_eye_findings = db.Column(db.Text, nullable=True)
     right_eye_findings = db.Column(db.Text, nullable=True)
     additional_remarks = db.Column(db.Text, nullable=True)
+    
+    # Prescription and Treatment
+    diagnosis = db.Column(db.Text, nullable=True)
+    prescribed_medications = db.Column(db.Text, nullable=True)
+    prescribed_eyewear = db.Column(db.Text, nullable=True)
+    follow_up_instructions = db.Column(db.Text, nullable=True)
+    next_appointment_recommendation = db.Column(db.Text, nullable=True)
     
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
@@ -73,7 +96,7 @@ class Review(db.Model):
     def __repr__(self):
         return f'<Review {self.id} by {self.patient_name}>'
 
-class Admin(db.Model):
+class Admin(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
@@ -85,5 +108,24 @@ class Admin(db.Model):
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
     
+    def get_id(self):
+        # Prefix with 'admin_' to distinguish from Patient IDs
+        return f'admin_{self.id}'
+    
     def __repr__(self):
         return f'<Admin {self.username}>'
+
+
+class OTP(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(100), nullable=False, index=True)
+    otp_code = db.Column(db.String(6), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    expires_at = db.Column(db.DateTime, nullable=False)
+    is_verified = db.Column(db.Boolean, default=False)
+    
+    def __repr__(self):
+        return f'<OTP for {self.email}>'
+    
+    def is_expired(self):
+        return datetime.utcnow() > self.expires_at

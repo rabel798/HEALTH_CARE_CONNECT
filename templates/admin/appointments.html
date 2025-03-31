@@ -1,0 +1,187 @@
+{% extends 'layout.html' %}
+
+{% block title %}Manage Appointments - Dr. Richa's Eye Clinic{% endblock %}
+
+{% block content %}
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-3 mb-4">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body text-center">
+                        <div class="avatar-circle bg-primary text-white mb-3">
+                            <i class="fas fa-user-md fa-2x"></i>
+                        </div>
+                        <h5 class="card-title">Dr. Richa</h5>
+                        <p class="card-text text-muted">Ophthalmologist</p>
+                    </div>
+                </div>
+                
+                <div class="list-group shadow-sm">
+                    <a href="{{ url_for('admin_dashboard') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-home me-2"></i> Dashboard
+                    </a>
+                    <a href="{{ url_for('admin_appointments') }}" class="list-group-item list-group-item-action active">
+                        <i class="fas fa-calendar-check me-2"></i> Appointments
+                    </a>
+                    <a href="{{ url_for('admin_patients') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-users me-2"></i> Patients
+                    </a>
+                    <a href="{{ url_for('admin_reviews') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-star me-2"></i> Reviews
+                    </a>
+                </div>
+            </div>
+            
+            <div class="col-lg-9">
+                <div class="card shadow-sm">
+                    <div class="card-header">
+                        <h5 class="mb-0">All Appointments</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="nav nav-tabs mb-4" id="appointmentTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="upcoming-tab" data-bs-toggle="tab" data-bs-target="#upcoming" type="button" role="tab" aria-controls="upcoming" aria-selected="true">Upcoming</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="completed-tab" data-bs-toggle="tab" data-bs-target="#completed" type="button" role="tab" aria-controls="completed" aria-selected="false">Completed</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="all-tab" data-bs-toggle="tab" data-bs-target="#all" type="button" role="tab" aria-controls="all" aria-selected="false">All</button>
+                            </li>
+                        </ul>
+                        
+                        <div class="tab-content" id="appointmentTabsContent">
+                            <!-- Upcoming Appointments Tab -->
+                            <div class="tab-pane fade show active" id="upcoming" role="tabpanel" aria-labelledby="upcoming-tab">
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Date</th>
+                                                <th>Time</th>
+                                                <th>Patient</th>
+                                                <th>Primary Issue</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for appointment in appointments %}
+                                                {% if appointment.appointment_date >= now.date() and appointment.status == 'scheduled' %}
+                                                    <tr>
+                                                        <td>{{ appointment.appointment_date.strftime('%d-%b-%Y') }}</td>
+                                                        <td>{{ appointment.appointment_time.strftime('%I:%M %p') }}</td>
+                                                        <td>{{ appointment.patient.full_name }}</td>
+                                                        <td>{{ appointment.primary_issue or 'Not specified' }}</td>
+                                                        <td>
+                                                            <a href="{{ url_for('admin_appointment_view', appointment_id=appointment.id) }}" class="btn btn-sm btn-primary">
+                                                                <i class="fas fa-eye me-1"></i> View
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            
+                            <!-- Completed Appointments Tab -->
+                            <div class="tab-pane fade" id="completed" role="tabpanel" aria-labelledby="completed-tab">
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Date</th>
+                                                <th>Time</th>
+                                                <th>Patient</th>
+                                                <th>Primary Issue</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for appointment in appointments %}
+                                                {% if appointment.status == 'completed' %}
+                                                    <tr>
+                                                        <td>{{ appointment.appointment_date.strftime('%d-%b-%Y') }}</td>
+                                                        <td>{{ appointment.appointment_time.strftime('%I:%M %p') }}</td>
+                                                        <td>{{ appointment.patient.full_name }}</td>
+                                                        <td>{{ appointment.primary_issue or 'Not specified' }}</td>
+                                                        <td>
+                                                            <a href="{{ url_for('admin_appointment_view', appointment_id=appointment.id) }}" class="btn btn-sm btn-primary">
+                                                                <i class="fas fa-eye me-1"></i> View
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            
+                            <!-- All Appointments Tab -->
+                            <div class="tab-pane fade" id="all" role="tabpanel" aria-labelledby="all-tab">
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Date</th>
+                                                <th>Time</th>
+                                                <th>Patient</th>
+                                                <th>Status</th>
+                                                <th>Primary Issue</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for appointment in appointments %}
+                                                <tr>
+                                                    <td>{{ appointment.appointment_date.strftime('%d-%b-%Y') }}</td>
+                                                    <td>{{ appointment.appointment_time.strftime('%I:%M %p') }}</td>
+                                                    <td>{{ appointment.patient.full_name }}</td>
+                                                    <td>
+                                                        {% if appointment.status == 'scheduled' %}
+                                                            <span class="badge bg-info">Scheduled</span>
+                                                        {% elif appointment.status == 'completed' %}
+                                                            <span class="badge bg-success">Completed</span>
+                                                        {% elif appointment.status == 'cancelled' %}
+                                                            <span class="badge bg-danger">Cancelled</span>
+                                                        {% else %}
+                                                            <span class="badge bg-secondary">{{ appointment.status }}</span>
+                                                        {% endif %}
+                                                    </td>
+                                                    <td>{{ appointment.primary_issue or 'Not specified' }}</td>
+                                                    <td>
+                                                        <a href="{{ url_for('admin_appointment_view', appointment_id=appointment.id) }}" class="btn btn-sm btn-primary">
+                                                            <i class="fas fa-eye me-1"></i> View
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .avatar-circle {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto;
+    }
+</style>
+{% endblock %}

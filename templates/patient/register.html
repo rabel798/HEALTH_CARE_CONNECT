@@ -1,0 +1,110 @@
+{% extends 'layout.html' %}
+
+{% block title %}Patient Registration - Dr. Richa's Eye Clinic{% endblock %}
+
+{% block content %}
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow-sm">
+                    <div class="card-body p-4 p-md-5">
+                        <h2 class="card-title text-center mb-4">Create Patient Account</h2>
+                        <p class="text-center mb-4">Register to book appointments, view medical records, and more.</p>
+                        
+                        <form method="POST" action="{{ url_for('patient_register') }}">
+                            {{ form.hidden_tag() }}
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    {{ form.full_name.label(class="form-label") }}
+                                    {{ form.full_name(class="form-control", placeholder="Enter your full name") }}
+                                    {% if form.full_name.errors %}
+                                        <div class="text-danger">
+                                            {% for error in form.full_name.errors %}
+                                                <small>{{ error }}</small>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    {{ form.age.label(class="form-label") }}
+                                    {{ form.age(class="form-control", placeholder="Enter your age") }}
+                                    {% if form.age.errors %}
+                                        <div class="text-danger">
+                                            {% for error in form.age.errors %}
+                                                <small>{{ error }}</small>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    {{ form.mobile_number.label(class="form-label") }}
+                                    {{ form.mobile_number(class="form-control", placeholder="Enter your mobile number") }}
+                                    {% if form.mobile_number.errors %}
+                                        <div class="text-danger">
+                                            {% for error in form.mobile_number.errors %}
+                                                <small>{{ error }}</small>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    {{ form.email.label(class="form-label") }}
+                                    {{ form.email(class="form-control", placeholder="Enter your email") }}
+                                    {% if form.email.errors %}
+                                        <div class="text-danger">
+                                            {% for error in form.email.errors %}
+                                                <small>{{ error }}</small>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    {{ form.password.label(class="form-label") }}
+                                    {{ form.password(class="form-control", placeholder="Create a password") }}
+                                    {% if form.password.errors %}
+                                        <div class="text-danger">
+                                            {% for error in form.password.errors %}
+                                                <small>{{ error }}</small>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    {{ form.confirm_password.label(class="form-label") }}
+                                    {{ form.confirm_password(class="form-control", placeholder="Confirm your password") }}
+                                    {% if form.confirm_password.errors %}
+                                        <div class="text-danger">
+                                            {% for error in form.confirm_password.errors %}
+                                                <small>{{ error }}</small>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="d-grid gap-2 mb-3">
+                                {{ form.submit(class="btn btn-primary py-2") }}
+                            </div>
+                        </form>
+                        
+                        <div class="text-center mt-3">
+                            <p>Already have an account? <a href="{{ url_for('patient_login') }}">Login here</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

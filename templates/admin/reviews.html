@@ -1,0 +1,149 @@
+{% extends 'layout.html' %}
+
+{% block title %}Reviews Management - Dr. Richa's Eye Clinic{% endblock %}
+
+{% block content %}
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-3 mb-4">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body text-center">
+                        <div class="avatar-circle bg-primary text-white mb-3">
+                            <i class="fas fa-user-md fa-2x"></i>
+                        </div>
+                        <h5 class="card-title">Dr. Richa</h5>
+                        <p class="card-text text-muted">Ophthalmologist</p>
+                    </div>
+                </div>
+                
+                <div class="list-group shadow-sm">
+                    <a href="{{ url_for('admin_dashboard') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-home me-2"></i> Dashboard
+                    </a>
+                    <a href="{{ url_for('admin_appointments') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-calendar-check me-2"></i> Appointments
+                    </a>
+                    <a href="{{ url_for('admin_patients') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-users me-2"></i> Patients
+                    </a>
+                    <a href="{{ url_for('admin_reviews') }}" class="list-group-item list-group-item-action active">
+                        <i class="fas fa-star me-2"></i> Reviews
+                    </a>
+                </div>
+            </div>
+            
+            <div class="col-lg-9">
+                <div class="card shadow-sm">
+                    <div class="card-header">
+                        <h5 class="mb-0">Patient Reviews</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="nav nav-tabs mb-4" id="reviewsTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="pending-tab" data-bs-toggle="tab" data-bs-target="#pending" type="button" role="tab" aria-controls="pending" aria-selected="true">Pending Approval</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="approved-tab" data-bs-toggle="tab" data-bs-target="#approved" type="button" role="tab" aria-controls="approved" aria-selected="false">Approved</button>
+                            </li>
+                        </ul>
+                        
+                        <div class="tab-content" id="reviewsTabsContent">
+                            <!-- Pending Reviews Tab -->
+                            <div class="tab-pane fade show active" id="pending" role="tabpanel" aria-labelledby="pending-tab">
+                                {% if pending_reviews %}
+                                    <div class="row">
+                                        {% for review in pending_reviews %}
+                                            <div class="col-md-6 mb-4">
+                                                <div class="card h-100">
+                                                    <div class="card-body">
+                                                        <div class="d-flex justify-content-between align-items-center mb-3">
+                                                            <h5 class="mb-0">{{ review.patient_name }}</h5>
+                                                            <div>
+                                                                {% for i in range(5) %}
+                                                                    {% if i < review.rating %}
+                                                                        <i class="fas fa-star text-warning"></i>
+                                                                    {% else %}
+                                                                        <i class="far fa-star text-warning"></i>
+                                                                    {% endif %}
+                                                                {% endfor %}
+                                                            </div>
+                                                        </div>
+                                                        <p class="card-text mb-4">{{ review.review_text }}</p>
+                                                        <p class="text-muted small mb-3">
+                                                            <i class="far fa-calendar-alt me-1"></i> {{ review.created_at.strftime('%d %b, %Y') }}
+                                                        </p>
+                                                        <form method="POST" action="{{ url_for('admin_approve_review', review_id=review.id) }}" class="d-grid">
+                                                            <button type="submit" class="btn btn-success">
+                                                                <i class="fas fa-check me-1"></i> Approve Review
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    <div class="text-center py-5">
+                                        <p class="text-muted mb-0">No pending reviews to approve.</p>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Approved Reviews Tab -->
+                            <div class="tab-pane fade" id="approved" role="tabpanel" aria-labelledby="approved-tab">
+                                {% if approved_reviews %}
+                                    <div class="row">
+                                        {% for review in approved_reviews %}
+                                            <div class="col-md-6 mb-4">
+                                                <div class="card h-100">
+                                                    <div class="card-body">
+                                                        <div class="d-flex justify-content-between align-items-center mb-3">
+                                                            <h5 class="mb-0">{{ review.patient_name }}</h5>
+                                                            <div>
+                                                                {% for i in range(5) %}
+                                                                    {% if i < review.rating %}
+                                                                        <i class="fas fa-star text-warning"></i>
+                                                                    {% else %}
+                                                                        <i class="far fa-star text-warning"></i>
+                                                                    {% endif %}
+                                                                {% endfor %}
+                                                            </div>
+                                                        </div>
+                                                        <p class="card-text mb-4">{{ review.review_text }}</p>
+                                                        <p class="text-muted small mb-0">
+                                                            <i class="far fa-calendar-alt me-1"></i> {{ review.created_at.strftime('%d %b, %Y') }}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    <div class="text-center py-5">
+                                        <p class="text-muted mb-0">No approved reviews yet.</p>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .avatar-circle {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto;
+    }
+</style>
+{% endblock %}

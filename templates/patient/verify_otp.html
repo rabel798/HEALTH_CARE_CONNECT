@@ -1,0 +1,45 @@
+{% extends 'layout.html' %}
+
+{% block title %}OTP Verification - Dr. Richa's Eye Clinic{% endblock %}
+
+{% block content %}
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <div class="card shadow-sm">
+                    <div class="card-body p-4 p-md-5">
+                        <h2 class="card-title text-center mb-4">Verify Your Email</h2>
+                        <p class="text-center mb-4">We've sent a 6-digit OTP to {{ email }}.<br>Please enter it below to verify your account.</p>
+                        
+                        <form method="POST" action="{{ url_for('verify_otp', email=email) }}">
+                            {{ form.hidden_tag() }}
+                            {{ form.email }}
+                            
+                            <div class="mb-4">
+                                {{ form.otp.label(class="form-label") }}
+                                {{ form.otp(class="form-control form-control-lg text-center", placeholder="Enter 6-digit OTP") }}
+                                {% if form.otp.errors %}
+                                    <div class="text-danger">
+                                        {% for error in form.otp.errors %}
+                                            <small>{{ error }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="d-grid gap-2 mb-3">
+                                {{ form.submit(class="btn btn-primary py-2") }}
+                            </div>
+                        </form>
+                        
+                        <div class="text-center mt-3">
+                            <p>Didn't receive the OTP? <a href="{{ url_for('patient_register') }}">Try again</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,181 @@
+{% extends 'layout.html' %}
+
+{% block title %}Add Prescription - Dr. Richa's Eye Clinic{% endblock %}
+
+{% block content %}
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-3 mb-4">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body text-center">
+                        <div class="avatar-circle bg-primary text-white mb-3">
+                            <i class="fas fa-user-md fa-2x"></i>
+                        </div>
+                        <h5 class="card-title">Dr. Richa</h5>
+                        <p class="card-text text-muted">Ophthalmologist</p>
+                    </div>
+                </div>
+                
+                <div class="list-group shadow-sm">
+                    <a href="{{ url_for('admin_dashboard') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-home me-2"></i> Dashboard
+                    </a>
+                    <a href="{{ url_for('admin_appointments') }}" class="list-group-item list-group-item-action active">
+                        <i class="fas fa-calendar-check me-2"></i> Appointments
+                    </a>
+                    <a href="{{ url_for('admin_patients') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-users me-2"></i> Patients
+                    </a>
+                    <a href="{{ url_for('admin_reviews') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-star me-2"></i> Reviews
+                    </a>
+                </div>
+            </div>
+            
+            <div class="col-lg-9">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <a href="{{ url_for('admin_appointment_view', appointment_id=appointment.id) }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-1"></i> Back to Appointment
+                    </a>
+                </div>
+                
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            {% if is_edit %}
+                            Edit Prescription & Medical Record
+                            {% else %}
+                            Add Prescription & Medical Record
+                            {% endif %}
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-info mb-4">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p class="mb-1"><strong>Patient:</strong> {{ appointment.patient.full_name }}</p>
+                                    <p class="mb-1"><strong>Age:</strong> {{ appointment.patient.age }} years</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p class="mb-1"><strong>Appointment:</strong> {{ appointment.appointment_date.strftime('%d %B, %Y') }}</p>
+                                    <p class="mb-1"><strong>Time:</strong> {{ appointment.appointment_time.strftime('%I:%M %p') }}</p>
+                                </div>
+                            </div>
+                            <p class="mb-0 mt-2"><strong>Primary Issue:</strong> {{ appointment.primary_issue or 'Not specified' }}</p>
+                        </div>
+                        
+                        <form method="POST" action="{{ url_for('admin_add_prescription', appointment_id=appointment.id) }}">
+                            {{ form.hidden_tag() }}
+                            
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">Diagnosis</label>
+                                {{ form.diagnosis(class="form-control", rows=3) }}
+                                {% if form.diagnosis.errors %}
+                                    <div class="text-danger">
+                                        {% for error in form.diagnosis.errors %}
+                                            <small>{{ error }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Left Eye Findings</label>
+                                    {{ form.left_eye_findings(class="form-control", rows=3) }}
+                                    {% if form.left_eye_findings.errors %}
+                                        <div class="text-danger">
+                                            {% for error in form.left_eye_findings.errors %}
+                                                <small>{{ error }}</small>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Right Eye Findings</label>
+                                    {{ form.right_eye_findings(class="form-control", rows=3) }}
+                                    {% if form.right_eye_findings.errors %}
+                                        <div class="text-danger">
+                                            {% for error in form.right_eye_findings.errors %}
+                                                <small>{{ error }}</small>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">Prescribed Medications</label>
+                                {{ form.prescribed_medications(class="form-control", rows=3) }}
+                                {% if form.prescribed_medications.errors %}
+                                    <div class="text-danger">
+                                        {% for error in form.prescribed_medications.errors %}
+                                            <small>{{ error }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">Prescribed Eyewear</label>
+                                {{ form.prescribed_eyewear(class="form-control", rows=3) }}
+                                {% if form.prescribed_eyewear.errors %}
+                                    <div class="text-danger">
+                                        {% for error in form.prescribed_eyewear.errors %}
+                                            <small>{{ error }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">Follow-up Instructions</label>
+                                {{ form.follow_up_instructions(class="form-control", rows=3) }}
+                                {% if form.follow_up_instructions.errors %}
+                                    <div class="text-danger">
+                                        {% for error in form.follow_up_instructions.errors %}
+                                            <small>{{ error }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">Next Appointment Recommendation</label>
+                                {{ form.next_appointment_recommendation(class="form-control") }}
+                                {% if form.next_appointment_recommendation.errors %}
+                                    <div class="text-danger">
+                                        {% for error in form.next_appointment_recommendation.errors %}
+                                            <small>{{ error }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                <a href="{{ url_for('admin_appointment_view', appointment_id=appointment.id) }}" class="btn btn-outline-secondary me-md-2">Cancel</a>
+                                {{ form.submit(class="btn btn-primary") }}
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .avatar-circle {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto;
+    }
+</style>
+{% endblock %}

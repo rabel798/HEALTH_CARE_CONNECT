@@ -1,10 +1,17 @@
 import os
+import random
+import string
 from datetime import datetime, timedelta
 from flask import render_template, request, redirect, url_for, flash, jsonify, session
 from sqlalchemy import desc
+from flask_login import login_user, logout_user, current_user, login_required
 from app import app, db
-from models import Patient, Appointment, MedicalRecord, Payment, Review, Admin
-from forms import AppointmentForm, PaymentForm, ReviewForm, AdminLoginForm
+from models import Patient, Appointment, MedicalRecord, Payment, Review, Admin, OTP
+from forms import (
+    AppointmentForm, PaymentForm, ReviewForm, AdminLoginForm,
+    PatientLoginForm, PatientRegistrationForm, OTPVerificationForm,
+    PrescriptionForm
+)
 
 # Add context processor to make current datetime available to all templates
 @app.context_processor
@@ -59,20 +66,32 @@ def appointment():
     """Appointment booking page route"""
     form = AppointmentForm()
     
+    # If the user is logged in, pre-fill the form
+    if current_user.is_authenticated and isinstance(current_user, Patient):
+        if request.method == 'GET':
+            form.full_name.data = current_user.full_name
+            form.mobile_number.data = current_user.mobile_number
+            form.email.data = current_user.email
+            form.age.data = current_user.age
+    
     if form.validate_on_submit():
-        # Check if patient exists by mobile number
-        patient = Patient.query.filter_by(mobile_number=form.mobile_number.data).first()
-        
-        # If patient doesn't exist, create new patient
-        if not patient:
-            patient = Patient(
-                full_name=form.full_name.data,
-                mobile_number=form.mobile_number.data,
-                email=form.email.data,
-                age=form.age.data
-            )
-            db.session.add(patient)
-            db.session.flush()  # To get the patient ID before commit
+        if current_user.is_authenticated and isinstance(current_user, Patient):
+            # Use the logged in patient
+            patient = current_user
+        else:
+            # Check if patient exists by mobile number
+            patient = Patient.query.filter_by(mobile_number=form.mobile_number.data).first()
+            
+            # If patient doesn't exist, create new patient
+            if not patient:
+                patient = Patient(
+                    full_name=form.full_name.data,
+                    mobile_number=form.mobile_number.data,
+                    email=form.email.data,
+                    age=form.age.data
+                )
+                db.session.add(patient)
+                db.session.flush()  # To get the patient ID before commit
         
         # Create new appointment
         new_appointment = Appointment(
@@ -175,3 +194,441 @@ def available_slots():
         return jsonify(available_slots)
     except Exception as e:
         return jsonify({"error": str(e)}), 400
+
+
+# Patient Authentication Routes
+@app.route('/patient/register', methods=['GET', 'POST'])
+def patient_register():
+    """Patient registration route"""
+    # If already logged in, redirect to patient dashboard
+    if current_user.is_authenticated:
+        return redirect(url_for('patient_dashboard'))
+    
+    form = PatientRegistrationForm()
+    if form.validate_on_submit():
+        # Check if email or mobile already exists
+        existing_patient = Patient.query.filter(
+            (Patient.email == form.email.data) | 
+            (Patient.mobile_number == form.mobile_number.data)
+        ).first()
+        
+        if existing_patient:
+            flash('A patient with this email or mobile number already exists.', 'danger')
+            return redirect(url_for('patient_register'))
+        
+        # Generate 6-digit OTP
+        otp_code = ''.join(random.choices(string.digits, k=6))
+        
+        # Set expiry time (30 minutes)
+        expires_at = datetime.utcnow() + timedelta(minutes=30)
+        
+        # Store OTP in database
+        new_otp = OTP(
+            email=form.email.data,
+            otp_code=otp_code,
+            expires_at=expires_at
+        )
+        db.session.add(new_otp)
+        
+        try:
+            db.session.commit()
+            
+            # Store registration data in session for later use
+            session['registration_data'] = {
+                'full_name': form.full_name.data,
+                'mobile_number': form.mobile_number.data,
+                'email': form.email.data,
+                'age': form.age.data,
+                'password': form.password.data
+            }
+            
+            # In a real app, we would send the OTP via email here
+            # For testing, we'll flash it
+            flash(f'For testing: Your OTP is {otp_code}', 'info')
+            
+            # Redirect to OTP verification page
+            return redirect(url_for('verify_otp', email=form.email.data))
+            
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Registration error: {str(e)}', 'danger')
+    
+    return render_template('patient/register.html', form=form)
+
+
+@app.route('/patient/verify-otp/<email>', methods=['GET', 'POST'])
+def verify_otp(email):
+    """OTP verification route"""
+    # If already logged in, redirect to patient dashboard
+    if current_user.is_authenticated:
+        return redirect(url_for('patient_dashboard'))
+    
+    # Check if we have registration data
+    if 'registration_data' not in session:
+        flash('Registration session expired. Please register again.', 'warning')
+        return redirect(url_for('patient_register'))
+    
+    form = OTPVerificationForm()
+    form.email.data = email
+    
+    if form.validate_on_submit():
+        # Find the most recent OTP for this email
+        otp_record = OTP.query.filter_by(
+            email=email,
+            is_verified=False
+        ).order_by(desc(OTP.created_at)).first()
+        
+        if not otp_record:
+            flash('OTP record not found or already verified. Please request a new OTP.', 'danger')
+            return redirect(url_for('patient_register'))
+        
+        if otp_record.is_expired():
+            flash('OTP has expired. Please request a new OTP.', 'danger')
+            return redirect(url_for('patient_register'))
+        
+        if otp_record.otp_code != form.otp.data:
+            flash('Invalid OTP. Please try again.', 'danger')
+            return redirect(url_for('verify_otp', email=email))
+        
+        # OTP verified, create patient account
+        registration_data = session['registration_data']
+        new_patient = Patient(
+            full_name=registration_data['full_name'],
+            mobile_number=registration_data['mobile_number'],
+            email=registration_data['email'],
+            age=registration_data['age'],
+            is_registered=True
+        )
+        new_patient.set_password(registration_data['password'])
+        
+        # Mark OTP as verified
+        otp_record.is_verified = True
+        
+        db.session.add(new_patient)
+        
+        try:
+            db.session.commit()
+            
+            # Clear session data
+            session.pop('registration_data', None)
+            
+            # Log in the user
+            login_user(new_patient)
+            
+            flash('Registration successful!', 'success')
+            return redirect(url_for('patient_dashboard'))
+            
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Error creating account: {str(e)}', 'danger')
+    
+    return render_template('patient/verify_otp.html', form=form, email=email)
+
+
+@app.route('/patient/login', methods=['GET', 'POST'])
+def patient_login():
+    """Patient login route"""
+    # If already logged in, redirect to patient dashboard
+    if current_user.is_authenticated:
+        return redirect(url_for('patient_dashboard'))
+    
+    form = PatientLoginForm()
+    if form.validate_on_submit():
+        patient = Patient.query.filter_by(email=form.email.data).first()
+        
+        # Check if patient exists and password is correct
+        if patient and patient.is_registered and patient.check_password(form.password.data):
+            login_user(patient)
+            
+            # Get next page from query parameter, if any
+            next_page = request.args.get('next')
+            
+            # Redirect to patient dashboard or next page
+            return redirect(next_page or url_for('patient_dashboard'))
+        else:
+            flash('Invalid email or password', 'danger')
+    
+    return render_template('patient/login.html', form=form)
+
+
+@app.route('/patient/logout')
+@login_required
+def patient_logout():
+    """Patient logout route"""
+    logout_user()
+    flash('You have been logged out', 'info')
+    return redirect(url_for('index'))
+
+
+@app.route('/patient/dashboard')
+@login_required
+def patient_dashboard():
+    """Patient dashboard route"""
+    # Get patient's appointments
+    appointments = Appointment.query.filter_by(patient_id=current_user.id).order_by(desc(Appointment.appointment_date), desc(Appointment.appointment_time)).all()
+    
+    return render_template('patient/dashboard.html', appointments=appointments)
+
+
+@app.route('/patient/appointments')
+@login_required
+def patient_appointments():
+    """Patient appointments history route"""
+    # Get patient's appointments
+    appointments = Appointment.query.filter_by(patient_id=current_user.id).order_by(desc(Appointment.appointment_date)).all()
+    
+    return render_template('patient/appointments.html', appointments=appointments)
+
+
+@app.route('/patient/medical-records')
+@login_required
+def patient_medical_records():
+    """Patient medical records route"""
+    # Get patient's appointments with medical records
+    appointments = (
+        db.session.query(Appointment)
+        .join(MedicalRecord, Appointment.id == MedicalRecord.appointment_id)
+        .filter(Appointment.patient_id == current_user.id)
+        .order_by(desc(Appointment.appointment_date))
+        .all()
+    )
+    
+    return render_template('patient/medical_records.html', appointments=appointments)
+
+
+# Admin/Doctor Authentication Routes
+@app.route('/admin/login', methods=['GET', 'POST'])
+def admin_login():
+    """Admin login route"""
+    # Check if user is already logged in as admin
+    if current_user.is_authenticated and isinstance(current_user, Admin):
+        return redirect(url_for('admin_dashboard'))
+    
+    form = AdminLoginForm()
+    if form.validate_on_submit():
+        admin = Admin.query.filter_by(username=form.username.data).first()
+        
+        # Check if admin exists and password is correct
+        if admin and admin.check_password(form.password.data):
+            login_user(admin)
+            
+            # Redirect to admin dashboard
+            return redirect(url_for('admin_dashboard'))
+        else:
+            flash('Invalid username or password', 'danger')
+    
+    return render_template('admin/login.html', form=form)
+
+
+@app.route('/admin/logout')
+@login_required
+def admin_logout():
+    """Admin logout route"""
+    logout_user()
+    flash('You have been logged out', 'info')
+    return redirect(url_for('index'))
+
+
+@app.route('/admin/dashboard')
+@login_required
+def admin_dashboard():
+    """Admin/Doctor dashboard route"""
+    # Ensure only admins can access this page
+    if not isinstance(current_user, Admin):
+        flash('Access denied. Admin privileges required.', 'danger')
+        return redirect(url_for('index'))
+    
+    # Get counts for dashboard
+    total_patients = Patient.query.count()
+    total_appointments = Appointment.query.count()
+    upcoming_appointments = Appointment.query.filter(
+        Appointment.appointment_date >= datetime.now().date(),
+        Appointment.status == 'scheduled'
+    ).count()
+    pending_reviews = Review.query.filter_by(is_approved=False).count()
+    
+    # Today's appointments
+    today_appointments = Appointment.query.filter(
+        Appointment.appointment_date == datetime.now().date(),
+        Appointment.status == 'scheduled'
+    ).order_by(Appointment.appointment_time).all()
+    
+    return render_template('admin/dashboard.html', 
+                          total_patients=total_patients,
+                          total_appointments=total_appointments,
+                          upcoming_appointments=upcoming_appointments,
+                          pending_reviews=pending_reviews,
+                          today_appointments=today_appointments)
+
+
+@app.route('/admin/appointments')
+@login_required
+def admin_appointments():
+    """Admin appointments management route"""
+    # Ensure only admins can access this page
+    if not isinstance(current_user, Admin):
+        flash('Access denied. Admin privileges required.', 'danger')
+        return redirect(url_for('index'))
+    
+    # Get all appointments
+    appointments = Appointment.query.order_by(desc(Appointment.appointment_date), desc(Appointment.appointment_time)).all()
+    
+    return render_template('admin/appointments.html', appointments=appointments)
+
+
+@app.route('/admin/patients')
+@login_required
+def admin_patients():
+    """Admin patients management route"""
+    # Ensure only admins can access this page
+    if not isinstance(current_user, Admin):
+        flash('Access denied. Admin privileges required.', 'danger')
+        return redirect(url_for('index'))
+    
+    # Get all patients
+    patients = Patient.query.order_by(Patient.full_name).all()
+    
+    return render_template('admin/patients.html', patients=patients)
+
+
+@app.route('/admin/patient/<int:patient_id>')
+@login_required
+def admin_patient_view(patient_id):
+    """Admin patient view route"""
+    # Ensure only admins can access this page
+    if not isinstance(current_user, Admin):
+        flash('Access denied. Admin privileges required.', 'danger')
+        return redirect(url_for('index'))
+    
+    # Get patient details
+    patient = Patient.query.get_or_404(patient_id)
+    
+    # Get patient's appointments and medical records
+    appointments = Appointment.query.filter_by(patient_id=patient_id).order_by(desc(Appointment.appointment_date)).all()
+    
+    return render_template('admin/patient_view.html', patient=patient, appointments=appointments)
+
+
+@app.route('/admin/appointment/<int:appointment_id>', methods=['GET', 'POST'])
+@login_required
+def admin_appointment_view(appointment_id):
+    """Admin appointment view route"""
+    # Ensure only admins can access this page
+    if not isinstance(current_user, Admin):
+        flash('Access denied. Admin privileges required.', 'danger')
+        return redirect(url_for('index'))
+    
+    # Get appointment details
+    appointment = Appointment.query.get_or_404(appointment_id)
+    
+    # Handle POST requests for updating appointment status
+    if request.method == 'POST':
+        action = request.form.get('action')
+        
+        if action == 'complete':
+            appointment.status = 'completed'
+            db.session.commit()
+            flash('Appointment marked as completed.', 'success')
+            return redirect(url_for('admin_appointment_view', appointment_id=appointment_id))
+        
+        elif action == 'cancel':
+            appointment.status = 'cancelled'
+            db.session.commit()
+            flash('Appointment has been cancelled.', 'warning')
+            return redirect(url_for('admin_appointment_view', appointment_id=appointment_id))
+    
+    # Get medical record if it exists
+    medical_record = MedicalRecord.query.filter_by(appointment_id=appointment_id).first()
+    has_medical_record = medical_record is not None
+    
+    return render_template('admin/appointment_view.html', 
+                           appointment=appointment, 
+                           medical_record=medical_record, 
+                           has_medical_record=has_medical_record)
+
+
+@app.route('/admin/prescription/<int:appointment_id>', methods=['GET', 'POST'])
+@login_required
+def admin_add_prescription(appointment_id):
+    """Admin add/edit prescription route"""
+    # Ensure only admins can access this page
+    if not isinstance(current_user, Admin):
+        flash('Access denied. Admin privileges required.', 'danger')
+        return redirect(url_for('index'))
+    
+    # Get appointment details
+    appointment = Appointment.query.get_or_404(appointment_id)
+    
+    # Get or create medical record
+    medical_record = MedicalRecord.query.filter_by(appointment_id=appointment_id).first()
+    is_edit = medical_record is not None
+    
+    if not medical_record:
+        medical_record = MedicalRecord(appointment_id=appointment_id)
+        db.session.add(medical_record)
+        db.session.flush()
+    
+    form = PrescriptionForm(obj=medical_record)
+    
+    if form.validate_on_submit():
+        # Update medical record with form data
+        form.populate_obj(medical_record)
+        
+        # Update appointment status to completed
+        appointment.status = 'completed'
+        
+        try:
+            db.session.commit()
+            if is_edit:
+                flash('Prescription updated successfully!', 'success')
+            else:
+                flash('Prescription added successfully!', 'success')
+            return redirect(url_for('admin_appointment_view', appointment_id=appointment_id))
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Error saving prescription: {str(e)}', 'danger')
+    
+    return render_template('admin/add_prescription.html', form=form, appointment=appointment, is_edit=is_edit)
+
+
+@app.route('/admin/reviews')
+@login_required
+def admin_reviews():
+    """Admin reviews management route"""
+    # Ensure only admins can access this page
+    if not isinstance(current_user, Admin):
+        flash('Access denied. Admin privileges required.', 'danger')
+        return redirect(url_for('index'))
+    
+    # Get pending reviews
+    pending_reviews = Review.query.filter_by(is_approved=False).order_by(desc(Review.created_at)).all()
+    
+    # Get approved reviews
+    approved_reviews = Review.query.filter_by(is_approved=True).order_by(desc(Review.created_at)).all()
+    
+    return render_template('admin/reviews.html', pending_reviews=pending_reviews, approved_reviews=approved_reviews)
+
+
+@app.route('/admin/review/approve/<int:review_id>', methods=['POST'])
+@login_required
+def admin_approve_review(review_id):
+    """Admin approve review route"""
+    # Ensure only admins can access this page
+    if not isinstance(current_user, Admin):
+        flash('Access denied. Admin privileges required.', 'danger')
+        return redirect(url_for('index'))
+    
+    # Get review
+    review = Review.query.get_or_404(review_id)
+    
+    # Approve review
+    review.is_approved = True
+    
+    try:
+        db.session.commit()
+        flash('Review approved!', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Error approving review: {str(e)}', 'danger')
+    
+    return redirect(url_for('admin_reviews'))
