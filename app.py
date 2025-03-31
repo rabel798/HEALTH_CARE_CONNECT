@@ -62,10 +62,10 @@ with app.app_context():
     admin = Admin.query.filter_by(username='dr.richa').first()
     if not admin:
         admin = Admin(
-            username='dr.richa',
+            username='richa',
             email='drricha@eyeclinic.com'
         )
-        admin.set_password('admin123')  # Default password, should be changed after first login
+        admin.set_password('richaisgreat'), should be changed after first login
         db.session.add(admin)
         try:
             db.session.commit()
