@@ -65,7 +65,7 @@ with app.app_context():
             username='richa',
             email='drricha@eyeclinic.com'
         )
-        admin.set_password('richaisgreat'), should be changed after first login
+        admin.set_password('richaisgreat')  # should be changed after first login
         db.session.add(admin)
         try:
             db.session.commit()
