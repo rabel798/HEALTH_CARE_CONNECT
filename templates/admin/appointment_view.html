@@ -42,6 +42,7 @@
                     <div>
                         {% if appointment.status == 'scheduled' %}
                             <form method="POST" action="{{ url_for('admin_appointment_view', appointment_id=appointment.id) }}" class="d-inline">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                 <input type="hidden" name="action" value="complete">
                                 <button type="submit" class="btn btn-success me-2">
                                     <i class="fas fa-check me-1"></i> Mark as Completed
@@ -49,6 +50,7 @@
                             </form>
                             
                             <form method="POST" action="{{ url_for('admin_appointment_view', appointment_id=appointment.id) }}" class="d-inline">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                 <input type="hidden" name="action" value="cancel">
                                 <button type="submit" class="btn btn-danger">
                                     <i class="fas fa-times me-1"></i> Cancel Appointment
