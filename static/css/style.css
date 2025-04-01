@@ -38,6 +38,27 @@ h1, h2, h3, h4, h5, h6 {
   font-size: 1.5rem;
 }
 
+/* Interactive Logo Styles */
+#interactive-logo-container {
+  width: 200px;
+  height: 40px !important;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  transition: var(--transition);
+}
+
+#interactive-logo-container:hover {
+  transform: translateY(-2px);
+}
+
+#interactive-logo-container svg {
+  width: 100%;
+  height: auto;
+  max-height: 40px;
+}
+
 .nav-link {
   color: var(--dark-color);
   font-weight: 500;
@@ -487,16 +508,63 @@ footer a:hover {
   color: #6c757d;
   cursor: not-allowed;
 }
+/* Enhanced Star Rating Styles */
 .star-rating {
     font-size: 24px;
     cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
 }
 
 .star-btn {
     padding: 0 2px;
-    transition: transform 0.1s ease;
+    transition: all 0.2s ease;
+    position: relative;
+    color: #ccc;
 }
 
-.star-btn:hover {
-    transform: scale(1.2);
+.star-btn.selected, 
+.star-rating:not(.active) .star-btn:hover,
+.star-rating.active .star-btn.selected,
+.star-rating.active .star-btn:hover:not(.selected) ~ .star-btn.selected {
+    color: var(--warning-color);
+    text-shadow: 0 0 5px rgba(255, 193, 7, 0.5);
+}
+
+.star-rating.active .star-btn:hover,
+.star-rating.active .star-btn:hover ~ .star-btn {
+    color: var(--warning-color);
+    transform: scale(1.3);
+}
+
+.star-btn::before {
+    content: '';
+    position: absolute;
+    top: -5px;
+    left: -5px;
+    right: -5px;
+    bottom: -5px;
+    background: radial-gradient(circle, rgba(255,193,7,0.2) 0%, rgba(255,255,255,0) 70%);
+    border-radius: 50%;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: -1;
+    pointer-events: none;
+}
+
+.star-btn:hover::before,
+.star-btn.selected::before {
+    opacity: 1;
+}
+
+/* Star animation */
+@keyframes starPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.3); }
+    100% { transform: scale(1); }
+}
+
+.star-btn.selected {
+    animation: starPulse 0.5s ease;
 }

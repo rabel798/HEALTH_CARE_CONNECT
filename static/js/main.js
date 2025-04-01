@@ -75,46 +75,84 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Interactive star rating
-    const starContainer = document.querySelector('.star-rating');
-    const ratingInput = document.querySelector('.rating-input');
+    // Enhanced Interactive star rating
+    const starContainers = document.querySelectorAll('.star-rating');
     
-    if (starContainer && ratingInput) {
-        const stars = starContainer.querySelectorAll('.star-btn');
+    starContainers.forEach(starContainer => {
+        const ratingInput = starContainer.querySelector('.rating-input') || 
+                          document.querySelector('input[name="rating"]');
         
-        // Hover effect
-        stars.forEach(star => {
-            star.addEventListener('mouseover', function() {
-                const rating = this.dataset.rating;
-                updateStars(rating, true);
+        if (ratingInput) {
+            const stars = starContainer.querySelectorAll('.star-btn');
+            
+            // Add active class to container for hover effects
+            starContainer.classList.add('active');
+            
+            // Initialize with any existing rating
+            if (ratingInput.value) {
+                updateStars(ratingInput.value);
+            }
+            
+            // Hover effect
+            stars.forEach(star => {
+                star.addEventListener('mouseover', function() {
+                    const rating = this.dataset.rating;
+                    highlightStars(rating);
+                });
             });
-        });
-        
-        // Mouse leave - reset to selected rating
-        starContainer.addEventListener('mouseleave', function() {
-            const rating = ratingInput.value || 0;
-            updateStars(rating, false);
-        });
-        
-        // Click to set rating
-        stars.forEach(star => {
-            star.addEventListener('click', function() {
-                const rating = this.dataset.rating;
-                ratingInput.value = rating;
-                updateStars(rating, false);
+            
+            // Mouse leave - reset to selected rating
+            starContainer.addEventListener('mouseleave', function() {
+                const rating = ratingInput.value || 0;
+                updateStars(rating);
             });
-        });
-        
-        function updateStars(rating, isHover) {
-            stars.forEach((star, index) => {
-                if (index < rating) {
-                    star.className = 'fas fa-star text-warning star-btn';
-                } else {
-                    star.className = 'far fa-star text-warning star-btn';
-                }
+            
+            // Click to set rating
+            stars.forEach(star => {
+                star.addEventListener('click', function() {
+                    const rating = this.dataset.rating;
+                    ratingInput.value = rating;
+                    updateStars(rating);
+                    
+                    // Add pulse animation to selected stars
+                    stars.forEach((s, index) => {
+                        if (index < rating) {
+                            // Remove and re-add the animation to restart it
+                            s.classList.remove('selected');
+                            void s.offsetWidth; // Force reflow
+                            s.classList.add('selected');
+                        }
+                    });
+                });
             });
+            
+            // Highlight stars on hover (temporary)
+            function highlightStars(rating) {
+                stars.forEach((star, index) => {
+                    // Remove selected class to prevent conflicts
+                    star.classList.remove('selected');
+                    
+                    // Update icon based on hover position
+                    if (index < rating) {
+                        star.className = 'fas fa-star star-btn';
+                    } else {
+                        star.className = 'far fa-star star-btn';
+                    }
+                });
+            }
+            
+            // Update stars permanently when a rating is selected
+            function updateStars(rating) {
+                stars.forEach((star, index) => {
+                    if (index < rating) {
+                        star.className = 'fas fa-star star-btn selected';
+                    } else {
+                        star.className = 'far fa-star star-btn';
+                    }
+                });
+            }
         }
-    }
+    });
 
     // Handle form submissions with validation
     const forms = document.querySelectorAll('.needs-validation');
