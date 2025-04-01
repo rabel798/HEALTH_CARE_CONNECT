@@ -5,6 +5,41 @@ document.addEventListener('DOMContentLoaded', function() {
         return new bootstrap.Tooltip(tooltipTriggerEl);
     });
     
+    // Dark mode functionality
+    function initDarkMode() {
+        // Create dark mode toggle button
+        const darkModeToggle = document.createElement('button');
+        darkModeToggle.classList.add('dark-mode-toggle');
+        darkModeToggle.setAttribute('aria-label', 'Toggle dark mode');
+        darkModeToggle.innerHTML = '<i class="fas fa-moon"></i><i class="fas fa-sun"></i>';
+        document.body.appendChild(darkModeToggle);
+        
+        // Check for saved theme preference
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+        }
+        
+        // Toggle dark mode on click
+        darkModeToggle.addEventListener('click', function() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const themeColorMeta = document.getElementById('theme-color-meta');
+            
+            if (currentTheme === 'dark') {
+                document.documentElement.removeAttribute('data-theme');
+                localStorage.setItem('theme', 'light');
+                if (themeColorMeta) themeColorMeta.setAttribute('content', '#007bff');
+            } else {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+                if (themeColorMeta) themeColorMeta.setAttribute('content', '#121212');
+            }
+        });
+    }
+    
+    // Initialize dark mode
+    initDarkMode();
+    
     // Navbar hide on scroll
     const navbar = document.querySelector('.navbar');
     let lastScrollTop = 0;

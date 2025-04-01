@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 250 60" width="250" height="60">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 60" width="300" height="60">
   <defs>
     <!-- Filter for the glow effect -->
     <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
@@ -9,7 +9,7 @@
   </defs>
 
   <!-- Background Rectangle -->          
-  <rect width="250" height="60" rx="8" fill="#ffffff"/>
+  <rect width="300" height="60" rx="8" fill="#ffffff"/>
 
   <!-- Eye Symbol (smaller and without reflection effect) -->
   <g id="eye">
@@ -33,82 +33,4 @@
     <!-- Family Tagline (pink) -->
     <text x="50" y="57" font-family="Montserrat, sans-serif" font-size="10" font-weight="500" fill="#e83e8c">A hub for your family and kid's eyes</text>
   </g>
-  
-  <script type="text/javascript">
-    <![CDATA[
-    // Get references to SVG elements
-    const svg = document.querySelector('svg');
-    const eye = document.getElementById('eye');
-    const pupil = document.getElementById('pupil');
-    const reflectionDot = document.getElementById('reflectionDot');
-    const topEyelid = document.getElementById('topEyelid');
-    const bottomEyelid = document.getElementById('bottomEyelid');
-    
-    // Function to handle mouse movement for pupil tracking
-    function trackMouse(evt) {
-      // Calculate mouse position relative to the SVG
-      const rect = svg.getBoundingClientRect();
-      const mouseX = evt.clientX - rect.left;
-      const mouseY = evt.clientY - rect.top;
-      
-      // Move pupil slightly to follow mouse (limit movement)
-      const eyeCenterX = 25;
-      const eyeCenterY = 30;
-      
-      // Calculate direction vector from eye center to mouse
-      let dx = mouseX - eyeCenterX;
-      let dy = mouseY - eyeCenterY;
-      
-      // Limit movement to 2 units in any direction
-      const maxMove = 2;
-      const dist = Math.sqrt(dx*dx + dy*dy);
-      if (dist > maxMove) {
-        dx = dx * maxMove / dist;
-        dy = dy * maxMove / dist;
-      }
-      
-      // Apply movement to pupil
-      pupil.setAttribute('cx', eyeCenterX + dx);
-      
-      // Move reflection dot opposite to pupil movement (simulating light reflection)
-      reflectionDot.setAttribute('cx', 27 - dx/2);
-      reflectionDot.setAttribute('cy', 27 - dy/2);
-    }
-    
-    // Function to make the eye blink
-    function blinkEye() {
-      // Show eyelids
-      topEyelid.style.display = 'block';
-      bottomEyelid.style.display = 'block';
-      
-      // Hide pupil and reflection during blink
-      pupil.style.display = 'none';
-      reflectionDot.style.display = 'none';
-      
-      // Open eye after short delay
-      setTimeout(() => {
-        topEyelid.style.display = 'none';
-        bottomEyelid.style.display = 'none';
-        pupil.style.display = 'block';
-        reflectionDot.style.display = 'block';
-      }, 150);
-    }
-    
-    // Attach event listeners when SVG is loaded
-    if (svg.parentNode) {
-      // Track mouse movement
-      document.addEventListener('mousemove', trackMouse);
-      
-      // Blink when mouse enters the eye
-      eye.addEventListener('mouseenter', blinkEye);
-      
-      // Random blinking
-      setInterval(() => {
-        if (Math.random() < 0.3) { // 30% chance to blink every 3 seconds
-          blinkEye();
-        }
-      }, 3000);
-    }
-    ]]>
-  </script>
 </svg>

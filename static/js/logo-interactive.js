@@ -13,56 +13,17 @@ document.addEventListener('DOMContentLoaded', function() {
             // Get the SVG document
             const svgElement = logoContainer.querySelector('svg');
             
-            // Make sure SVG scripts run
-            // The scripts in the SVG should handle mouse tracking, blinking, etc.
-            // But we need to manually initialize some behaviors since the SVG is loaded dynamically
-            
+            // Get reference to all required SVG elements
             const eye = svgElement.getElementById('eye');
             const pupil = svgElement.getElementById('pupil');
             const reflectionDot = svgElement.getElementById('reflectionDot');
             const topEyelid = svgElement.getElementById('topEyelid');
             const bottomEyelid = svgElement.getElementById('bottomEyelid');
-            const light = svgElement.getElementById('light');
             
-            if (!eye || !pupil || !reflectionDot || !topEyelid || !bottomEyelid || !light) {
+            if (!eye || !pupil || !reflectionDot || !topEyelid || !bottomEyelid) {
                 console.error('SVG elements not found');
                 return;
             }
-            
-            // Handle mouse movement
-            document.addEventListener('mousemove', function(evt) {
-                // Calculate mouse position relative to the SVG
-                const rect = svgElement.getBoundingClientRect();
-                const mouseX = evt.clientX - rect.left;
-                const mouseY = evt.clientY - rect.top;
-                
-                // Update light position for reflection effect
-                light.setAttribute('x', mouseX);
-                light.setAttribute('y', mouseY);
-                
-                // Move pupil slightly to follow mouse (limit movement)
-                const eyeCenterX = 40;
-                const eyeCenterY = 30;
-                
-                // Calculate direction vector from eye center to mouse
-                let dx = mouseX - eyeCenterX;
-                let dy = mouseY - eyeCenterY;
-                
-                // Limit movement to 3 units in any direction
-                const maxMove = 3;
-                const dist = Math.sqrt(dx*dx + dy*dy);
-                if (dist > maxMove) {
-                    dx = dx * maxMove / dist;
-                    dy = dy * maxMove / dist;
-                }
-                
-                // Apply movement to pupil
-                pupil.setAttribute('cx', eyeCenterX + dx);
-                
-                // Move reflection dot opposite to pupil movement
-                reflectionDot.setAttribute('cx', 43 - dx/2);
-                reflectionDot.setAttribute('cy', 27 - dy/2);
-            });
             
             // Function to make the eye blink
             function blinkEye() {
@@ -83,21 +44,52 @@ document.addEventListener('DOMContentLoaded', function() {
                 }, 150);
             }
             
-            // Blink when mouse enters the eye
-            eye.addEventListener('mouseenter', blinkEye);
-            
-            // Set up random blinking
-            setInterval(() => {
-                if (Math.random() < 0.3) { // 30% chance to blink every 3 seconds
-                    blinkEye();
+            // Handle mouse movement for pupil tracking
+            document.addEventListener('mousemove', function(evt) {
+                // Calculate mouse position relative to the SVG
+                const rect = svgElement.getBoundingClientRect();
+                const mouseX = evt.clientX - rect.left;
+                const mouseY = evt.clientY - rect.top;
+                
+                // Move pupil slightly to follow mouse (limit movement)
+                const eyeCenterX = 25; // Updated eye center position
+                const eyeCenterY = 30;
+                
+                // Calculate direction vector from eye center to mouse
+                let dx = mouseX - eyeCenterX;
+                let dy = mouseY - eyeCenterY;
+                
+                // Limit movement to 3 units in any direction
+                const maxMove = 3;
+                const dist = Math.sqrt(dx*dx + dy*dy);
+                if (dist > maxMove) {
+                    dx = dx * maxMove / dist;
+                    dy = dy * maxMove / dist;
                 }
-            }, 3000);
+                
+                // Apply movement to pupil
+                pupil.setAttribute('cx', eyeCenterX + dx);
+                
+                // Move reflection dot opposite to pupil movement
+                reflectionDot.setAttribute('cx', 27 - dx/2);
+                reflectionDot.setAttribute('cy', 27 - dy/2);
+            });
             
-            // Add click handler if the logo should be clickable
+            // Blink when mouse enters the eye
+            eye.addEventListener('mouseenter', function() {
+                blinkEye();
+            });
+            
+            // Continuous blinking every 4 seconds
+            setInterval(blinkEye, 4000);
+            
+            // Add click handler
             svgElement.addEventListener('click', function() {
+                // Trigger a blink
+                blinkEye();
+                
                 // If the logo should link to the homepage or admin login
-                // Redirect or trigger modal as needed
-                console.log('Logo clicked');
+                // We already have this handled in layout.html
             });
         })
         .catch(error => {
