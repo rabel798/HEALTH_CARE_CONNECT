@@ -4,6 +4,24 @@ document.addEventListener('DOMContentLoaded', function() {
     var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
         return new bootstrap.Tooltip(tooltipTriggerEl);
     });
+    
+    // Navbar hide on scroll
+    const navbar = document.querySelector('.navbar');
+    let lastScrollTop = 0;
+    
+    window.addEventListener('scroll', function() {
+        let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        
+        if (scrollTop > lastScrollTop && scrollTop > 100) {
+            // Scrolling down & past the threshold
+            navbar.classList.add('navbar-hidden');
+        } else {
+            // Scrolling up
+            navbar.classList.remove('navbar-hidden');
+        }
+        
+        lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; // For Mobile or negative scrolling
+    }, false);
 
     // Add fade-in animation to elements
     const fadeElements = document.querySelectorAll('.fade-in');

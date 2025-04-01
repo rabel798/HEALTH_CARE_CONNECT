@@ -40,13 +40,14 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Interactive Logo Styles */
 #interactive-logo-container {
-  width: 200px;
+  width: 250px;
   height: 40px !important;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: flex-start;
   transition: var(--transition);
+  margin-right: 20px;
 }
 
 #interactive-logo-container:hover {
@@ -56,7 +57,17 @@ h1, h2, h3, h4, h5, h6 {
 #interactive-logo-container svg {
   width: 100%;
   height: auto;
-  max-height: 40px;
+  max-height: 45px;
+}
+
+/* Hide navbar on scroll up */
+.navbar {
+  transition: transform 0.4s ease-in-out;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-hidden {
+  transform: translateY(-100%);
 }
 
 .nav-link {
