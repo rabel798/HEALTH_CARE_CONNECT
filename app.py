@@ -44,9 +44,15 @@ login_manager.login_message_category = "warning"
 def load_user(user_id):
     from models import Doctor, Assistant, Admin, Patient
     try:
-        user_id = int(user_id)
-        return Patient.query.get(user_id)
-    except ValueError:
+        if user_id.startswith('doctor_'):
+            return Doctor.query.get(int(user_id.split('_')[1]))
+        elif user_id.startswith('assistant_'):
+            return Assistant.query.get(int(user_id.split('_')[1]))
+        elif user_id.startswith('admin_'):
+            return Admin.query.get(int(user_id.split('_')[1]))
+        else:
+            return Patient.query.get(int(user_id))
+    except (ValueError, AttributeError):
         return None
 
 # Import routes after app is created to avoid circular imports
