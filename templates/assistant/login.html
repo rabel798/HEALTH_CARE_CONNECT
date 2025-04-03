@@ -14,39 +14,25 @@
                             <h2 class="card-title">Assistant Login</h2>
                             <p class="text-muted">Staff portal access</p>
                         </div>
-                        
+
                         <form method="POST" action="{{ url_for('assistant_login') }}">
                             {{ form.hidden_tag() }}
-                            
+
                             <div class="mb-3">
                                 {{ form.username.label(class="form-label") }}
-                                {{ form.username(class="form-control", placeholder="Enter your username") }}
-                                {% if form.username.errors %}
-                                    <div class="text-danger">
-                                        {% for error in form.username.errors %}
-                                            <small>{{ error }}</small>
-                                        {% endfor %}
-                                    </div>
-                                {% endif %}
+                                {{ form.username(class="form-control", placeholder="Enter username") }}
                             </div>
-                            
+
                             <div class="mb-3">
                                 {{ form.password.label(class="form-label") }}
-                                {{ form.password(class="form-control", placeholder="Enter your password") }}
-                                {% if form.password.errors %}
-                                    <div class="text-danger">
-                                        {% for error in form.password.errors %}
-                                            <small>{{ error }}</small>
-                                        {% endfor %}
-                                    </div>
-                                {% endif %}
+                                {{ form.password(class="form-control", placeholder="Enter password") }}
                             </div>
-                            
+
                             <div class="d-grid gap-2 mb-3">
                                 {{ form.submit(class="btn btn-info py-2") }}
                             </div>
                         </form>
-                        
+
                         <div class="text-center mt-4">
                             <a href="{{ url_for('auth_selection') }}" class="text-decoration-none">
                                 <i class="fas fa-arrow-left me-1"></i> Back to selection

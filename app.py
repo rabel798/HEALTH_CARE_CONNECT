@@ -67,17 +67,17 @@ with app.app_context():
     from datetime import date
     
     # Create doctor account
-    doctor = Doctor.query.filter_by(username='dr.richa').first()
+    doctor = Doctor.query.filter_by(username='drricha').first()
     if not doctor:
         doctor = Doctor(
-            username='dr.richa',
+            username='drricha',
             email='drricha@eyeclinic.com',
             full_name='Dr. Richa Sharma',
             mobile_number='9876543210',
             qualifications='MBBS, MS, FPOS',
             specialization='Ophthalmology, Pediatric Eye Care'
         )
-        doctor.set_password('doctor123')  # should be changed after first login
+        doctor.set_password('admin123')  # default password
         db.session.add(doctor)
         print('Default doctor account created for Dr. Richa')
     
