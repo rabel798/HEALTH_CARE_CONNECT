@@ -546,13 +546,22 @@ footer a:hover {
     position: relative;
     color: #ccc;
     display: inline-block;
+    opacity: 1 !important;
+    visibility: visible !important;
 }
 
 .star-btn.selected, 
 .star-rating:not(.active) .star-btn:hover,
 .star-rating.active .star-btn.selected {
-    color: var(--warning-color);
+    color: var(--warning-color) !important;
     text-shadow: 0 0 8px rgba(255, 193, 7, 0.6);
+}
+
+.star-rating .fas.fa-star,
+.star-rating .far.fa-star {
+    opacity: 1 !important;
+    visibility: visible !important;
+    display: inline-block !important;
 }
 
 /* This controls the interactive fill effect when hovering */
