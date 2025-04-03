@@ -9,11 +9,11 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired, Email
 from app import app, db
-from models import Patient, Appointment, MedicalRecord, Payment, Review, Admin, OTP
+from models import Patient, Appointment, MedicalRecord, Payment, Review, Admin, OTP, Doctor, Assistant, Salary
 from forms import (
     AppointmentForm, PaymentForm, ReviewForm, AdminLoginForm,
     PatientLoginForm, PatientRegistrationForm, OTPVerificationForm,
-    PrescriptionForm
+    PrescriptionForm, DoctorLoginForm, AssistantLoginForm, SalaryForm
 )
 
 # Add context processor to make current datetime available to all templates
@@ -537,6 +537,120 @@ def patient_medical_records():
 def auth_selection():
     """Authentication selection route for choosing between staff and patient login"""
     return render_template('auth/selection.html')
+
+
+# Doctor Authentication Routes
+@app.route('/doctor/login', methods=['GET', 'POST'])
+def doctor_login():
+    """Doctor login route"""
+    # If already logged in as doctor, redirect to dashboard
+    if current_user.is_authenticated and isinstance(current_user, Doctor):
+        return redirect(url_for('admin_dashboard'))
+        
+    form = DoctorLoginForm()
+    if form.validate_on_submit():
+        # Find doctor with this username
+        doctor = Doctor.query.filter_by(username=form.username.data).first()
+        
+        if doctor and doctor.check_password(form.password.data):
+            login_user(doctor)
+            flash('Login successful! Welcome, Dr. ' + doctor.full_name, 'success')
+            return redirect(url_for('admin_dashboard'))
+        else:
+            flash('Invalid username or password.', 'danger')
+            
+    return render_template('doctor/login.html', form=form)
+
+
+@app.route('/doctor/logout')
+@login_required
+def doctor_logout():
+    """Doctor logout route"""
+    if current_user.is_authenticated and isinstance(current_user, Doctor):
+        logout_user()
+        flash('You have been logged out.', 'info')
+    
+    return redirect(url_for('auth_selection'))
+
+
+# Assistant Authentication Routes
+@app.route('/assistant/login', methods=['GET', 'POST'])
+def assistant_login():
+    """Assistant login route"""
+    # If already logged in as assistant, redirect to dashboard
+    if current_user.is_authenticated and isinstance(current_user, Assistant):
+        return redirect(url_for('assistant_dashboard'))
+        
+    form = AssistantLoginForm()
+    if form.validate_on_submit():
+        # Find assistant with this username
+        assistant = Assistant.query.filter_by(username=form.username.data).first()
+        
+        if assistant and assistant.check_password(form.password.data):
+            login_user(assistant)
+            flash('Login successful! Welcome, ' + assistant.full_name, 'success')
+            return redirect(url_for('assistant_dashboard'))
+        else:
+            flash('Invalid username or password.', 'danger')
+            
+    return render_template('assistant/login.html', form=form)
+
+
+@app.route('/assistant/logout')
+@login_required
+def assistant_logout():
+    """Assistant logout route"""
+    if current_user.is_authenticated and isinstance(current_user, Assistant):
+        logout_user()
+        flash('You have been logged out.', 'info')
+    
+    return redirect(url_for('auth_selection'))
+
+
+@app.route('/assistant/dashboard')
+@login_required
+def assistant_dashboard():
+    """Assistant dashboard route"""
+    # Ensure user is an assistant
+    if not isinstance(current_user, Assistant):
+        flash('You do not have permission to access this page.', 'danger')
+        return redirect(url_for('index'))
+    
+    # Get all patients
+    all_patients = Patient.query.all()
+    
+    # Get today's appointments
+    today = datetime.now().date()
+    today_appointments = Appointment.query.filter_by(appointment_date=today).all()
+    
+    # Get all appointments
+    all_appointments = Appointment.query.order_by(desc(Appointment.appointment_date)).all()
+    
+    # Get upcoming appointments
+    upcoming_appointments = Appointment.query.filter(
+        Appointment.appointment_date >= today,
+        Appointment.status == 'scheduled'
+    ).count()
+    
+    # Get total appointments
+    total_appointments = Appointment.query.count()
+    
+    # Get total patients
+    total_patients = Patient.query.count()
+    
+    # Get salary records for current assistant
+    salary_records = Salary.query.filter_by(assistant_id=current_user.id).order_by(desc(Salary.payment_date)).all()
+    
+    return render_template(
+        'assistant/dashboard.html',
+        all_patients=all_patients,
+        today_appointments=today_appointments,
+        all_appointments=all_appointments,
+        upcoming_appointments=upcoming_appointments,
+        total_appointments=total_appointments,
+        total_patients=total_patients,
+        salary_records=salary_records
+    )
 
 
 # Admin/Doctor Authentication Routes

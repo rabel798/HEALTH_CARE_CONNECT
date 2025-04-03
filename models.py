@@ -96,6 +96,67 @@ class Review(db.Model):
     def __repr__(self):
         return f'<Review {self.id} by {self.patient_name}>'
 
+# Base class for staff members
+class Staff(UserMixin, db.Model):
+    __abstract__ = True
+    
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(64), unique=True, nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    password_hash = db.Column(db.String(256), nullable=False)
+    full_name = db.Column(db.String(100), nullable=False)
+    mobile_number = db.Column(db.String(15), nullable=False)
+    
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+    
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
+
+class Doctor(Staff):
+    __tablename__ = 'doctor'
+    
+    qualifications = db.Column(db.String(200), nullable=True)
+    specialization = db.Column(db.String(200), nullable=True)
+    
+    def get_id(self):
+        # Prefix with 'doctor_' to distinguish from other IDs
+        return f'doctor_{self.id}'
+    
+    def __repr__(self):
+        return f'<Doctor {self.username}>'
+
+class Assistant(Staff):
+    __tablename__ = 'assistant'
+    
+    position = db.Column(db.String(100), nullable=True)
+    joining_date = db.Column(db.Date, nullable=True)
+    
+    # Relationship with salary records
+    salary_records = db.relationship('Salary', backref='assistant', lazy=True)
+    
+    def get_id(self):
+        # Prefix with 'assistant_' to distinguish from other IDs
+        return f'assistant_{self.id}'
+    
+    def __repr__(self):
+        return f'<Assistant {self.username}>'
+
+class Salary(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    assistant_id = db.Column(db.Integer, db.ForeignKey('assistant.id'), nullable=False)
+    amount = db.Column(db.Float, nullable=False)
+    payment_date = db.Column(db.Date, nullable=False)
+    payment_method = db.Column(db.String(50), nullable=False)  # bank_transfer, cash, stripe, etc.
+    transaction_id = db.Column(db.String(100), nullable=True)
+    status = db.Column(db.String(20), default='pending')  # pending, completed, failed
+    description = db.Column(db.Text, nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    def __repr__(self):
+        return f'<Salary {self.id} for Assistant {self.assistant_id}>'
+
+# Keeping the Admin model for backward compatibility
 class Admin(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), unique=True, nullable=False)

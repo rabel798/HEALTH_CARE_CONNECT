@@ -1,0 +1,107 @@
+DOCTOR DASHBOARD ACCESS:
+
+1. Financial Management:
+- View all financial records
+- Track consultation fees
+- Monitor daily/monthly revenue
+- Access payment history
+- Staff salary management:
+  * Process assistant's salary via Stripe
+  * Set salary amount
+  * View payment history
+  * Automated email notifications for payments
+
+2. Patient Management:
+- Full access to all patient records
+- Add/Edit/Delete patient information
+- View complete patient history
+- Manage prescriptions
+- Access detailed medical records
+
+3. Appointment Control:
+- View all appointments
+- Manage schedule
+- Set availability
+- Cancel/Reschedule appointments
+- View walk-in appointments
+
+4. Administrative Controls:
+- Change both doctor and assistant passwords
+- Manage assistant's access rights
+- Update clinic information
+- Set working hours
+- Manage holiday schedule
+
+5. Reports & Analytics:
+- Financial reports
+- Patient statistics
+- Revenue analysis
+- Appointment analytics
+- Treatment success rates
+
+ASSISTANT DASHBOARD ACCESS:
+
+1. Appointment Management:
+- View all appointments
+- Accept/Reject new requests
+- Add walk-in patients
+- Update appointment status
+- Send automated emails for acceptance/rejection
+
+2. Patient Management:
+- View patient records
+- Add new patients
+- Update patient information
+- Record basic patient details
+- Handle patient queries
+
+3. Booking Management:
+- Edit booking details
+- Manage daily schedule
+- Record walk-in appointments
+- Update appointment status
+
+4. Financial Records (Limited):
+- Record payments from patients
+- Generate receipts
+- View daily transactions
+- Cannot access salary information
+
+IMPLEMENTATION REQUIREMENTS:
+
+1. Database Structure:
+- Users table (doctor/assistant credentials)
+- Patients table
+- Appointments table
+- Payments table
+- Salary records table
+
+2. Security Features:
+- Encrypted passwords
+- Session management
+- Role-based access control
+- Secure payment processing
+
+3. Payment Integration:
+- Stripe payment gateway
+- Payment tracking system
+- Receipt generation
+- Automated email notifications
+
+4. Email System:
+- Appointment confirmations
+- Payment receipts
+- Salary notifications
+- Password reset communications
+
+5. User Interface:
+- Clean dashboard design
+- Separate layouts for doctor/assistant
+- Mobile responsive
+- Easy navigation
+
+6. Error Handling:
+- Form validation
+- Payment error management
+- Session timeout handling
+- Data validation checks

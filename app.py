@@ -41,8 +41,16 @@ login_manager.login_message_category = "warning"
 # User loader function for Flask-Login
 @login_manager.user_loader
 def load_user(user_id):
-    # Check if it's an admin or patient based on the ID format
-    if user_id.startswith('admin_'):
+    # Check user type based on the ID format
+    if user_id.startswith('doctor_'):
+        doctor_id = int(user_id.split('_')[1])
+        from models import Doctor
+        return Doctor.query.get(doctor_id)
+    elif user_id.startswith('assistant_'):
+        assistant_id = int(user_id.split('_')[1])
+        from models import Assistant
+        return Assistant.query.get(assistant_id)
+    elif user_id.startswith('admin_'):
         admin_id = int(user_id.split('_')[1])
         from models import Admin
         return Admin.query.get(admin_id)
@@ -57,22 +65,57 @@ from routes import *
 with app.app_context():
     db.create_all()
     
-    # Create admin account for Dr. Richa if it doesn't exist
-    from models import Admin
-    admin = Admin.query.filter_by(username='dr.richa').first()
+    # Create doctor account for Dr. Richa if it doesn't exist
+    from models import Doctor, Assistant, Admin
+    from datetime import date
+    
+    # Create doctor account
+    doctor = Doctor.query.filter_by(username='dr.richa').first()
+    if not doctor:
+        doctor = Doctor(
+            username='dr.richa',
+            email='drricha@eyeclinic.com',
+            full_name='Dr. Richa Sharma',
+            mobile_number='9876543210',
+            qualifications='MBBS, MS, FPOS',
+            specialization='Ophthalmology, Pediatric Eye Care'
+        )
+        doctor.set_password('doctor123')  # should be changed after first login
+        db.session.add(doctor)
+        print('Default doctor account created for Dr. Richa')
+    
+    # Create assistant account
+    assistant = Assistant.query.filter_by(username='assistant').first()
+    if not assistant:
+        assistant = Assistant(
+            username='assistant',
+            email='assistant@eyeclinic.com',
+            full_name='Clinic Assistant',
+            mobile_number='9876543211',
+            position='Clinic Receptionist',
+            joining_date=date.today()
+        )
+        assistant.set_password('assistant123')  # should be changed after first login
+        db.session.add(assistant)
+        print('Default assistant account created')
+    
+    # Keep admin account for backward compatibility
+    admin = Admin.query.filter_by(username='richa').first()
     if not admin:
         admin = Admin(
             username='richa',
-            email='drricha@eyeclinic.com'
+            email='admin@eyeclinic.com'
         )
         admin.set_password('richaisgreat')  # should be changed after first login
         db.session.add(admin)
-        try:
-            db.session.commit()
-            print('Default admin account created for Dr. Richa')
-        except Exception as e:
-            db.session.rollback()
-            print(f'Error creating admin account: {str(e)}')
+        print('Default admin account created for backward compatibility')
+    
+    try:
+        db.session.commit()
+        print('Default accounts created successfully')
+    except Exception as e:
+        db.session.rollback()
+        print(f'Error creating default accounts: {str(e)}')
 
 # Register error handlers
 @app.errorhandler(404)

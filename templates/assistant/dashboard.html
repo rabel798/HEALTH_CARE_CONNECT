@@ -1,0 +1,419 @@
+{% extends 'layout.html' %}
+
+{% block title %}Assistant Dashboard - Dr. Richa's Eye Clinic{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-light sidebar py-4">
+            <div class="position-sticky">
+                <div class="text-center mb-4">
+                    <i class="fas fa-user-nurse fa-3x text-info mb-2"></i>
+                    <h5>Assistant Dashboard</h5>
+                    <p class="text-muted small">Welcome, {{ current_user.full_name }}</p>
+                </div>
+                
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#dashboard-main" data-bs-toggle="tab">
+                            <i class="fas fa-home me-2"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#appointments" data-bs-toggle="tab">
+                            <i class="fas fa-calendar-check me-2"></i> Appointments
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#patients" data-bs-toggle="tab">
+                            <i class="fas fa-users me-2"></i> Patients
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#salary" data-bs-toggle="tab">
+                            <i class="fas fa-money-bill-wave me-2"></i> Your Salary
+                        </a>
+                    </li>
+                    <li class="nav-item mt-3">
+                        <a class="nav-link text-danger" href="{{ url_for('assistant_logout') }}">
+                            <i class="fas fa-sign-out-alt me-2"></i> Logout
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+        
+        <!-- Main content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
+            <div class="tab-content">
+                <!-- Dashboard Overview Tab -->
+                <div class="tab-pane active" id="dashboard-main">
+                    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+                        <h2>Dashboard Overview</h2>
+                        <div class="btn-toolbar mb-2 mb-md-0">
+                            <div class="btn-group me-2">
+                                <span class="text-muted">Today: {{ now.strftime('%B %d, %Y') }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Stats cards -->
+                    <div class="row mb-4">
+                        <div class="col-lg-3 col-md-6 mb-3">
+                            <div class="card border-left-primary shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                                Today's Appointments</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ today_appointments|length }}</div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-calendar-day fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-3 col-md-6 mb-3">
+                            <div class="card border-left-success shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                                Total Appointments</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_appointments }}</div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-3 col-md-6 mb-3">
+                            <div class="card border-left-info shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                                Patients</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_patients }}</div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-users fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-3 col-md-6 mb-3">
+                            <div class="card border-left-warning shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                                Upcoming Appointments</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ upcoming_appointments }}</div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-clock fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Today's appointments -->
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                            <h6 class="m-0 font-weight-bold text-primary">Today's Appointments</h6>
+                            <a href="#appointments" data-bs-toggle="tab" class="btn btn-sm btn-primary">View All</a>
+                        </div>
+                        <div class="card-body">
+                            {% if today_appointments %}
+                                <div class="table-responsive">
+                                    <table class="table table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th>Patient</th>
+                                                <th>Time</th>
+                                                <th>Age</th>
+                                                <th>Contact</th>
+                                                <th>Status</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for appointment in today_appointments %}
+                                                <tr>
+                                                    <td>{{ appointment.patient.full_name }}</td>
+                                                    <td>{{ appointment.appointment_time.strftime('%I:%M %p') }}</td>
+                                                    <td>{{ appointment.patient.age }}</td>
+                                                    <td>{{ appointment.patient.mobile_number }}</td>
+                                                    <td>
+                                                        {% if appointment.status == 'scheduled' %}
+                                                            <span class="badge bg-warning">Scheduled</span>
+                                                        {% elif appointment.status == 'completed' %}
+                                                            <span class="badge bg-success">Completed</span>
+                                                        {% elif appointment.status == 'cancelled' %}
+                                                            <span class="badge bg-danger">Cancelled</span>
+                                                        {% endif %}
+                                                    </td>
+                                                    <td>
+                                                        <a href="#" class="btn btn-sm btn-info">Details</a>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            {% else %}
+                                <div class="text-center py-4">
+                                    <i class="fas fa-calendar-day fa-3x text-muted mb-3"></i>
+                                    <p>No appointments scheduled for today.</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Appointments Tab -->
+                <div class="tab-pane" id="appointments">
+                    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+                        <h2>Appointments Management</h2>
+                        <div class="btn-toolbar mb-2 mb-md-0">
+                            <button type="button" class="btn btn-sm btn-outline-primary me-2">
+                                <i class="fas fa-plus me-1"></i> Add Walk-in
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary">
+                                <i class="fas fa-calendar-alt me-1"></i> Schedule
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Appointments table -->
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                            <h6 class="m-0 font-weight-bold text-primary">All Appointments</h6>
+                            <div>
+                                <select class="form-select form-select-sm">
+                                    <option selected>All Status</option>
+                                    <option>Scheduled</option>
+                                    <option>Completed</option>
+                                    <option>Cancelled</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>Patient</th>
+                                            <th>Date</th>
+                                            <th>Time</th>
+                                            <th>Age</th>
+                                            <th>Contact</th>
+                                            <th>Primary Issue</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for appointment in all_appointments %}
+                                            <tr>
+                                                <td>{{ appointment.patient.full_name }}</td>
+                                                <td>{{ appointment.appointment_date.strftime('%b %d, %Y') }}</td>
+                                                <td>{{ appointment.appointment_time.strftime('%I:%M %p') }}</td>
+                                                <td>{{ appointment.patient.age }}</td>
+                                                <td>{{ appointment.patient.mobile_number }}</td>
+                                                <td>{{ appointment.primary_issue[:30] ~ '...' if appointment.primary_issue and appointment.primary_issue|length > 30 else appointment.primary_issue }}</td>
+                                                <td>
+                                                    {% if appointment.status == 'scheduled' %}
+                                                        <span class="badge bg-warning">Scheduled</span>
+                                                    {% elif appointment.status == 'completed' %}
+                                                        <span class="badge bg-success">Completed</span>
+                                                    {% elif appointment.status == 'cancelled' %}
+                                                        <span class="badge bg-danger">Cancelled</span>
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                    <a href="#" class="btn btn-sm btn-info">Details</a>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Patients Tab -->
+                <div class="tab-pane" id="patients">
+                    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+                        <h2>Patient Management</h2>
+                        <div class="btn-toolbar mb-2 mb-md-0">
+                            <button type="button" class="btn btn-sm btn-outline-primary me-2">
+                                <i class="fas fa-plus me-1"></i> New Patient
+                            </button>
+                            <div class="input-group input-group-sm">
+                                <input type="text" class="form-control" placeholder="Search patients...">
+                                <button class="btn btn-outline-secondary" type="button">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Patients table -->
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">All Patients</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Age</th>
+                                            <th>Mobile</th>
+                                            <th>Email</th>
+                                            <th>Last Visit</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for patient in all_patients %}
+                                            <tr>
+                                                <td>{{ patient.full_name }}</td>
+                                                <td>{{ patient.age }}</td>
+                                                <td>{{ patient.mobile_number }}</td>
+                                                <td>{{ patient.email }}</td>
+                                                <td>
+                                                    {% set last_appointment = patient.appointments|sort(attribute='appointment_date', reverse=True)|first %}
+                                                    {{ last_appointment.appointment_date.strftime('%b %d, %Y') if last_appointment else 'No visits' }}
+                                                </td>
+                                                <td>
+                                                    <a href="#" class="btn btn-sm btn-info">View</a>
+                                                    <a href="#" class="btn btn-sm btn-primary">Edit</a>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Salary Tab -->
+                <div class="tab-pane" id="salary">
+                    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+                        <h2>Your Salary Information</h2>
+                    </div>
+                    
+                    <!-- Salary information card -->
+                    <div class="row">
+                        <div class="col-lg-4 mb-4">
+                            <div class="card shadow h-100">
+                                <div class="card-header py-3">
+                                    <h6 class="m-0 font-weight-bold text-primary">Salary Overview</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="text-center mb-4">
+                                        <i class="fas fa-money-bill-wave fa-4x text-success mb-3"></i>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <p class="mb-1"><strong>Name:</strong> {{ current_user.full_name }}</p>
+                                        <p class="mb-1"><strong>Position:</strong> {{ current_user.position }}</p>
+                                        <p class="mb-1"><strong>Joining Date:</strong> {{ current_user.joining_date.strftime('%B %d, %Y') }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-8 mb-4">
+                            <div class="card shadow">
+                                <div class="card-header py-3">
+                                    <h6 class="m-0 font-weight-bold text-primary">Salary Payment History</h6>
+                                </div>
+                                <div class="card-body">
+                                    {% if salary_records %}
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Date</th>
+                                                        <th>Amount</th>
+                                                        <th>Payment Method</th>
+                                                        <th>Status</th>
+                                                        <th>Description</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {% for salary in salary_records %}
+                                                        <tr>
+                                                            <td>{{ salary.payment_date.strftime('%b %d, %Y') }}</td>
+                                                            <td>₹{{ "%.2f"|format(salary.amount) }}</td>
+                                                            <td>{{ salary.payment_method }}</td>
+                                                            <td>
+                                                                {% if salary.status == 'completed' %}
+                                                                    <span class="badge bg-success">Completed</span>
+                                                                {% elif salary.status == 'pending' %}
+                                                                    <span class="badge bg-warning">Pending</span>
+                                                                {% elif salary.status == 'failed' %}
+                                                                    <span class="badge bg-danger">Failed</span>
+                                                                {% endif %}
+                                                            </td>
+                                                            <td>{{ salary.description }}</td>
+                                                        </tr>
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    {% else %}
+                                        <div class="text-center py-4">
+                                            <i class="fas fa-receipt fa-3x text-muted mb-3"></i>
+                                            <p>No salary records found.</p>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Handle tab navigation from URL hash
+        let hash = window.location.hash;
+        if (hash) {
+            document.querySelector(`a[href="${hash}"]`).click();
+        }
+        
+        // Update active class on nav items
+        const navLinks = document.querySelectorAll('#sidebar .nav-link');
+        navLinks.forEach(link => {
+            link.addEventListener('click', function() {
+                navLinks.forEach(l => l.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+    });
+</script>
+{% endblock %}

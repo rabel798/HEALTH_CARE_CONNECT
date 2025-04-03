@@ -28,6 +28,29 @@ class ReviewForm(FlaskForm):
     review_text = TextAreaField('Your Review', validators=[DataRequired(), Length(min=10, max=500)])
     submit = SubmitField('Submit Review')
 
+class DoctorLoginForm(FlaskForm):
+    username = StringField('Username', validators=[DataRequired(), Length(min=3, max=64)])
+    password = PasswordField('Password', validators=[DataRequired(), Length(min=8, max=128)])
+    submit = SubmitField('Login')
+
+class AssistantLoginForm(FlaskForm):
+    username = StringField('Username', validators=[DataRequired(), Length(min=3, max=64)])
+    password = PasswordField('Password', validators=[DataRequired(), Length(min=8, max=128)])
+    submit = SubmitField('Login')
+
+class SalaryForm(FlaskForm):
+    amount = StringField('Salary Amount', validators=[DataRequired()])
+    payment_date = DateField('Payment Date', validators=[DataRequired()])
+    payment_method = SelectField('Payment Method', choices=[
+        ('bank_transfer', 'Bank Transfer'),
+        ('cash', 'Cash'),
+        ('stripe', 'Stripe'),
+        ('other', 'Other')
+    ], validators=[DataRequired()])
+    description = TextAreaField('Description/Notes', validators=[Optional(), Length(max=500)])
+    submit = SubmitField('Process Salary Payment')
+
+# Keep for backward compatibility
 class AdminLoginForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired(), Length(min=3, max=64)])
     password = PasswordField('Password', validators=[DataRequired(), Length(min=8, max=128)])
