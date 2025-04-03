@@ -532,165 +532,19 @@ footer a:hover {
 }
 /* Enhanced Star Rating Styles */
 .star-rating {
-    font-size: 28px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    margin-bottom: 0.75rem;
-    position: relative;
-}
+  font-size: 24px;
+  cursor: pointer;
+  }
+  .star-btn {
+      padding: 0 2px;
 
-.star-btn {
-    padding: 0 2px;
-    transition: all 0.3s ease;
-    position: relative;
-    color: #ccc;
-    display: flex !important;
-    align-items: center;
-    justify-content: center;
-    opacity: 1 !important;
-    visibility: visible !important;
-    z-index: 1;
-    cursor: pointer;
-    font-size: 28px;
-}
-
-.star-btn i {
-    display: block !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    color: #ccc;
-}
-
-.star-btn.selected i,
-.star-btn:hover i {
-    color: var(--warning-color) !important;
-}
-
-.star-btn:hover ~ .star-btn i {
-    color: #ccc !important;
-}
-
-.star-btn:hover ~ .star-btn {
-    color: #ccc !important;
-}
-
-.star-rating:hover .star-btn {
-    color: var(--warning-color) !important;
-}
-
-.star-btn i.fas.fa-star,
-.star-btn i.far.fa-star {
-    display: inline-block !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    color: var(--warning-color);
-}
-
-.star-btn.selected, 
-.star-rating:not(.active) .star-btn:hover,
-.star-rating.active .star-btn.selected {
-    color: var(--warning-color) !important;
-    text-shadow: 0 0 8px rgba(255, 193, 7, 0.6);
-}
-
-.star-rating .fas.fa-star,
-.star-rating .far.fa-star {
-    display: inline-block !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    font-size: 28px;
-}
-
-.star-rating .fas.fa-star,
-.star-rating .far.fa-star {
-    opacity: 1 !important;
-    visibility: visible !important;
-    display: inline-block !important;
-}
-
-/* This controls the interactive fill effect when hovering */
-.star-rating.active .star-btn:hover ~ .star-btn {
-    color: #ccc !important;
-}
-
-.star-rating.active .star-btn:hover {
-    color: var(--warning-color) !important;
-    transform: scale(1.4);
-}
-
-.star-btn::before {
-    content: '';
-    position: absolute;
-    top: -8px;
-    left: -8px;
-    right: -8px;
-    bottom: -8px;
-    background: radial-gradient(circle, rgba(255,193,7,0.2) 0%, rgba(255,255,255,0) 70%);
-    border-radius: 50%;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    z-index: -1;
-    pointer-events: none;
-}
-
-.star-btn:hover::before,
-.star-btn.selected::before {
-    opacity: 1;
-}
-
-/* Enhanced ripple effect for selected stars */
-.star-btn::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 0;
-    height: 0;
-    background: rgba(255, 193, 7, 0.3);
-    border-radius: 50%;
-    transform: translate(-50%, -50%);
-    z-index: -2;
-    pointer-events: none;
-}
-
-.star-btn.selected::after {
-    animation: star-ripple 0.8s ease;
-}
-
-/* Star animations */
-@keyframes starPulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.4); }
-    100% { transform: scale(1); }
-}
-
-@keyframes star-ripple {
-    0% { 
-        width: 0;
-        height: 0;
-        opacity: 1;
+        transition: transform 0.1s ease;
     }
-    100% { 
-        width: 200%;
-        height: 200%;
-        opacity: 0;
+    .star-btn:hover {
+        transform: scale(1.2);
     }
-}
 
-@keyframes attention-pulse {
-    0% { transform: translateY(0); box-shadow: 0 0 0 0 rgba(255, 193, 7, 0); }
-    25% { transform: translateY(-5px); box-shadow: 0 5px 15px rgba(255, 193, 7, 0.4); }
-    50% { transform: translateY(0); box-shadow: 0 0 0 0 rgba(255, 193, 7, 0); }
-    75% { transform: translateY(-3px); box-shadow: 0 3px 10px rgba(255, 193, 7, 0.3); }
-    100% { transform: translateY(0); box-shadow: 0 0 0 0 rgba(255, 193, 7, 0); }
-}
 
-.star-btn.selected {
-    animation: starPulse 0.6s ease;
-}
 
 /* Rating validation feedback */
 .star-rating.was-validated {
