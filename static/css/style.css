@@ -550,12 +550,15 @@ footer a:hover {
     visibility: visible !important;
     z-index: 1;
     cursor: pointer;
+    font-size: 28px;
 }
 
-.star-btn i {
+.star-btn i.fas.fa-star,
+.star-btn i.far.fa-star {
     display: inline-block !important;
     visibility: visible !important;
     opacity: 1 !important;
+    color: var(--warning-color);
 }
 
 .star-btn.selected, 
