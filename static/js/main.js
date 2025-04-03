@@ -144,6 +144,10 @@ document.addEventListener('DOMContentLoaded', function() {
             5: 'Excellent'
         };
 
+        // Initialize stars on page load
+        const initialRating = ratingInput.value || 0;
+        updateStars(initialRating, false);
+
         function updateStars(rating, isHover) {
             stars.forEach((star, index) => {
                 const icon = star.querySelector('i');
