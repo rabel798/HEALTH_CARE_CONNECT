@@ -45,7 +45,7 @@ def location():
 def reviews():
     """Reviews page route with submission form"""
     form = ReviewForm()
-    
+
     if form.validate_on_submit():
         # Create new review (unapproved by default)
         new_review = Review(
@@ -62,7 +62,7 @@ def reviews():
         except Exception as e:
             db.session.rollback()
             flash(f'Error submitting review: {str(e)}', 'danger')
-    
+
     # Get all approved reviews
     approved_reviews = Review.query.filter_by(is_approved=True).order_by(desc(Review.created_at)).all()
     return render_template('reviews.html', reviews=approved_reviews, form=form)
@@ -71,7 +71,7 @@ def reviews():
 def appointment():
     """Appointment booking page route"""
     form = AppointmentForm()
-    
+
     # If the user is logged in, pre-fill the form
     if current_user.is_authenticated and isinstance(current_user, Patient):
         if request.method == 'GET':
@@ -79,7 +79,7 @@ def appointment():
             form.mobile_number.data = current_user.mobile_number
             form.email.data = current_user.email
             form.age.data = current_user.age
-    
+
     if form.validate_on_submit():
         if current_user.is_authenticated and isinstance(current_user, Patient):
             # Use the logged in patient
@@ -87,7 +87,7 @@ def appointment():
         else:
             # Check if patient exists by mobile number
             patient = Patient.query.filter_by(mobile_number=form.mobile_number.data).first()
-            
+
             # If patient doesn't exist, create new patient
             if not patient:
                 patient = Patient(
@@ -98,7 +98,7 @@ def appointment():
                 )
                 db.session.add(patient)
                 db.session.flush()  # To get the patient ID before commit
-        
+
         # Create new appointment
         new_appointment = Appointment(
             patient_id=patient.id,
@@ -109,7 +109,7 @@ def appointment():
             status='scheduled'
         )
         db.session.add(new_appointment)
-        
+
         try:
             db.session.commit()
             # Store appointment ID in session for payment process
@@ -119,11 +119,11 @@ def appointment():
         except Exception as e:
             db.session.rollback()
             flash(f'Error booking appointment: {str(e)}', 'danger')
-    
+
     # Pass default date (tomorrow) and available time slots to the template
     tomorrow = datetime.now() + timedelta(days=1)
     default_date = tomorrow.strftime('%Y-%m-%d')
-    
+
     return render_template('appointment.html', form=form, default_date=default_date)
 
 @app.route('/payment', methods=['GET', 'POST'])
@@ -134,10 +134,10 @@ def payment():
     if not appointment_id:
         flash('No active appointment found', 'warning')
         return redirect(url_for('appointment'))
-    
+
     # Get appointment details
     appointment = Appointment.query.get_or_404(appointment_id)
-    
+
     form = PaymentForm()
     if form.validate_on_submit():
         # Create payment record
@@ -150,7 +150,7 @@ def payment():
             status='completed'  # For demo, automatically mark as completed
         )
         db.session.add(new_payment)
-        
+
         try:
             db.session.commit()
             # Clear appointment from session
@@ -160,7 +160,7 @@ def payment():
         except Exception as e:
             db.session.rollback()
             flash(f'Error processing payment: {str(e)}', 'danger')
-    
+
     return render_template('payment.html', form=form, appointment=appointment)
 
 @app.route('/success')
@@ -172,18 +172,18 @@ def success():
 @app.route('/api/available-slots', methods=['GET'])
 def available_slots():
     selected_date = request.args.get('date')
-    
+
     # If no date provided, return empty list
     if not selected_date:
         return jsonify([])
-    
+
     try:
         # Convert selected_date string to date object
         selected_date = datetime.strptime(selected_date, '%Y-%m-%d').date()
-        
+
         # Check if the selected date is Sunday (weekday 6)
         is_sunday = selected_date.weekday() == 6
-        
+
         # Define available slots based on day of week
         if is_sunday:
             # Sunday slots (10 AM to 1 PM with 30-minute intervals)
@@ -195,16 +195,16 @@ def available_slots():
             all_slots = [
                 "18:00", "18:30", "19:00", "19:30", "20:00", "20:30", "21:00"
             ]
-        
+
         # Get all appointments for the selected date
         booked_appointments = Appointment.query.filter_by(appointment_date=selected_date).all()
-        
+
         # Get the booked time slots
         booked_slots = [appt.appointment_time.strftime('%H:%M') for appt in booked_appointments]
-        
+
         # Filter out booked slots
         available_slots = [slot for slot in all_slots if slot not in booked_slots]
-        
+
         return jsonify(available_slots)
     except Exception as e:
         return jsonify({"error": str(e)}), 400
@@ -217,7 +217,7 @@ def patient_register():
     # If already logged in, redirect to patient dashboard
     if current_user.is_authenticated:
         return redirect(url_for('patient_dashboard'))
-    
+
     form = PatientRegistrationForm()
     if form.validate_on_submit():
         # Check if email or mobile already exists
@@ -225,17 +225,17 @@ def patient_register():
             (Patient.email == form.email.data) | 
             (Patient.mobile_number == form.mobile_number.data)
         ).first()
-        
+
         if existing_patient:
             flash('A patient with this email or mobile number already exists.', 'danger')
             return redirect(url_for('patient_register'))
-        
+
         # Generate 6-digit OTP
         otp_code = ''.join(random.choices(string.digits, k=6))
-        
+
         # Set expiry time (30 minutes)
         expires_at = datetime.utcnow() + timedelta(minutes=30)
-        
+
         # Store OTP in database
         new_otp = OTP(
             email=form.email.data,
@@ -243,10 +243,10 @@ def patient_register():
             expires_at=expires_at
         )
         db.session.add(new_otp)
-        
+
         try:
             db.session.commit()
-            
+
             # Store registration data in session for later use
             session['registration_data'] = {
                 'full_name': form.full_name.data,
@@ -255,18 +255,18 @@ def patient_register():
                 'age': form.age.data,
                 'password': form.password.data
             }
-            
+
             # In a real app, we would send the OTP via email here
             # For testing, we'll flash it
             flash(f'For testing: Your OTP is {otp_code}', 'info')
-            
+
             # Redirect to OTP verification page
             return redirect(url_for('verify_otp', email=form.email.data))
-            
+
         except Exception as e:
             db.session.rollback()
             flash(f'Registration error: {str(e)}', 'danger')
-    
+
     return render_template('patient/register.html', form=form)
 
 
@@ -276,34 +276,34 @@ def verify_otp(email):
     # If already logged in, redirect to patient dashboard
     if current_user.is_authenticated:
         return redirect(url_for('patient_dashboard'))
-    
+
     # Check if we have registration data
     if 'registration_data' not in session:
         flash('Registration session expired. Please register again.', 'warning')
         return redirect(url_for('patient_register'))
-    
+
     form = OTPVerificationForm()
     form.email.data = email
-    
+
     if form.validate_on_submit():
         # Find the most recent OTP for this email
         otp_record = OTP.query.filter_by(
             email=email,
             is_verified=False
         ).order_by(desc(OTP.created_at)).first()
-        
+
         if not otp_record:
             flash('OTP record not found or already verified. Please request a new OTP.', 'danger')
             return redirect(url_for('patient_register'))
-        
+
         if otp_record.is_expired():
             flash('OTP has expired. Please request a new OTP.', 'danger')
             return redirect(url_for('patient_register'))
-        
+
         if otp_record.otp_code != form.otp.data:
             flash('Invalid OTP. Please try again.', 'danger')
             return redirect(url_for('verify_otp', email=email))
-        
+
         # OTP verified, create patient account
         registration_data = session['registration_data']
         new_patient = Patient(
@@ -314,28 +314,28 @@ def verify_otp(email):
             is_registered=True
         )
         new_patient.set_password(registration_data['password'])
-        
+
         # Mark OTP as verified
         otp_record.is_verified = True
-        
+
         db.session.add(new_patient)
-        
+
         try:
             db.session.commit()
-            
+
             # Clear session data
             session.pop('registration_data', None)
-            
+
             # Log in the user
             login_user(new_patient)
-            
+
             flash('Registration successful!', 'success')
             return redirect(url_for('patient_dashboard'))
-            
+
         except Exception as e:
             db.session.rollback()
             flash(f'Error creating account: {str(e)}', 'danger')
-    
+
     return render_template('patient/verify_otp.html', form=form, email=email)
 
 
@@ -345,20 +345,20 @@ def patient_gmail_login():
     # If already logged in, redirect to patient dashboard
     if current_user.is_authenticated:
         return redirect(url_for('patient_dashboard'))
-    
+
     # Create a simple form to collect email for OTP
     class GmailLoginForm(FlaskForm):
         email = StringField('Email Address', validators=[DataRequired(), Email()])
         submit = SubmitField('Send OTP')
-    
+
     form = GmailLoginForm()
-    
+
     if form.validate_on_submit():
         email = form.email.data
-        
+
         # Check if patient exists with this email
         patient = Patient.query.filter_by(email=email).first()
-        
+
         if not patient:
             # Create a non-registered patient record with email only
             patient = Patient(
@@ -370,13 +370,13 @@ def patient_gmail_login():
             )
             db.session.add(patient)
             db.session.flush()
-        
+
         # Generate 6-digit OTP
         otp_code = ''.join(random.choices(string.digits, k=6))
-        
+
         # Set expiry time (30 minutes)
         expires_at = datetime.utcnow() + timedelta(minutes=30)
-        
+
         # Store OTP in database
         new_otp = OTP(
             email=email,
@@ -384,21 +384,21 @@ def patient_gmail_login():
             expires_at=expires_at
         )
         db.session.add(new_otp)
-        
+
         try:
             db.session.commit()
-            
+
             # In a real app, we would send the OTP via email here
             # For testing, we'll flash it
             flash(f'For testing: Your OTP is {otp_code}', 'info')
-            
+
             # Redirect to OTP verification page
             return redirect(url_for('verify_login_otp', email=email))
-            
+
         except Exception as e:
             db.session.rollback()
             flash(f'Error: {str(e)}', 'danger')
-    
+
     return render_template('patient/gmail_login.html', form=form)
 
 
@@ -408,59 +408,59 @@ def verify_login_otp(email):
     # If already logged in, redirect to patient dashboard
     if current_user.is_authenticated:
         return redirect(url_for('patient_dashboard'))
-    
+
     form = OTPVerificationForm()
     form.email.data = email
-    
+
     if form.validate_on_submit():
         # Find the most recent OTP for this email
         otp_record = OTP.query.filter_by(
             email=email,
             is_verified=False
         ).order_by(desc(OTP.created_at)).first()
-        
+
         if not otp_record:
             flash('OTP record not found or already verified. Please request a new OTP.', 'danger')
             return redirect(url_for('patient_gmail_login'))
-        
+
         if otp_record.is_expired():
             flash('OTP has expired. Please request a new OTP.', 'danger')
             return redirect(url_for('patient_gmail_login'))
-        
+
         # Check if OTP matches
         if otp_record.otp_code != form.otp.data:
             flash('Invalid OTP. Please try again.', 'danger')
             return redirect(url_for('verify_login_otp', email=email))
-        
+
         # Mark OTP as verified
         otp_record.is_verified = True
-        
+
         # Find the patient with this email
         patient = Patient.query.filter_by(email=email).first()
-        
+
         if not patient:
             flash('Patient record not found.', 'danger')
             return redirect(url_for('patient_gmail_login'))
-        
+
         # Login the patient
         login_user(patient)
-        
+
         try:
             db.session.commit()
-            
+
             # If this is the patient's first login with Gmail,
             # they might need to complete their profile
             if not patient.is_registered:
                 flash('Please complete your profile information.', 'info')
                 # Here we would ideally redirect to a profile completion page
                 # For now, we'll just go to the dashboard
-            
+
             return redirect(url_for('patient_dashboard'))
-            
+
         except Exception as e:
             db.session.rollback()
             flash(f'Error verifying OTP: {str(e)}', 'danger')
-    
+
     return render_template('patient/verify_login_otp.html', form=form, email=email)
 
 
@@ -470,23 +470,23 @@ def patient_login():
     # If already logged in, redirect to patient dashboard
     if current_user.is_authenticated:
         return redirect(url_for('patient_dashboard'))
-    
+
     form = PatientLoginForm()
     if form.validate_on_submit():
         patient = Patient.query.filter_by(email=form.email.data).first()
-        
+
         # Check if patient exists and password is correct
         if patient and patient.is_registered and patient.check_password(form.password.data):
             login_user(patient)
-            
+
             # Get next page from query parameter, if any
             next_page = request.args.get('next')
-            
+
             # Redirect to patient dashboard or next page
             return redirect(next_page or url_for('patient_dashboard'))
         else:
             flash('Invalid email or password', 'danger')
-    
+
     return render_template('patient/login.html', form=form)
 
 
@@ -505,7 +505,7 @@ def patient_dashboard():
     """Patient dashboard route"""
     # Get patient's appointments
     appointments = Appointment.query.filter_by(patient_id=current_user.id).order_by(desc(Appointment.appointment_date), desc(Appointment.appointment_time)).all()
-    
+
     return render_template('patient/dashboard.html', appointments=appointments)
 
 
@@ -515,7 +515,7 @@ def patient_appointments():
     """Patient appointments history route"""
     # Get patient's appointments
     appointments = Appointment.query.filter_by(patient_id=current_user.id).order_by(desc(Appointment.appointment_date)).all()
-    
+
     return render_template('patient/appointments.html', appointments=appointments)
 
 
@@ -531,7 +531,7 @@ def patient_medical_records():
         .order_by(desc(Appointment.appointment_date))
         .all()
     )
-    
+
     return render_template('patient/medical_records.html', appointments=appointments)
 
 
@@ -549,19 +549,19 @@ def doctor_login():
     # If already logged in as doctor, redirect to dashboard
     if current_user.is_authenticated and isinstance(current_user, Doctor):
         return redirect(url_for('admin_dashboard'))
-        
+
     form = DoctorLoginForm()
     if form.validate_on_submit():
         # Find doctor with this username
         doctor = Doctor.query.filter_by(username=form.username.data).first()
-        
+
         if doctor and doctor.check_password(form.password.data):
             login_user(doctor)
             flash('Login successful! Welcome, Dr. ' + doctor.full_name, 'success')
             return redirect(url_for('admin_dashboard'))
         else:
             flash('Invalid username or password.', 'danger')
-            
+
     return render_template('doctor/login.html', form=form)
 
 
@@ -572,7 +572,7 @@ def doctor_logout():
     if current_user.is_authenticated and isinstance(current_user, Doctor):
         logout_user()
         flash('You have been logged out.', 'info')
-    
+
     return redirect(url_for('auth_selection'))
 
 
@@ -583,19 +583,19 @@ def assistant_login():
     # If already logged in as assistant, redirect to dashboard
     if current_user.is_authenticated and isinstance(current_user, Assistant):
         return redirect(url_for('assistant_dashboard'))
-        
+
     form = AssistantLoginForm()
     if form.validate_on_submit():
         # Find assistant with this username
         assistant = Assistant.query.filter_by(username=form.username.data).first()
-        
+
         if assistant and assistant.check_password(form.password.data):
             login_user(assistant)
             flash('Login successful! Welcome, ' + assistant.full_name, 'success')
             return redirect(url_for('assistant_dashboard'))
         else:
             flash('Invalid username or password.', 'danger')
-            
+
     return render_template('assistant/login.html', form=form)
 
 
@@ -606,7 +606,7 @@ def assistant_logout():
     if current_user.is_authenticated and isinstance(current_user, Assistant):
         logout_user()
         flash('You have been logged out.', 'info')
-    
+
     return redirect(url_for('auth_selection'))
 
 
@@ -618,32 +618,32 @@ def assistant_dashboard():
     if not isinstance(current_user, Assistant):
         flash('You do not have permission to access this page.', 'danger')
         return redirect(url_for('index'))
-    
+
     # Get all patients
     all_patients = Patient.query.all()
-    
+
     # Get today's appointments
     today = datetime.now().date()
     today_appointments = Appointment.query.filter_by(appointment_date=today).all()
-    
+
     # Get all appointments
     all_appointments = Appointment.query.order_by(desc(Appointment.appointment_date)).all()
-    
+
     # Get upcoming appointments
     upcoming_appointments = Appointment.query.filter(
         Appointment.appointment_date >= today,
         Appointment.status == 'scheduled'
     ).count()
-    
+
     # Get total appointments
     total_appointments = Appointment.query.count()
-    
+
     # Get total patients
     total_patients = Patient.query.count()
-    
+
     # Get salary records for current assistant
     salary_records = Salary.query.filter_by(assistant_id=current_user.id).order_by(desc(Salary.payment_date)).all()
-    
+
     return render_template(
         'assistant/dashboard.html',
         all_patients=all_patients,
@@ -663,20 +663,20 @@ def admin_login():
     # Check if user is already logged in as admin
     if current_user.is_authenticated and isinstance(current_user, Admin):
         return redirect(url_for('admin_dashboard'))
-    
+
     form = AdminLoginForm()
     if form.validate_on_submit():
         admin = Admin.query.filter_by(username=form.username.data).first()
-        
+
         # Check if admin exists and password is correct
         if admin and admin.check_password(form.password.data):
             login_user(admin)
-            
+
             # Redirect to admin dashboard
             return redirect(url_for('admin_dashboard'))
         else:
             flash('Invalid username or password', 'danger')
-    
+
     return render_template('admin/login.html', form=form)
 
 
@@ -697,7 +697,7 @@ def admin_dashboard():
     if not isinstance(current_user, Admin):
         flash('Access denied. Admin privileges required.', 'danger')
         return redirect(url_for('index'))
-    
+
     # Get counts for dashboard
     total_patients = Patient.query.count()
     total_appointments = Appointment.query.count()
@@ -706,13 +706,13 @@ def admin_dashboard():
         Appointment.status == 'scheduled'
     ).count()
     pending_reviews = Review.query.filter_by(is_approved=False).count()
-    
+
     # Today's appointments
     today_appointments = Appointment.query.filter(
         Appointment.appointment_date == datetime.now().date(),
         Appointment.status == 'scheduled'
     ).order_by(Appointment.appointment_time).all()
-    
+
     return render_template('admin/dashboard.html', 
                           total_patients=total_patients,
                           total_appointments=total_appointments,
@@ -729,10 +729,10 @@ def admin_appointments():
     if not isinstance(current_user, Admin):
         flash('Access denied. Admin privileges required.', 'danger')
         return redirect(url_for('index'))
-    
+
     # Get all appointments
     appointments = Appointment.query.order_by(desc(Appointment.appointment_date), desc(Appointment.appointment_time)).all()
-    
+
     return render_template('admin/appointments.html', appointments=appointments)
 
 
@@ -744,10 +744,10 @@ def admin_patients():
     if not isinstance(current_user, Admin):
         flash('Access denied. Admin privileges required.', 'danger')
         return redirect(url_for('index'))
-    
+
     # Get all patients
     patients = Patient.query.order_by(Patient.full_name).all()
-    
+
     return render_template('admin/patients.html', patients=patients)
 
 
@@ -755,17 +755,17 @@ def admin_patients():
 @login_required
 def admin_patient_view(patient_id):
     """Admin patient view route"""
-    # Ensure only admins can access this page
-    if not isinstance(current_user, Admin):
-        flash('Access denied. Admin privileges required.', 'danger')
+    # Ensure only admins or assistants can access this page
+    if not (isinstance(current_user, Admin) or isinstance(current_user, Assistant)):
+        flash('Access denied. Staff privileges required.', 'danger')
         return redirect(url_for('index'))
-    
+
     # Get patient details
     patient = Patient.query.get_or_404(patient_id)
-    
+
     # Get patient's appointments and medical records
     appointments = Appointment.query.filter_by(patient_id=patient_id).order_by(desc(Appointment.appointment_date)).all()
-    
+
     return render_template('admin/patient_view.html', patient=patient, appointments=appointments)
 
 
@@ -775,62 +775,62 @@ def admin_appointment_view(appointment_id):
     if not (isinstance(current_user, Admin) or isinstance(current_user, Assistant)):
         flash('Access denied.', 'danger')
         return redirect(url_for('index'))
-    
+
     appointment = Appointment.query.get_or_404(appointment_id)
-    
+
     if request.method == 'POST':
         action = request.form.get('action')
-        
+
         if action == 'complete':
             appointment.status = 'completed'
             message = "Your appointment has been completed. Thank you for visiting Dr. Richa's Eye Clinic."
         elif action == 'cancel':
             appointment.status = 'cancelled'
             message = "Your appointment has been cancelled. Please contact us if you need to reschedule."
-        
+
         try:
             db.session.commit()
-            
+
             # Send email notification
             if appointment.patient.email:
                 subject = f"Appointment {appointment.status.title()} - Dr. Richa's Eye Clinic"
                 send_email_notification(appointment.patient.email, subject, message)
-            
+
             flash(f'Appointment {appointment.status}.', 'success')
         except Exception as e:
             db.session.rollback()
             flash(f'Error updating appointment: {str(e)}', 'danger')
-        
+
         return redirect(url_for('admin_appointment_view', appointment_id=appointment_id))
     """Admin appointment view route"""
     # Ensure only admins can access this page
     if not isinstance(current_user, Admin):
         flash('Access denied. Admin privileges required.', 'danger')
         return redirect(url_for('index'))
-    
+
     # Get appointment details
     appointment = Appointment.query.get_or_404(appointment_id)
-    
+
     # Handle POST requests for updating appointment status
     if request.method == 'POST':
         action = request.form.get('action')
-        
+
         if action == 'complete':
             appointment.status = 'completed'
             db.session.commit()
             flash('Appointment marked as completed.', 'success')
             return redirect(url_for('admin_appointment_view', appointment_id=appointment_id))
-        
+
         elif action == 'cancel':
             appointment.status = 'cancelled'
             db.session.commit()
             flash('Appointment has been cancelled.', 'warning')
             return redirect(url_for('admin_appointment_view', appointment_id=appointment_id))
-    
+
     # Get medical record if it exists
     medical_record = MedicalRecord.query.filter_by(appointment_id=appointment_id).first()
     has_medical_record = medical_record is not None
-    
+
     return render_template('admin/appointment_view.html', 
                            appointment=appointment, 
                            medical_record=medical_record, 
@@ -845,28 +845,28 @@ def admin_add_prescription(appointment_id):
     if not isinstance(current_user, Admin):
         flash('Access denied. Admin privileges required.', 'danger')
         return redirect(url_for('index'))
-    
+
     # Get appointment details
     appointment = Appointment.query.get_or_404(appointment_id)
-    
+
     # Get or create medical record
     medical_record = MedicalRecord.query.filter_by(appointment_id=appointment_id).first()
     is_edit = medical_record is not None
-    
+
     if not medical_record:
         medical_record = MedicalRecord(appointment_id=appointment_id)
         db.session.add(medical_record)
         db.session.flush()
-    
+
     form = PrescriptionForm(obj=medical_record)
-    
+
     if form.validate_on_submit():
         # Update medical record with form data
         form.populate_obj(medical_record)
-        
+
         # Update appointment status to completed
         appointment.status = 'completed'
-        
+
         try:
             db.session.commit()
             if is_edit:
@@ -877,7 +877,7 @@ def admin_add_prescription(appointment_id):
         except Exception as e:
             db.session.rollback()
             flash(f'Error saving prescription: {str(e)}', 'danger')
-    
+
     return render_template('admin/add_prescription.html', form=form, appointment=appointment, is_edit=is_edit)
 
 
@@ -889,13 +889,13 @@ def admin_reviews():
     if not isinstance(current_user, Admin):
         flash('Access denied. Admin privileges required.', 'danger')
         return redirect(url_for('index'))
-    
+
     # Get pending reviews
     pending_reviews = Review.query.filter_by(is_approved=False).order_by(desc(Review.created_at)).all()
-    
+
     # Get approved reviews
     approved_reviews = Review.query.filter_by(is_approved=True).order_by(desc(Review.created_at)).all()
-    
+
     return render_template('admin/reviews.html', pending_reviews=pending_reviews, approved_reviews=approved_reviews)
 
 
@@ -907,20 +907,20 @@ def admin_approve_review(review_id):
     if not isinstance(current_user, Admin):
         flash('Access denied. Admin privileges required.', 'danger')
         return redirect(url_for('index'))
-    
+
     # Get review
     review = Review.query.get_or_404(review_id)
-    
+
     # Approve review
     review.is_approved = True
-    
+
     try:
         db.session.commit()
         flash('Review approved!', 'success')
     except Exception as e:
         db.session.rollback()
         flash(f'Error approving review: {str(e)}', 'danger')
-    
+
     return redirect(url_for('admin_reviews'))
 def send_email_notification(to_email, subject, message):
     try:
@@ -929,14 +929,14 @@ def send_email_notification(to_email, subject, message):
         smtp_port = 587
         sender_email = "your-clinic-email@gmail.com"  # Update this
         sender_password = "your-app-password"  # Update this
-        
+
         # Create message
         msg = MIMEMultipart()
         msg['From'] = sender_email
         msg['To'] = to_email
         msg['Subject'] = subject
         msg.attach(MIMEText(message, 'plain'))
-        
+
         # Send email
         with smtplib.SMTP(smtp_server, smtp_port) as server:
             server.starttls()
@@ -953,7 +953,7 @@ def assistant_add_patient():
     if not isinstance(current_user, Assistant):
         flash('Access denied.', 'danger')
         return redirect(url_for('index'))
-    
+
     form = PatientRegistrationForm()
     if form.validate_on_submit():
         new_patient = Patient(
@@ -971,5 +971,5 @@ def assistant_add_patient():
         except Exception as e:
             db.session.rollback()
             flash(f'Error adding patient: {str(e)}', 'danger')
-    
+
     return render_template('assistant/add_patient.html', form=form)

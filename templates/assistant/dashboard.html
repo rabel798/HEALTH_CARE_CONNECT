@@ -13,7 +13,7 @@
                     <h5>Assistant Dashboard</h5>
                     <p class="text-muted small">Welcome, {{ current_user.full_name }}</p>
                 </div>
-                
+
                 <ul class="nav flex-column">
                     <li class="nav-item">
                         <a class="nav-link active" href="#dashboard-main" data-bs-toggle="tab">
@@ -43,7 +43,7 @@
                 </ul>
             </div>
         </nav>
-        
+
         <!-- Main content -->
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
             <div class="tab-content">
@@ -57,7 +57,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <!-- Stats cards -->
                     <div class="row mb-4">
                         <div class="col-lg-3 col-md-6 mb-3">
@@ -76,7 +76,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="col-lg-3 col-md-6 mb-3">
                             <div class="card border-left-success shadow h-100 py-2">
                                 <div class="card-body">
@@ -93,7 +93,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="col-lg-3 col-md-6 mb-3">
                             <div class="card border-left-info shadow h-100 py-2">
                                 <div class="card-body">
@@ -110,7 +110,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="col-lg-3 col-md-6 mb-3">
                             <div class="card border-left-warning shadow h-100 py-2">
                                 <div class="card-body">
@@ -128,7 +128,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <!-- Today's appointments -->
                     <div class="card shadow mb-4">
                         <div class="card-header py-3 d-flex justify-content-between align-items-center">
@@ -188,7 +188,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- Appointments Tab -->
                 <div class="tab-pane" id="appointments">
                     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
@@ -202,7 +202,7 @@
                             </button>
                         </div>
                     </div>
-                    
+
                     <!-- Appointments table -->
                     <div class="card shadow mb-4">
                         <div class="card-header py-3 d-flex justify-content-between align-items-center">
@@ -260,7 +260,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- Patients Tab -->
                 <div class="tab-pane" id="patients">
                     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
@@ -277,7 +277,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <!-- Patients table -->
                     <div class="card shadow mb-4">
                         <div class="card-header py-3">
@@ -308,8 +308,8 @@
                                                     {{ last_appointment.appointment_date.strftime('%b %d, %Y') if last_appointment else 'No visits' }}
                                                 </td>
                                                 <td>
-                                                    <a href="#" class="btn btn-sm btn-info">View</a>
-                                                    <a href="#" class="btn btn-sm btn-primary">Edit</a>
+                                                    <a href="{{ url_for('admin_patient_view', patient_id=patient.id) }}" class="btn btn-sm btn-info">View</a>
+                                                    <a href="{{ url_for('admin_patient_edit', patient_id=patient.id) }}" class="btn btn-sm btn-primary">Edit</a>
                                                 </td>
                                             </tr>
                                         {% endfor %}
@@ -319,13 +319,13 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- Salary Tab -->
                 <div class="tab-pane" id="salary">
                     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
                         <h2>Your Salary Information</h2>
                     </div>
-                    
+
                     <!-- Salary information card -->
                     <div class="row">
                         <div class="col-lg-4 mb-4">
@@ -337,7 +337,7 @@
                                     <div class="text-center mb-4">
                                         <i class="fas fa-money-bill-wave fa-4x text-success mb-3"></i>
                                     </div>
-                                    
+
                                     <div class="mb-3">
                                         <p class="mb-1"><strong>Name:</strong> {{ current_user.full_name }}</p>
                                         <p class="mb-1"><strong>Position:</strong> {{ current_user.position }}</p>
@@ -346,7 +346,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="col-lg-8 mb-4">
                             <div class="card shadow">
                                 <div class="card-header py-3">
@@ -411,7 +411,7 @@
         if (hash) {
             document.querySelector(`a[href="${hash}"]`).click();
         }
-        
+
         // Update active class on nav items
         const navLinks = document.querySelectorAll('#sidebar .nav-link');
         navLinks.forEach(link => {
