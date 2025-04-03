@@ -11,7 +11,7 @@ class Patient(UserMixin, db.Model):
     age = db.Column(db.Integer, nullable=False)
     password_hash = db.Column(db.String(256), nullable=True)
     is_registered = db.Column(db.Boolean, default=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     appointments = db.relationship('Appointment', backref='patient', lazy=True)
     
     def set_password(self, password):
