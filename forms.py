@@ -68,6 +68,8 @@ class PatientRegistrationForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Email(), Length(max=100)])
     age = IntegerField('Age', validators=[DataRequired(), NumberRange(min=1, max=120)])
     primary_issue = TextAreaField('Primary Eye Issue', validators=[Optional(), Length(max=500)])
+    consultation_fee = DecimalField('Consultation Fee', validators=[Optional()], default=500.00)
+    payment_method = SelectField('Payment Method', choices=[('cash', 'Cash'), ('gpay', 'Google Pay')], validators=[Optional()])
     password = PasswordField('Password', validators=[Optional(), Length(min=8, max=128)])
     submit = SubmitField('Add Patient')
 
