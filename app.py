@@ -1,3 +1,4 @@
+
 import os
 import logging
 from flask import Flask, render_template
@@ -41,22 +42,12 @@ login_manager.login_message_category = "warning"
 # User loader function for Flask-Login
 @login_manager.user_loader
 def load_user(user_id):
-    # Check user type based on the ID format
-    if user_id.startswith('doctor_'):
-        doctor_id = int(user_id.split('_')[1])
-        from models import Doctor
-        return Doctor.query.get(doctor_id)
-    elif user_id.startswith('assistant_'):
-        assistant_id = int(user_id.split('_')[1])
-        from models import Assistant
-        return Assistant.query.get(assistant_id)
-    elif user_id.startswith('admin_'):
-        admin_id = int(user_id.split('_')[1])
-        from models import Admin
-        return Admin.query.get(admin_id)
-    else:
-        from models import Patient
-        return Patient.query.get(int(user_id))
+    from models import Doctor, Assistant, Admin, Patient
+    try:
+        user_id = int(user_id)
+        return Patient.query.get(user_id)
+    except ValueError:
+        return None
 
 # Import routes after app is created to avoid circular imports
 from routes import *
