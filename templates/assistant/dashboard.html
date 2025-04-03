@@ -30,6 +30,11 @@
                             <i class="fas fa-users me-2"></i> Patients
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#salary" data-bs-toggle="tab">
+                            <i class="fas fa-money-bill-wave me-2"></i> Your Salary
+                        </a>
+                    </li>
                     <li class="nav-item mt-3">
                         <a class="nav-link text-danger" href="{{ url_for('assistant_logout') }}">
                             <i class="fas fa-sign-out-alt me-2"></i> Logout
@@ -189,12 +194,12 @@
                     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
                         <h2>Appointments Management</h2>
                         <div class="btn-toolbar mb-2 mb-md-0">
-                            <button type="button" class="btn btn-sm btn-outline-primary me-2">
+                            <a href="{{ url_for('assistant_add_patient') }}" class="btn btn-sm btn-outline-primary me-2">
                                 <i class="fas fa-plus me-1"></i> Add Walk-in
-                            </button>
-                            <button type="button" class="btn btn-sm btn-outline-secondary">
+                            </a>
+                            <a href="{{ url_for('appointment') }}" class="btn btn-sm btn-outline-secondary">
                                 <i class="fas fa-calendar-alt me-1"></i> Schedule
-                            </button>
+                            </a>
                         </div>
                     </div>
 
@@ -261,12 +266,12 @@
                     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
                         <h2>Patient Management</h2>
                         <div class="btn-toolbar mb-2 mb-md-0">
-                            <button type="button" class="btn btn-sm btn-outline-primary me-2">
+                            <a href="{{ url_for('assistant_add_patient') }}" class="btn btn-sm btn-outline-primary me-2">
                                 <i class="fas fa-plus me-1"></i> New Patient
-                            </button>
+                            </a>
                             <div class="input-group input-group-sm">
-                                <input type="text" class="form-control" placeholder="Search patients...">
-                                <button class="btn btn-outline-secondary" type="button">
+                                <input type="text" class="form-control" id="patientSearch" placeholder="Search patients...">
+                                <button class="btn btn-outline-secondary" type="button" onclick="searchPatients()">
                                     <i class="fas fa-search"></i>
                                 </button>
                             </div>
@@ -402,12 +407,27 @@
 
 {% block extra_js %}
 <script>
+    function searchPatients() {
+        const searchText = document.getElementById('patientSearch').value.toLowerCase();
+        const patientTable = document.querySelector('#patients table tbody');
+        const rows = patientTable.getElementsByTagName('tr');
+
+        for (let row of rows) {
+            const nameCell = row.cells[0];
+            const name = nameCell.textContent.toLowerCase();
+            row.style.display = name.includes(searchText) ? '' : 'none';
+        }
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
         // Handle tab navigation from URL hash
         let hash = window.location.hash;
         if (hash) {
             document.querySelector(`a[href="${hash}"]`).click();
         }
+
+        // Add event listener for search input
+        document.getElementById('patientSearch').addEventListener('keyup', searchPatients);
 
         // Update active class on nav items
         const navLinks = document.querySelectorAll('#sidebar .nav-link');
