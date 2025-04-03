@@ -109,7 +109,7 @@ with app.app_context():
             username='richa',
             email='admin@eyeclinic.com'
         )
-        admin.set_password('richaisgreat')  # should be changed after first login
+        admin.set_password('richaisgreat ')  # should be changed after first login
         db.session.add(admin)
         print('Default admin account created for backward compatibility')
     
