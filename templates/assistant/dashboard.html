@@ -250,7 +250,7 @@
                                                     {% endif %}
                                                 </td>
                                                 <td>
-                                                    <a href="#" class="btn btn-sm btn-info">Details</a>
+                                                    <a href="{{ url_for('admin_appointment_view', appointment_id=appointment.id) }}" class="btn btn-sm btn-info">Details</a>
                                                 </td>
                                             </tr>
                                         {% endfor %}

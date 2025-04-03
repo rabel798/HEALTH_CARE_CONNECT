@@ -66,13 +66,9 @@ class PatientRegistrationForm(FlaskForm):
     mobile_number = StringField('Mobile Number', validators=[DataRequired(), Length(min=10, max=15)])
     email = StringField('Email', validators=[DataRequired(), Email(), Length(max=100)])
     age = IntegerField('Age', validators=[DataRequired(), NumberRange(min=1, max=120)])
-    password = PasswordField('Password', validators=[
-        DataRequired(),
-        Length(min=8, max=128),
-        EqualTo('confirm_password', message='Passwords must match')
-    ])
-    confirm_password = PasswordField('Confirm Password', validators=[DataRequired()])
-    submit = SubmitField('Register')
+    primary_issue = TextAreaField('Primary Eye Issue', validators=[Optional(), Length(max=500)])
+    password = PasswordField('Password', validators=[Optional(), Length(min=8, max=128)])
+    submit = SubmitField('Add Patient')
 
 class OTPVerificationForm(FlaskForm):
     email = HiddenField('Email')
