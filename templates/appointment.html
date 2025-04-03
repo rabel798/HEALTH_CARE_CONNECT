@@ -58,17 +58,6 @@
                         </div>
                         
                         <div class="row mb-4">
-                            <div class="col-md-6">
-                                <label for="appointment_time" class="form-label">Preferred Time <span class="text-danger">*</span></label>
-                                {{ form.appointment_time(class="form-control", type="hidden", required=true) }}
-                                <div id="time-slots-container">
-                                    <p class="text-muted small">Please select a date to see available time slots</p>
-                                </div>
-                                <div class="time-slots-loader spinner-border text-primary" role="status" style="display: none;">
-                                    <span class="visually-hidden">Loading...</span>
-                                </div>
-                                <div class="invalid-feedback">Please select a preferred time.</div>
-                            </div>
                             <div class="col-md-6 mb-3 mb-md-0">
                                 <label for="appointment_date" class="form-label">Preferred Date <span class="text-danger">*</span></label>
                                 <div class="input-group">
@@ -77,6 +66,10 @@
                                 </div>
                                 <div class="invalid-feedback">Please select a preferred date.</div>
                             </div>
+                            <div class="col-md-6">
+                                <label for="appointment_time" class="form-label">Preferred Time <span class="text-danger">*</span></label>
+                                {{ form.appointment_time(class="form-control", type="hidden", required=true) }}
+                                <div id="time-slots-container">
                                     <p class="text-muted small">Please select a date to see available time slots</p>
                                 </div>
                                 <div class="time-slots-loader spinner-border text-primary" role="status" style="display: none;">
