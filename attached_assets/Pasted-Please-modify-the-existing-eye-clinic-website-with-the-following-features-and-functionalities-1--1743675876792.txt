@@ -1,0 +1,128 @@
+Please modify the existing eye clinic website with the following features and functionalities:
+
+1. Logo Click Authentication Flow:
+- Replace direct doctor login with two options:
+  * "Enter as Doctor"
+  * "Enter as Assistant"
+- Add Gmail login option for both roles
+- Implement OTP verification system
+
+2. Doctor Login Credentials:
+- Username: drricha
+- Password: admin123
+- Associated email: drrichaeyeclinic@gmail.com
+
+3. Assistant Login Credentials:
+- Username: assistant
+- Password: admin456
+
+4. Doctor Dashboard Enhancements:
+- Retain all existing functionality
+- Add new tabs:
+  * Financial Records (consultation fees + other payments)
+  * Staff Management
+    - Assistant salary payment integration
+    - Stripe payment gateway implementation
+    - Automated email notifications:
+      > Doctor: "Salary payment of ₹[amount] processed for [month]"
+      > Assistant: "Your salary of ₹[amount] for [month] has been credited"
+  * Password Management
+    - Ability to change both doctor and assistant passwords
+    - OTP verification to drrichaeyeclinic@gmail.com
+  * Cancellation Records
+    - View cancelled appointment history
+    - Cancellation analytics
+    - Reason analysis
+
+5. Assistant Dashboard:
+- Include all doctor tabs except payment section
+- Add new features:
+  * Walk-in Patient Management
+    - Booking editor
+    - Payment recording
+    - Data sync with doctor's appointment/payment tabs
+  * Appointment Control
+    - Accept/Reject functionality
+    - Automated emails:
+      > Rejection: "We apologize, your appointment request has been declined..."
+      > Acceptance: "Your appointment has been confirmed..."
+    - Time-based auto-rejection system
+  * Cancellation Management
+    - Real-time updates of cancelled appointments
+    - Waitlist management
+    - Slot availability updates
+
+6. User Dashboard:
+- Appointment Booking System
+- Appointment Cancellation Feature:
+  * "Cancel Appointment" button
+  * Confirmation popup
+  * Reason input field (optional)
+  * Cancellation policy display
+  * Time restriction warnings (24-hour notice required)
+  * Automated emails:
+    > To User: "Your appointment for [date/time] has been cancelled"
+    > To Doctor: "Patient [name] cancelled appointment for [date/time]"
+    > To Assistant: "Appointment cancelled by [patient] for [date/time]"
+
+7. Database Requirements:
+- User authentication tables
+- Financial records
+- Appointment tracking
+- Payment history
+- Staff salary records
+- Cancellation records:
+  * Cancellation status
+  * Reasons
+  * Timestamps
+  * Patient details
+
+8. Email Integration:
+- Gmail API for login
+- SMTP for notifications
+- OTP delivery system
+- Automated emails for:
+  * Appointment booking
+  * Cancellations
+  * Salary payments
+  * Account actions
+
+9. Payment Integration:
+- Stripe API for salary processing
+- Payment tracking system
+- Receipt generation
+- Automatic refund system for cancelled appointments
+
+10. Technical Requirements:
+- Secure authentication system
+- Database encryption
+- Session management
+- Email automation
+- Payment gateway security
+- Mobile responsive design
+- Error handling
+- Activity logging
+- Real-time updates
+- Data backup system
+
+Additional Security Features:
+1. Session timeouts
+2. Input validation
+3. Error logging
+4. Confirmation dialogs
+5. Rate limiting for OTP
+6. Audit trails
+7. Password encryption
+8. Data backup
+9. XSS protection
+10. SQL injection prevention
+
+User Experience Considerations:
+1. Intuitive interface
+2. Clear navigation
+3. Responsive design
+4. Loading indicators
+5. Error messages
+6. Success confirmations
+7. Help tooltips
+8. Mobile optimization

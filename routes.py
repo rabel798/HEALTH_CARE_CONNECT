@@ -5,6 +5,9 @@ from datetime import datetime, timedelta
 from flask import render_template, request, redirect, url_for, flash, jsonify, session
 from sqlalchemy import desc
 from flask_login import login_user, logout_user, current_user, login_required
+from flask_wtf import FlaskForm
+from wtforms import StringField, SubmitField
+from wtforms.validators import DataRequired, Email
 from app import app, db
 from models import Patient, Appointment, MedicalRecord, Payment, Review, Admin, OTP
 from forms import (
@@ -333,6 +336,131 @@ def verify_otp(email):
     return render_template('patient/verify_otp.html', form=form, email=email)
 
 
+@app.route('/patient/gmail-login', methods=['GET', 'POST'])
+def patient_gmail_login():
+    """Patient Gmail OTP login route"""
+    # If already logged in, redirect to patient dashboard
+    if current_user.is_authenticated:
+        return redirect(url_for('patient_dashboard'))
+    
+    # Create a simple form to collect email for OTP
+    class GmailLoginForm(FlaskForm):
+        email = StringField('Email Address', validators=[DataRequired(), Email()])
+        submit = SubmitField('Send OTP')
+    
+    form = GmailLoginForm()
+    
+    if form.validate_on_submit():
+        email = form.email.data
+        
+        # Check if patient exists with this email
+        patient = Patient.query.filter_by(email=email).first()
+        
+        if not patient:
+            # Create a non-registered patient record with email only
+            patient = Patient(
+                full_name="Gmail User",  # Will be updated after login
+                mobile_number="0000000000",  # Will be updated after login
+                email=email,
+                age=1,  # Will be updated after login
+                is_registered=False
+            )
+            db.session.add(patient)
+            db.session.flush()
+        
+        # Generate 6-digit OTP
+        otp_code = ''.join(random.choices(string.digits, k=6))
+        
+        # Set expiry time (30 minutes)
+        expires_at = datetime.utcnow() + timedelta(minutes=30)
+        
+        # Store OTP in database
+        new_otp = OTP(
+            email=email,
+            otp_code=otp_code,
+            expires_at=expires_at
+        )
+        db.session.add(new_otp)
+        
+        try:
+            db.session.commit()
+            
+            # In a real app, we would send the OTP via email here
+            # For testing, we'll flash it
+            flash(f'For testing: Your OTP is {otp_code}', 'info')
+            
+            # Redirect to OTP verification page
+            return redirect(url_for('verify_login_otp', email=email))
+            
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Error: {str(e)}', 'danger')
+    
+    return render_template('patient/gmail_login.html', form=form)
+
+
+@app.route('/patient/verify-login-otp/<email>', methods=['GET', 'POST'])
+def verify_login_otp(email):
+    """Verify OTP for Gmail login"""
+    # If already logged in, redirect to patient dashboard
+    if current_user.is_authenticated:
+        return redirect(url_for('patient_dashboard'))
+    
+    form = OTPVerificationForm()
+    form.email.data = email
+    
+    if form.validate_on_submit():
+        # Find the most recent OTP for this email
+        otp_record = OTP.query.filter_by(
+            email=email,
+            is_verified=False
+        ).order_by(desc(OTP.created_at)).first()
+        
+        if not otp_record:
+            flash('OTP record not found or already verified. Please request a new OTP.', 'danger')
+            return redirect(url_for('patient_gmail_login'))
+        
+        if otp_record.is_expired():
+            flash('OTP has expired. Please request a new OTP.', 'danger')
+            return redirect(url_for('patient_gmail_login'))
+        
+        # Check if OTP matches
+        if otp_record.otp_code != form.otp.data:
+            flash('Invalid OTP. Please try again.', 'danger')
+            return redirect(url_for('verify_login_otp', email=email))
+        
+        # Mark OTP as verified
+        otp_record.is_verified = True
+        
+        # Find the patient with this email
+        patient = Patient.query.filter_by(email=email).first()
+        
+        if not patient:
+            flash('Patient record not found.', 'danger')
+            return redirect(url_for('patient_gmail_login'))
+        
+        # Login the patient
+        login_user(patient)
+        
+        try:
+            db.session.commit()
+            
+            # If this is the patient's first login with Gmail,
+            # they might need to complete their profile
+            if not patient.is_registered:
+                flash('Please complete your profile information.', 'info')
+                # Here we would ideally redirect to a profile completion page
+                # For now, we'll just go to the dashboard
+            
+            return redirect(url_for('patient_dashboard'))
+            
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Error verifying OTP: {str(e)}', 'danger')
+    
+    return render_template('patient/verify_login_otp.html', form=form, email=email)
+
+
 @app.route('/patient/login', methods=['GET', 'POST'])
 def patient_login():
     """Patient login route"""
@@ -402,6 +530,13 @@ def patient_medical_records():
     )
     
     return render_template('patient/medical_records.html', appointments=appointments)
+
+
+# Authentication Selection Route
+@app.route('/auth/selection')
+def auth_selection():
+    """Authentication selection route for choosing between staff and patient login"""
+    return render_template('auth/selection.html')
 
 
 # Admin/Doctor Authentication Routes

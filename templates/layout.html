@@ -86,13 +86,13 @@
                 <div id="interactive-logo-container" style="height: 40px;"></div>
             </a>
             <script>
-                // Add special click handler for doctor access - clicking on logo once shows admin login
+                // Add click handler for authentication selection
                 document.addEventListener('DOMContentLoaded', function() {
                     const logo = document.getElementById('clinic-logo');
                     
                     logo.addEventListener('click', function(e) {
                         e.preventDefault();
-                        window.location.href = "{{ url_for('admin_login') }}";
+                        window.location.href = "{{ url_for('auth_selection') }}";
                     });
                 });
             </script>

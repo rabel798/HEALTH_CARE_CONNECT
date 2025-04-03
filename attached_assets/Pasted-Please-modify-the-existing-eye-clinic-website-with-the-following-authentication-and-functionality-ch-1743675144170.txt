@@ -1,0 +1,72 @@
+Please modify the existing eye clinic website with the following authentication and functionality changes:
+
+1. Logo Click Authentication Flow:
+- Replace direct doctor login with two options:
+  * "Enter as Doctor"
+  * "Enter as Receptionist"
+- Add Gmail login option for both roles
+- Implement OTP verification system
+
+2. Doctor Login Credentials:
+- Username: drricha
+- Password: admin123
+- Associated email: drrichaeyeclinic@gmail.com
+
+3. Receptionist Login Credentials:
+- Username: receptionist
+- Password: admin456
+
+4. Doctor Dashboard Enhancements:
+- Retain all existing functionality
+- Add new tabs:
+  * Financial Records (consultation fees + other payments)
+  * Staff Management
+    - Receptionist salary payment integration
+    - Stripe payment gateway implementation
+    - Automated email notifications:
+      > Doctor: "Salary payment of ₹[amount] processed for [month]"
+      > Receptionist: "Your salary of ₹[amount] for [month] has been credited"
+  * Password Management
+    - Ability to change both doctor and receptionist passwords
+    - OTP verification to drrichaeyeclinic@gmail.com
+
+5. Receptionist Dashboard:
+- Include all doctor tabs except payment section
+- Add new features:
+  * Walk-in Patient Management
+    - Booking editor
+    - Payment recording
+    - Data sync with doctor's appointment/payment tabs
+  * Appointment Control
+    - Accept/Reject functionality
+    - Automated emails:
+      > Rejection: "We apologize, your appointment request has been declined..."
+      > Acceptance: "Your appointment has been confirmed..."
+    - Time-based auto-rejection system
+
+6. Database Requirements:
+- User authentication tables
+- Financial records
+- Appointment tracking
+- Payment history
+- Staff salary records
+
+7. Email Integration:
+- Gmail API for login
+- SMTP for notifications
+- OTP delivery system
+
+8. Payment Integration:
+- Stripe API for salary processing
+- Payment tracking system
+- Receipt generation
+
+Technical Requirements:
+- Secure authentication system
+- Database encryption
+- Session management
+- Email automation
+- Payment gateway security
+- Mobile responsive design
+- Error handling
+- Activity logging

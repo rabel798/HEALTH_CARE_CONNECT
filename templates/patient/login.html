@@ -12,6 +12,19 @@
                         <h2 class="card-title text-center mb-4">Patient Login</h2>
                         <p class="text-center mb-4">Access your appointments, medical records, and more.</p>
                         
+                        <!-- OAuth Login Option -->
+                        <div class="text-center mb-4">
+                            <a href="{{ url_for('patient_gmail_login') }}" class="btn btn-outline-danger w-100 py-2 mb-3">
+                                <i class="fab fa-google me-2"></i> Login with Gmail OTP
+                            </a>
+                            <div class="text-center my-3">
+                                <span class="border-bottom position-relative d-inline-block">
+                                    <span class="bg-light position-absolute px-3" style="top: -10px; left: 50%; transform: translateX(-50%);">OR</span>
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <!-- Manual Login Form -->
                         <form method="POST" action="{{ url_for('patient_login') }}">
                             {{ form.hidden_tag() }}
                             

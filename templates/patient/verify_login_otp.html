@@ -1,0 +1,70 @@
+{% extends 'layout.html' %}
+
+{% block title %}Verify OTP - Dr. Richa's Eye Clinic{% endblock %}
+
+{% block content %}
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <div class="card shadow-sm">
+                    <div class="card-body p-4 p-md-5">
+                        <div class="text-center mb-4">
+                            <i class="fas fa-key text-primary fa-3x mb-3"></i>
+                            <h2 class="card-title mb-1">Verify OTP</h2>
+                            <p class="text-muted">We've sent a verification code to <strong>{{ email }}</strong></p>
+                        </div>
+                        
+                        <form method="POST">
+                            {{ form.hidden_tag() }}
+                            
+                            <div class="mb-4">
+                                {{ form.otp.label(class="form-label") }}
+                                {{ form.otp(class="form-control text-center", placeholder="Enter 6-digit OTP", autocomplete="off") }}
+                                {% if form.otp.errors %}
+                                    <div class="text-danger">
+                                        {% for error in form.otp.errors %}
+                                            <small>{{ error }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="d-grid gap-2 mb-3">
+                                {{ form.submit(class="btn btn-primary py-2") }}
+                            </div>
+                        </form>
+                        
+                        <div class="text-center mt-4">
+                            <a href="{{ url_for('patient_gmail_login') }}" class="text-decoration-none">
+                                <i class="fas fa-arrow-left me-1"></i> Back to email entry
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    // Focus on OTP input and add formatting 
+    document.addEventListener('DOMContentLoaded', function() {
+        const otpInput = document.getElementById('otp');
+        if (otpInput) {
+            otpInput.focus();
+            
+            // Add digit validation and formatting
+            otpInput.addEventListener('input', function(e) {
+                // Remove any non-digit characters
+                this.value = this.value.replace(/\D/g, '');
+                
+                // Limit to 6 digits
+                if (this.value.length > 6) {
+                    this.value = this.value.slice(0, 6);
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

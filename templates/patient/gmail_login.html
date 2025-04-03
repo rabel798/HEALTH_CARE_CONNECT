@@ -1,0 +1,49 @@
+{% extends 'layout.html' %}
+
+{% block title %}Gmail OTP Login - Dr. Richa's Eye Clinic{% endblock %}
+
+{% block content %}
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <div class="card shadow-sm">
+                    <div class="card-body p-4 p-md-5">
+                        <div class="text-center mb-4">
+                            <i class="fab fa-google text-danger fa-3x mb-3"></i>
+                            <h2 class="card-title mb-1">Gmail OTP Login</h2>
+                            <p class="text-muted">Enter your Gmail to receive a one-time verification code</p>
+                        </div>
+                        
+                        <form method="POST">
+                            {{ form.hidden_tag() }}
+                            
+                            <div class="mb-4">
+                                {{ form.email.label(class="form-label") }}
+                                {{ form.email(class="form-control", placeholder="Enter your Gmail address") }}
+                                {% if form.email.errors %}
+                                    <div class="text-danger">
+                                        {% for error in form.email.errors %}
+                                            <small>{{ error }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="d-grid gap-2 mb-3">
+                                {{ form.submit(class="btn btn-danger py-2") }}
+                            </div>
+                        </form>
+                        
+                        <div class="text-center mt-4">
+                            <a href="{{ url_for('patient_login') }}" class="text-decoration-none">
+                                <i class="fas fa-arrow-left me-1"></i> Back to login options
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
