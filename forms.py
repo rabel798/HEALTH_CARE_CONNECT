@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, IntegerField, TextAreaField, DateField, TimeField, SelectField, SubmitField, PasswordField, HiddenField
+from wtforms import StringField, IntegerField, TextAreaField, DateField, TimeField, SelectField, SubmitField, PasswordField, HiddenField, DecimalField
 from wtforms.validators import DataRequired, Email, Length, NumberRange, Optional, EqualTo
 
 class AppointmentForm(FlaskForm):
