@@ -93,18 +93,22 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Appointment date picker functionality
     const appointmentDateInput = document.getElementById('appointment_date');
-    if (appointmentDateInput) {
-        // Set min date to today
-        const today = new Date();
-        const tomorrow = new Date(today);
-        tomorrow.setDate(today.getDate() + 1);
-        
-        const formattedTomorrow = tomorrow.toISOString().split('T')[0];
-        appointmentDateInput.setAttribute('min', formattedTomorrow);
-        
-        // Handle date selection to fetch available time slots
-        appointmentDateInput.addEventListener('change', function() {
-            fetchAvailableTimeSlots(this.value);
+    const calendarTrigger = document.getElementById('calendar-trigger');
+    
+    if (appointmentDateInput && calendarTrigger) {
+        // Initialize flatpickr
+        const datePicker = flatpickr(appointmentDateInput, {
+            dateFormat: "Y-m-d",
+            minDate: "today",
+            disableMobile: true,
+            onChange: function(selectedDates, dateStr) {
+                fetchAvailableTimeSlots(dateStr);
+            }
+        });
+
+        // Open calendar on icon click
+        calendarTrigger.addEventListener('click', function() {
+            datePicker.open();
         });
     }
 

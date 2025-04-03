@@ -498,6 +498,10 @@ footer a:hover {
   100% { transform: rotate(360deg); }
 }
 
+.cursor-pointer {
+    cursor: pointer;
+}
+
 /* Time slot selection */
 .time-slots {
   display: flex;
