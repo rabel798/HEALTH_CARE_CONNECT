@@ -3,33 +3,54 @@
 {% block title %}Assistant Login - Dr. Richa's Eye Clinic{% endblock %}
 
 {% block content %}
-<section class="py-5 bg-light">
+<section class="py-5" style="background: linear-gradient(135deg, #f5f7fa 0%, #e4eef7 100%);">
     <div class="container">
         <div class="row justify-content-center">
-            <div class="col-md-8 col-lg-5">
-                <div class="card shadow-sm">
-                    <div class="card-body p-4 p-md-5">
+            <div class="col-md-6 col-lg-5">
+                <div class="card shadow-lg border-0 rounded-lg">
+                    <div class="card-header bg-info text-white text-center py-4">
+                        <div id="interactive-logo-container" style="height: 70px; width: 100%; margin-bottom: 10px;"></div>
+                        <h3 class="mb-0">Assistant Login Portal</h3>
+                    </div>
+                    <div class="card-body p-5">
                         <div class="text-center mb-4">
                             <i class="fas fa-user-nurse fa-3x text-info mb-3"></i>
-                            <h2 class="card-title">Assistant Login</h2>
-                            <p class="text-muted">Staff portal access</p>
+                            <p class="text-muted">Access clinic management system</p>
+                            <div class="small text-center text-muted mb-3">
+                                Default assistant credentials
+                                <div class="badge bg-light text-dark mt-1">Username: assistant</div>
+                            </div>
                         </div>
 
                         <form method="POST" action="{{ url_for('assistant_login') }}">
                             {{ form.hidden_tag() }}
 
-                            <div class="mb-3">
-                                {{ form.username.label(class="form-label") }}
-                                {{ form.username(class="form-control", placeholder="Enter username") }}
+                            <div class="form-floating mb-3">
+                                {{ form.username(class="form-control", placeholder="Username", id="floating-username-assistant") }}
+                                {{ form.username.label(for="floating-username-assistant") }}
+                                {% if form.username.errors %}
+                                    <div class="text-danger">
+                                        {% for error in form.username.errors %}
+                                            <small>{{ error }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
                             </div>
 
-                            <div class="mb-3">
-                                {{ form.password.label(class="form-label") }}
-                                {{ form.password(class="form-control", placeholder="Enter password") }}
+                            <div class="form-floating mb-4">
+                                {{ form.password(class="form-control", placeholder="Password", id="floating-password-assistant") }}
+                                {{ form.password.label(for="floating-password-assistant") }}
+                                {% if form.password.errors %}
+                                    <div class="text-danger">
+                                        {% for error in form.password.errors %}
+                                            <small>{{ error }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
                             </div>
 
-                            <div class="d-grid gap-2 mb-3">
-                                {{ form.submit(class="btn btn-info py-2") }}
+                            <div class="d-grid">
+                                {{ form.submit(class="btn btn-info btn-lg text-white") }}
                             </div>
                         </form>
 
@@ -39,9 +60,27 @@
                             </a>
                         </div>
                     </div>
+                    <div class="card-footer text-center py-3 bg-light">
+                        <div class="small text-muted">Dr. Richa's Eye Clinic © {{ now.year }}</div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </section>
+
+<script>
+// Add animation to the assistant icon
+document.addEventListener('DOMContentLoaded', function() {
+    const assistantIcon = document.querySelector('.fa-user-nurse');
+    if (assistantIcon) {
+        assistantIcon.addEventListener('mouseover', function() {
+            this.classList.add('fa-bounce');
+        });
+        assistantIcon.addEventListener('mouseout', function() {
+            this.classList.remove('fa-bounce');
+        });
+    }
+});
+</script>
 {% endblock %}
