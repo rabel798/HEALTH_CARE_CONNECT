@@ -538,6 +538,7 @@ footer a:hover {
     align-items: center;
     gap: 8px;
     margin-bottom: 0.75rem;
+    position: relative;
 }
 
 .star-btn {
@@ -551,6 +552,16 @@ footer a:hover {
     z-index: 1;
     cursor: pointer;
     font-size: 28px;
+    flex: 1;
+    text-align: center;
+}
+
+.star-btn:hover ~ .star-btn {
+    color: #ccc !important;
+}
+
+.star-rating:hover .star-btn {
+    color: var(--warning-color) !important;
 }
 
 .star-btn i.fas.fa-star,
