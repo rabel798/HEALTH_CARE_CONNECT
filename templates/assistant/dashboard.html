@@ -227,7 +227,8 @@
                                             <th>Age</th>
                                             <th>Contact</th>
                                             <th>Primary Issue</th>
-                                            <th>Status</th>
+                                            <th>Consultation Fee</th>
+                                            <th>Payment Status</th>
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
@@ -241,12 +242,13 @@
                                                 <td>{{ appointment.patient.mobile_number }}</td>
                                                 <td>{{ appointment.primary_issue[:30] ~ '...' if appointment.primary_issue and appointment.primary_issue|length > 30 else appointment.primary_issue }}</td>
                                                 <td>
-                                                    {% if appointment.status == 'scheduled' %}
-                                                        <span class="badge bg-warning">Scheduled</span>
-                                                    {% elif appointment.status == 'completed' %}
-                                                        <span class="badge bg-success">Completed</span>
-                                                    {% elif appointment.status == 'cancelled' %}
-                                                        <span class="badge bg-danger">Cancelled</span>
+                                                    <input type="number" class="form-control form-control-sm consultation-fee" value="{{ appointment.consultation_fee or 500 }}" data-appointment-id="{{ appointment.id }}">
+                                                </td>
+                                                <td>
+                                                    {% if appointment.payment_status == 'paid' %}
+                                                        <span class="badge bg-success">Paid</span>
+                                                    {% elif appointment.payment_status == 'due' %}
+                                                        <span class="badge bg-warning">Due</span>
                                                     {% endif %}
                                                 </td>
                                                 <td>

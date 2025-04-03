@@ -33,6 +33,7 @@ class Appointment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     patient_id = db.Column(db.Integer, db.ForeignKey('patient.id'), nullable=False)
     appointment_date = db.Column(db.Date, nullable=False)
+    consultation_fee = db.Column(db.Float, nullable=False, default=500.0)
     appointment_time = db.Column(db.Time, nullable=False)
     primary_issue = db.Column(db.Text, nullable=True)
     referral_info = db.Column(db.String(255), nullable=True)

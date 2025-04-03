@@ -5,6 +5,7 @@ from wtforms.validators import DataRequired, Email, Length, NumberRange, Optiona
 class AppointmentForm(FlaskForm):
     full_name = StringField('Full Name', validators=[DataRequired(), Length(min=3, max=100)])
     mobile_number = StringField('Mobile Number', validators=[DataRequired(), Length(min=10, max=15)])
+    consultation_fee = IntegerField('Consultation Fee', validators=[Optional()], default=500)
     email = StringField('Email', validators=[Optional(), Email(), Length(max=100)])
     age = IntegerField('Age', validators=[DataRequired(), NumberRange(min=1, max=120)])
     appointment_date = DateField('Appointment Date', validators=[DataRequired()])
