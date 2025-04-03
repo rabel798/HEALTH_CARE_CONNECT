@@ -545,9 +545,17 @@ footer a:hover {
     transition: all 0.3s ease;
     position: relative;
     color: #ccc;
-    display: inline-block;
+    display: inline-block !important;
     opacity: 1 !important;
     visibility: visible !important;
+    z-index: 1;
+    cursor: pointer;
+}
+
+.star-btn i {
+    display: inline-block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
 }
 
 .star-btn.selected, 
@@ -555,6 +563,14 @@ footer a:hover {
 .star-rating.active .star-btn.selected {
     color: var(--warning-color) !important;
     text-shadow: 0 0 8px rgba(255, 193, 7, 0.6);
+}
+
+.star-rating .fas.fa-star,
+.star-rating .far.fa-star {
+    display: inline-block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    font-size: 28px;
 }
 
 .star-rating .fas.fa-star,
