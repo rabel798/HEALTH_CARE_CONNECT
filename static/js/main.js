@@ -146,11 +146,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 updateStars(ratingInput.value);
             }
             
-            // Hover effect
-            stars.forEach(star => {
+            // Hover effect - highlight stars up to the current hover position
+            stars.forEach((star, index) => {
                 star.addEventListener('mouseover', function() {
-                    const rating = this.dataset.rating;
-                    highlightStars(rating);
+                    // Highlight all stars up to this one
+                    highlightStars(index + 1);
                 });
             });
             
@@ -161,15 +161,37 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             
             // Click to set rating
-            stars.forEach(star => {
+            stars.forEach((star, index) => {
                 star.addEventListener('click', function() {
-                    const rating = this.dataset.rating;
+                    const rating = index + 1; // Set rating based on star position (1-5)
                     ratingInput.value = rating;
                     updateStars(rating);
                     
+                    // Update rating feedback text if it exists
+                    const ratingFeedback = starContainer.closest('div').querySelector('.rating-feedback');
+                    if (ratingFeedback) {
+                        const feedbackMessages = [
+                            'Poor',
+                            'Fair',
+                            'Good',
+                            'Very Good',
+                            'Excellent'
+                        ];
+                        
+                        // Update the feedback text with selected rating
+                        const feedbackText = feedbackMessages[rating - 1];
+                        ratingFeedback.innerHTML = `<span class="badge bg-primary px-3 py-2 rounded-pill">You rated: ${feedbackText} (${rating} ${rating === 1 ? 'star' : 'stars'})</span>`;
+                        
+                        // Hide any error message
+                        const ratingError = document.getElementById('rating-error');
+                        if (ratingError) {
+                            ratingError.style.display = 'none !important';
+                        }
+                    }
+                    
                     // Add pulse animation to selected stars
-                    stars.forEach((s, index) => {
-                        if (index < rating) {
+                    stars.forEach((s, i) => {
+                        if (i < rating) {
                             // Remove and re-add the animation to restart it
                             s.classList.remove('selected');
                             void s.offsetWidth; // Force reflow
@@ -187,9 +209,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                     // Update icon based on hover position
                     if (index < rating) {
-                        star.className = 'fas fa-star star-btn';
+                        star.className = 'fas fa-star star-btn text-warning';
                     } else {
-                        star.className = 'far fa-star star-btn';
+                        star.className = 'far fa-star star-btn text-warning';
                     }
                 });
             }
@@ -198,9 +220,9 @@ document.addEventListener('DOMContentLoaded', function() {
             function updateStars(rating) {
                 stars.forEach((star, index) => {
                     if (index < rating) {
-                        star.className = 'fas fa-star star-btn selected';
+                        star.className = 'fas fa-star star-btn text-warning selected';
                     } else {
-                        star.className = 'far fa-star star-btn';
+                        star.className = 'far fa-star star-btn text-warning';
                     }
                 });
             }
@@ -211,7 +233,33 @@ document.addEventListener('DOMContentLoaded', function() {
     const forms = document.querySelectorAll('.needs-validation');
     Array.from(forms).forEach(form => {
         form.addEventListener('submit', event => {
-            if (!form.checkValidity()) {
+            let formValid = form.checkValidity();
+            
+            // Check if this is a review form with star rating
+            const ratingInput = form.querySelector('.rating-input');
+            const ratingError = document.getElementById('rating-error');
+            
+            if (ratingInput && (!ratingInput.value || ratingInput.value === "0")) {
+                // Special validation for star rating
+                formValid = false;
+                if (ratingError) {
+                    ratingError.style.display = 'block !important';
+                    ratingError.style.removeProperty('display');
+                }
+                
+                // Highlight the star rating area
+                const starRating = form.querySelector('.star-rating');
+                if (starRating) {
+                    starRating.classList.add('was-validated');
+                    
+                    // Add a pulse animation to draw attention
+                    starRating.style.animation = 'none';
+                    void starRating.offsetWidth; // Trigger reflow
+                    starRating.style.animation = 'attention-pulse 0.8s ease';
+                }
+            }
+            
+            if (!formValid) {
                 event.preventDefault();
                 event.stopPropagation();
             } else {

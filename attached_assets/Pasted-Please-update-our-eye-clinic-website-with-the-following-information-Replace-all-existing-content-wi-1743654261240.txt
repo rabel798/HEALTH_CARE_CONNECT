@@ -1,0 +1,46 @@
+Please update our eye clinic website with the following information. Replace all existing content with these new details:
+
+1. Consultation Fee:
+   - Update to 500/- INR
+
+2. Appointment Cancellation Policy:
+   - Change to "No Cancellation charges"
+
+3. Emergency Contact:
+   - Replace with "Emergency contact information coming soon" or similar placeholder
+
+4. Services Provided (maintain this list exactly as shown):
+   - Cataract Surgery
+   - Squint Surgery
+   - Pediatric Cataract
+   - Retina
+   - Glaucoma
+   (Note: Don't include any pricing for these services for now)
+
+5. Doctor Information:
+   - Name: Dr. Richa Sharma
+   - Qualifications: 
+     * MBBS, MS, FPOS
+     * Fellowship in Aravind Eye Hospital, Coimbatore
+     * Fellowship from Boston Children's Hospital, Harvard Medical School (please highlight this credential)
+     * Specializes in Adult and Pediatric eye Care (please highlight this)
+   - Note: Currently only one doctor in the clinic
+
+6. Clinic Address:
+   - First floor, DVR Town Centre, near to IGUS private limited, Mandur, Budigere Road (New Airport Road), Bengaluru, Karnataka 560049
+   - Please update the Google Map embedded on the website to show this exact location
+
+7. Contact Information:
+   - Email: drrichaeyeclinic@gmail.com
+   - Phone: Add placeholder text "Contact number coming soon"
+   - Social Media: Add placeholder text "Social media accounts coming soon"
+
+8. Clinic Hours:
+   - Monday to Saturday: 6 PM to 9 PM
+   - Sunday: 10 AM to 1 PM
+
+Important notes:
+1. Please ensure the Google Map is updated to show the exact clinic location: First floor, DVR Town Centre, near to IGUS private limited, Mandur, Budigere Road (New Airport Road), Bengaluru, Karnataka 560049
+2. Keep the overall design and layout of the website the same, just update the information
+3. Ensure all text is clearly readable and properly formatted
+4. If there are any sections on the current website not covered in this update, please maintain them but update with placeholder text if necessary

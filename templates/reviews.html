@@ -87,16 +87,23 @@
                             
                             <div class="mb-4">
                                 <label class="form-label">Your Rating</label>
-                                <div class="star-rating mb-2">
-                                    <i class="far fa-star text-warning star-btn" data-rating="1"></i>
-                                    <i class="far fa-star text-warning star-btn" data-rating="2"></i>
-                                    <i class="far fa-star text-warning star-btn" data-rating="3"></i>
-                                    <i class="far fa-star text-warning star-btn" data-rating="4"></i>
-                                    <i class="far fa-star text-warning star-btn" data-rating="5"></i>
+                                <div class="card border-0 shadow-sm p-3 mb-2">
+                                    <div class="d-flex flex-column align-items-center">
+                                        <div class="star-rating mb-2" role="group" aria-label="Rate your experience">
+                                            <i class="far fa-star text-warning star-btn" title="Poor (1 star)"></i>
+                                            <i class="far fa-star text-warning star-btn" title="Fair (2 stars)"></i>
+                                            <i class="far fa-star text-warning star-btn" title="Good (3 stars)"></i>
+                                            <i class="far fa-star text-warning star-btn" title="Very Good (4 stars)"></i>
+                                            <i class="far fa-star text-warning star-btn" title="Excellent (5 stars)"></i>
+                                        </div>
+                                        <div class="rating-feedback text-center mt-1 mb-0">
+                                            <span class="badge bg-light text-dark px-3 py-2 rounded-pill">Click to rate your experience</span>
+                                        </div>
+                                    </div>
                                 </div>
-                                {{ form.rating(type="hidden", class="rating-input") }}
-                                <div class="invalid-feedback">
-                                    Please select a rating.
+                                {{ form.rating(type="hidden", class="rating-input", required=true) }}
+                                <div class="invalid-feedback d-block text-center" id="rating-error" style="display: none !important;">
+                                    Please select a rating before submitting.
                                 </div>
                             </div>
                             
