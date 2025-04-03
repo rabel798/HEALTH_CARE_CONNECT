@@ -545,15 +545,24 @@ def auth_selection():
 # Doctor Authentication Routes
 @app.route('/doctor/login', methods=['GET', 'POST'])
 def doctor_login():
-    """Doctor login route"""
-    # Auto-login as the default doctor
+    """Doctor login route - auto login without credentials"""
     doctor = Doctor.query.first()
-    if doctor:
-        login_user(doctor)
-        return redirect(url_for('admin_dashboard'))
-    else:
-        flash('Error: No doctor account found.', 'danger')
-    return redirect(url_for('index'))
+    if not doctor:
+        # Create default doctor if doesn't exist
+        doctor = Doctor(
+            username='drricha',
+            email='drricha@eyeclinic.com',
+            full_name='Dr. Richa Sharma',
+            mobile_number='9876543210',
+            qualifications='MBBS, MS, FPOS',
+            specialization='Ophthalmology, Pediatric Eye Care'
+        )
+        doctor.set_password('admin123')
+        db.session.add(doctor)
+        db.session.commit()
+    
+    login_user(doctor)
+    return redirect(url_for('admin_dashboard'))
 
 
 @app.route('/doctor/logout')
