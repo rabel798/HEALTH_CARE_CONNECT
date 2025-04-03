@@ -693,9 +693,9 @@ def admin_logout():
 @login_required
 def admin_dashboard():
     """Admin/Doctor dashboard route"""
-    # Ensure only admins can access this page
-    if not isinstance(current_user, Admin):
-        flash('Access denied. Admin privileges required.', 'danger')
+    # Ensure only admins or assistants can access this page
+    if not (isinstance(current_user, Admin) or isinstance(current_user, Assistant)):
+        flash('Access denied. Staff privileges required.', 'danger')
         return redirect(url_for('index'))
 
     # Get counts for dashboard
@@ -725,9 +725,9 @@ def admin_dashboard():
 @login_required
 def admin_appointments():
     """Admin appointments management route"""
-    # Ensure only admins can access this page
-    if not isinstance(current_user, Admin):
-        flash('Access denied. Admin privileges required.', 'danger')
+    # Ensure only admins or assistants can access this page
+    if not (isinstance(current_user, Admin) or isinstance(current_user, Assistant)):
+        flash('Access denied. Staff privileges required.', 'danger')
         return redirect(url_for('index'))
 
     # Get all appointments
@@ -740,9 +740,9 @@ def admin_appointments():
 @login_required
 def admin_patients():
     """Admin patients management route"""
-    # Ensure only admins can access this page
-    if not isinstance(current_user, Admin):
-        flash('Access denied. Admin privileges required.', 'danger')
+    # Ensure only admins or assistants can access this page
+    if not (isinstance(current_user, Admin) or isinstance(current_user, Assistant)):
+        flash('Access denied. Staff privileges required.', 'danger')
         return redirect(url_for('index'))
 
     # Get all patients
@@ -803,9 +803,9 @@ def admin_appointment_view(appointment_id):
 
         return redirect(url_for('admin_appointment_view', appointment_id=appointment_id))
     """Admin appointment view route"""
-    # Ensure only admins can access this page
-    if not isinstance(current_user, Admin):
-        flash('Access denied. Admin privileges required.', 'danger')
+    # Ensure only admins or assistants can access this page
+    if not (isinstance(current_user, Admin) or isinstance(current_user, Assistant)):
+        flash('Access denied. Staff privileges required.', 'danger')
         return redirect(url_for('index'))
 
     # Get appointment details
@@ -841,9 +841,9 @@ def admin_appointment_view(appointment_id):
 @login_required
 def admin_add_prescription(appointment_id):
     """Admin add/edit prescription route"""
-    # Ensure only admins can access this page
-    if not isinstance(current_user, Admin):
-        flash('Access denied. Admin privileges required.', 'danger')
+    # Ensure only admins or assistants can access this page
+    if not (isinstance(current_user, Admin) or isinstance(current_user, Assistant)):
+        flash('Access denied. Staff privileges required.', 'danger')
         return redirect(url_for('index'))
 
     # Get appointment details
@@ -885,9 +885,9 @@ def admin_add_prescription(appointment_id):
 @login_required
 def admin_reviews():
     """Admin reviews management route"""
-    # Ensure only admins can access this page
-    if not isinstance(current_user, Admin):
-        flash('Access denied. Admin privileges required.', 'danger')
+    # Ensure only admins or assistants can access this page
+    if not (isinstance(current_user, Admin) or isinstance(current_user, Assistant)):
+        flash('Access denied. Staff privileges required.', 'danger')
         return redirect(url_for('index'))
 
     # Get pending reviews
@@ -903,9 +903,9 @@ def admin_reviews():
 @login_required
 def admin_approve_review(review_id):
     """Admin approve review route"""
-    # Ensure only admins can access this page
-    if not isinstance(current_user, Admin):
-        flash('Access denied. Admin privileges required.', 'danger')
+    # Ensure only admins or assistants can access this page
+    if not (isinstance(current_user, Admin) or isinstance(current_user, Assistant)):
+        flash('Access denied. Staff privileges required.', 'danger')
         return redirect(url_for('index'))
 
     # Get review

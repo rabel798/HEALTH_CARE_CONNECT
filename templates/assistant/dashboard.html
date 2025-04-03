@@ -30,11 +30,6 @@
                             <i class="fas fa-users me-2"></i> Patients
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#salary" data-bs-toggle="tab">
-                            <i class="fas fa-money-bill-wave me-2"></i> Your Salary
-                        </a>
-                    </li>
                     <li class="nav-item mt-3">
                         <a class="nav-link text-danger" href="{{ url_for('assistant_logout') }}">
                             <i class="fas fa-sign-out-alt me-2"></i> Logout
@@ -308,9 +303,10 @@
                                                     {{ last_appointment.appointment_date.strftime('%b %d, %Y') if last_appointment else 'No visits' }}
                                                 </td>
                                                 <td>
-                                                    <a href="{{ url_for('admin_patient_view', patient_id=patient.id) }}" class="btn btn-sm btn-info">View</a>
-                                                    <a href="{{ url_for('admin_patient_view', patient_id=patient.id) }}" class="btn btn-sm btn-primary">Edit</a>
-                                                </td>
+                                                        <a href="{{ url_for('admin_patient_view', patient_id=patient.id) }}" class="btn btn-sm btn-info">View</a>
+                                                        <a href="{{ url_for('admin_patient_view', patient_id=patient.id) }}" class="btn btn-sm btn-primary">Edit</a>
+                                                        <a href="{{ url_for('admin_add_prescription', appointment_id=patient.appointments[-1].id) if patient.appointments else '#' }}" class="btn btn-sm btn-success" {{ 'disabled' if not patient.appointments else '' }}>Add Prescription</a>
+                                                    </td>
                                             </tr>
                                         {% endfor %}
                                     </tbody>
@@ -319,6 +315,7 @@
                         </div>
                     </div>
                 </div>
+
 
                 <!-- Salary Tab -->
                 <div class="tab-pane" id="salary">
