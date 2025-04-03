@@ -546,14 +546,15 @@ def auth_selection():
 @app.route('/doctor/login', methods=['GET', 'POST'])
 def doctor_login():
     """Doctor login route"""
-    # Auto-login as the default doctor
-    doctor = Doctor.query.first()
-    if doctor:
-        login_user(doctor)
-        return redirect(url_for('admin_dashboard'))
-    else:
-        flash('Error: No doctor account found.', 'danger')
-    return redirect(url_for('index'))
+    form = DoctorLoginForm()
+    if form.validate_on_submit():
+        doctor = Doctor.query.filter_by(username=form.username.data).first()
+        if doctor and doctor.check_password(form.password.data):
+            login_user(doctor)
+            return redirect(url_for('admin_dashboard'))
+        else:
+            flash('Invalid username or password', 'danger')
+    return render_template('doctor/login.html', form=form)
 
 
 @app.route('/doctor/logout')
