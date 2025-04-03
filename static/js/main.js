@@ -134,6 +134,30 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (starContainer && ratingInput) {
         const stars = starContainer.querySelectorAll('.star-btn');
+        const ratingFeedback = document.querySelector('.rating-feedback span');
+
+        const ratingTexts = {
+            1: 'Poor',
+            2: 'Fair',
+            3: 'Good',
+            4: 'Very Good',
+            5: 'Excellent'
+        };
+
+        function updateStars(rating, isHover) {
+            stars.forEach((star, index) => {
+                const icon = star.querySelector('i');
+                if (index < rating) {
+                    icon.className = 'fas fa-star text-warning';
+                } else {
+                    icon.className = 'far fa-star text-warning';
+                }
+            });
+
+            if (ratingFeedback && rating > 0) {
+                ratingFeedback.textContent = ratingTexts[rating] || 'Click to rate';
+            }
+        }
 
         // Hover effect
         stars.forEach(star => {
@@ -157,16 +181,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 updateStars(rating, false);
             });
         });
-
-        function updateStars(rating, isHover) {
-            stars.forEach((star, index) => {
-                if (index < rating) {
-                    star.className = 'fas fa-star text-warning star-btn';
-                } else {
-                    star.className = 'far fa-star text-warning star-btn';
-                }
-            });
-        }
     }
 
     // Handle form submissions with validation

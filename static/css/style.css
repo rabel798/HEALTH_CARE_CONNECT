@@ -532,17 +532,24 @@ footer a:hover {
 }
 /* Enhanced Star Rating Styles */
 .star-rating {
-  font-size: 24px;
-  cursor: pointer;
-  }
-  .star-btn {
-      padding: 0 2px;
+    font-size: 24px;
+    cursor: pointer;
+    display: flex;
+    gap: 4px;
+    justify-content: center;
+}
 
-        transition: transform 0.1s ease;
-    }
-    .star-btn:hover {
-        transform: scale(1.2);
-    }
+.star-btn {
+    padding: 0 2px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.1s ease;
+}
+
+.star-btn:hover {
+    transform: scale(1.2);
+}
 
 
 
