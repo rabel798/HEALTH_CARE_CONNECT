@@ -39,6 +39,8 @@ class Appointment(db.Model):
     referral_info = db.Column(db.String(255), nullable=True)
     status = db.Column(db.String(20), default='scheduled')  # scheduled, completed, cancelled
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    consultation_fee = db.Column(db.Float, nullable=False, default=500.0)
+    payment_status = db.Column(db.String(20), default='pending')  # pending, paid
     
     def __repr__(self):
         return f'<Appointment {self.id} for Patient {self.patient_id}>'

@@ -545,24 +545,19 @@ def auth_selection():
 # Doctor Authentication Routes
 @app.route('/doctor/login', methods=['GET', 'POST'])
 def doctor_login():
-    """Doctor login route - auto login without credentials"""
-    doctor = Doctor.query.first()
-    if not doctor:
-        # Create default doctor if doesn't exist
-        doctor = Doctor(
-            username='drricha',
-            email='drricha@eyeclinic.com',
-            full_name='Dr. Richa Sharma',
-            mobile_number='9876543210',
-            qualifications='MBBS, MS, FPOS',
-            specialization='Ophthalmology, Pediatric Eye Care'
-        )
-        doctor.set_password('admin123')
-        db.session.add(doctor)
-        db.session.commit()
+    """Doctor login route"""
+    form = DoctorLoginForm()
     
-    login_user(doctor)
-    return redirect(url_for('admin_dashboard'))
+    if form.validate_on_submit():
+        doctor = Doctor.query.filter_by(username=form.username.data).first()
+        if doctor and doctor.check_password(form.password.data):
+            login_user(doctor)
+            flash('Welcome back, Dr. Richa!', 'success')
+            return redirect(url_for('admin_dashboard'))
+        else:
+            flash('Invalid credentials.', 'danger')
+    
+    return render_template('doctor/login.html', form=form)
 
 
 @app.route('/doctor/logout')
