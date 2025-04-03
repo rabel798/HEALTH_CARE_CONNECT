@@ -167,20 +167,28 @@ def success():
 def available_slots():
     selected_date = request.args.get('date')
     
-    # Default available slots (9 AM to 5 PM with 30-minute intervals)
-    all_slots = [
-        "09:00", "09:30", "10:00", "10:30", "11:00", "11:30",
-        "12:00", "12:30", "14:00", "14:30", "15:00", "15:30",
-        "16:00", "16:30", "17:00"
-    ]
-    
-    # If no date provided, return all slots
+    # If no date provided, return empty list
     if not selected_date:
-        return jsonify(all_slots)
+        return jsonify([])
     
     try:
         # Convert selected_date string to date object
         selected_date = datetime.strptime(selected_date, '%Y-%m-%d').date()
+        
+        # Check if the selected date is Sunday (weekday 6)
+        is_sunday = selected_date.weekday() == 6
+        
+        # Define available slots based on day of week
+        if is_sunday:
+            # Sunday slots (10 AM to 1 PM with 30-minute intervals)
+            all_slots = [
+                "10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "13:00"
+            ]
+        else:
+            # Monday to Saturday slots (6 PM to 9 PM with 30-minute intervals)
+            all_slots = [
+                "18:00", "18:30", "19:00", "19:30", "20:00", "20:30", "21:00"
+            ]
         
         # Get all appointments for the selected date
         booked_appointments = Appointment.query.filter_by(appointment_date=selected_date).all()

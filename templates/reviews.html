@@ -37,10 +37,10 @@
                     <div class="review-card">
                         <div class="stars mb-3">
                             {% for i in range(review.rating) %}
-                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star text-warning"></i>
                             {% endfor %}
                             {% for i in range(5 - review.rating) %}
-                                <i class="far fa-star"></i>
+                                <i class="far fa-star text-warning"></i>
                             {% endfor %}
                         </div>
                         <p class="review-text mb-3">"{{ review.review_text }}"</p>
