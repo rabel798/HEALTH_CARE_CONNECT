@@ -7,8 +7,8 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function initMap() {
-    // Clinic location coordinates (example coordinates - replace with actual clinic location)
-    const clinicLocation = [28.6139, 77.2090]; // Delhi coordinates as example
+    // Clinic location coordinates for Budigere Road, Bengaluru
+    const clinicLocation = [13.0617, 77.7213]; // Budigere Road, Bengaluru coordinates
     
     // Initialize map
     const map = L.map('map').setView(clinicLocation, 15);
@@ -35,12 +35,12 @@ function initMap() {
 
 // Function to open Google Maps with directions from user's location to clinic
 function getDirectionsToClinic() {
-    // Clinic location (example coordinates - replace with actual clinic location)
-    const clinicLat = 28.6139;
-    const clinicLng = 77.2090;
+    // Clinic location coordinates for Budigere Road, Bengaluru
+    const clinicLat = 13.0617;
+    const clinicLng = 77.7213;
     
-    // Clinic address (replace with actual clinic address)
-    const clinicAddress = encodeURIComponent("Dr. Richa's Eye Clinic, Delhi, India");
+    // Clinic address
+    const clinicAddress = encodeURIComponent("Dr. Richa's Eye Clinic, First floor, DVR Town Centre, near to IGUS private limited, Mandur, Budigere Road, Bengaluru, Karnataka 560049, India");
     
     // Try to get user's current location
     if (navigator.geolocation) {
