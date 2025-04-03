@@ -3,6 +3,9 @@ import random
 import string
 from datetime import datetime, timedelta
 from flask import render_template, request, redirect, url_for, flash, jsonify, session
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 from sqlalchemy import desc
 from flask_login import login_user, logout_user, current_user, login_required
 from flask_wtf import FlaskForm
@@ -769,6 +772,36 @@ def admin_patient_view(patient_id):
 @app.route('/admin/appointment/<int:appointment_id>', methods=['GET', 'POST'])
 @login_required
 def admin_appointment_view(appointment_id):
+    if not (isinstance(current_user, Admin) or isinstance(current_user, Assistant)):
+        flash('Access denied.', 'danger')
+        return redirect(url_for('index'))
+    
+    appointment = Appointment.query.get_or_404(appointment_id)
+    
+    if request.method == 'POST':
+        action = request.form.get('action')
+        
+        if action == 'complete':
+            appointment.status = 'completed'
+            message = "Your appointment has been completed. Thank you for visiting Dr. Richa's Eye Clinic."
+        elif action == 'cancel':
+            appointment.status = 'cancelled'
+            message = "Your appointment has been cancelled. Please contact us if you need to reschedule."
+        
+        try:
+            db.session.commit()
+            
+            # Send email notification
+            if appointment.patient.email:
+                subject = f"Appointment {appointment.status.title()} - Dr. Richa's Eye Clinic"
+                send_email_notification(appointment.patient.email, subject, message)
+            
+            flash(f'Appointment {appointment.status}.', 'success')
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Error updating appointment: {str(e)}', 'danger')
+        
+        return redirect(url_for('admin_appointment_view', appointment_id=appointment_id))
     """Admin appointment view route"""
     # Ensure only admins can access this page
     if not isinstance(current_user, Admin):
@@ -889,3 +922,54 @@ def admin_approve_review(review_id):
         flash(f'Error approving review: {str(e)}', 'danger')
     
     return redirect(url_for('admin_reviews'))
+def send_email_notification(to_email, subject, message):
+    try:
+        # Email configuration
+        smtp_server = "smtp.gmail.com"
+        smtp_port = 587
+        sender_email = "your-clinic-email@gmail.com"  # Update this
+        sender_password = "your-app-password"  # Update this
+        
+        # Create message
+        msg = MIMEMultipart()
+        msg['From'] = sender_email
+        msg['To'] = to_email
+        msg['Subject'] = subject
+        msg.attach(MIMEText(message, 'plain'))
+        
+        # Send email
+        with smtplib.SMTP(smtp_server, smtp_port) as server:
+            server.starttls()
+            server.login(sender_email, sender_password)
+            server.send_message(msg)
+        return True
+    except Exception as e:
+        print(f"Error sending email: {str(e)}")
+        return False
+
+@app.route('/assistant/add-patient', methods=['GET', 'POST'])
+@login_required
+def assistant_add_patient():
+    if not isinstance(current_user, Assistant):
+        flash('Access denied.', 'danger')
+        return redirect(url_for('index'))
+    
+    form = PatientRegistrationForm()
+    if form.validate_on_submit():
+        new_patient = Patient(
+            full_name=form.full_name.data,
+            mobile_number=form.mobile_number.data,
+            email=form.email.data,
+            age=form.age.data,
+            is_registered=False
+        )
+        db.session.add(new_patient)
+        try:
+            db.session.commit()
+            flash('Patient added successfully!', 'success')
+            return redirect(url_for('assistant_dashboard'))
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Error adding patient: {str(e)}', 'danger')
+    
+    return render_template('assistant/add_patient.html', form=form)

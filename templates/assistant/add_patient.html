@@ -1,0 +1,52 @@
+
+{% extends 'layout.html' %}
+
+{% block title %}Add New Patient - Dr. Richa's Eye Clinic{% endblock %}
+
+{% block content %}
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card shadow-sm">
+                    <div class="card-header">
+                        <h5 class="mb-0">Add New Walk-in Patient</h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST" action="{{ url_for('assistant_add_patient') }}">
+                            {{ form.hidden_tag() }}
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    {{ form.full_name.label(class="form-label") }}
+                                    {{ form.full_name(class="form-control") }}
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    {{ form.age.label(class="form-label") }}
+                                    {{ form.age(class="form-control") }}
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    {{ form.mobile_number.label(class="form-label") }}
+                                    {{ form.mobile_number(class="form-control") }}
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    {{ form.email.label(class="form-label") }}
+                                    {{ form.email(class="form-control") }}
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                {{ form.primary_issue.label(class="form-label") }}
+                                {{ form.primary_issue(class="form-control") }}
+                            </div>
+                            <div class="text-end">
+                                <button type="submit" class="btn btn-primary">Add Patient</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
