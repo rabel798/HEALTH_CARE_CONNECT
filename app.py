@@ -66,35 +66,41 @@ with app.app_context():
     from models import Doctor, Assistant, Admin
     from datetime import date
     
-    # Create doctor account
-    doctor = Doctor.query.filter_by(username='drricha').first()
-    if not doctor:
-        doctor = Doctor(
-            username='drricha',
-            email='drricha@eyeclinic.com',
-            full_name='Dr. Richa Sharma',
-            mobile_number='9876543210',
-            qualifications='MBBS, MS, FPOS',
-            specialization='Ophthalmology, Pediatric Eye Care'
-        )
-        doctor.set_password('admin123')  # default password
-        db.session.add(doctor)
-        print('Default doctor account created for Dr. Richa')
-    
-    # Create assistant account
-    assistant = Assistant.query.filter_by(username='assistant').first()
-    if not assistant:
-        assistant = Assistant(
-            username='assistant',
-            email='assistant@eyeclinic.com',
-            full_name='Clinic Assistant',
-            mobile_number='9876543211',
-            position='Clinic Receptionist',
-            joining_date=date.today()
-        )
-        assistant.set_password('assistant123')  # should be changed after first login
-        db.session.add(assistant)
-        print('Default assistant account created')
+    try:
+        # Create doctor account
+        doctor = Doctor.query.filter_by(username='drricha').first()
+        if not doctor:
+            doctor = Doctor(
+                username='drricha',
+                email='drricha@eyeclinic.com',
+                full_name='Dr. Richa Sharma',
+                mobile_number='9876543210',
+                qualifications='MBBS, MS, FPOS',
+                specialization='Ophthalmology, Pediatric Eye Care'
+            )
+            doctor.set_password('admin123')  # default password
+            db.session.add(doctor)
+            db.session.commit()
+            print('Default doctor account created for Dr. Richa')
+        
+        # Create assistant account
+        assistant = Assistant.query.filter_by(username='assistant').first()
+        if not assistant:
+            assistant = Assistant(
+                username='assistant',
+                email='assistant@eyeclinic.com',
+                full_name='Clinic Assistant',
+                mobile_number='9876543211',
+                position='Clinic Receptionist',
+                joining_date=date.today()
+            )
+            assistant.set_password('assistant123')  # should be changed after first login
+            db.session.add(assistant)
+            db.session.commit()
+            print('Default assistant account created')
+    except Exception as e:
+        db.session.rollback()
+        print(f'Error creating default accounts: {str(e)}')
     
     # Keep admin account for backward compatibility
     admin = Admin.query.filter_by(username='richa').first()
