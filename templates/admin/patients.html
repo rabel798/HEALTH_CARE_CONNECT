@@ -16,7 +16,7 @@
                         <p class="card-text text-muted">Ophthalmologist</p>
                     </div>
                 </div>
-                
+
                 <div class="list-group shadow-sm">
                     <a href="{{ url_for('admin_dashboard') }}" class="list-group-item list-group-item-action">
                         <i class="fas fa-home me-2"></i> Dashboard
@@ -32,7 +32,7 @@
                     </a>
                 </div>
             </div>
-            
+
             <div class="col-lg-9">
                 <div class="card shadow-sm">
                     <div class="card-header d-flex justify-content-between align-items-center">
@@ -51,8 +51,10 @@
                                         <th>Age</th>
                                         <th>Mobile</th>
                                         <th>Email</th>
-                                        <th>Appointments</th>
-                                        <th>Action</th>
+                                        <th>Visit Count</th>
+                                        <th>Last Visit</th>
+                                        <th>Consultation Fee</th>
+                                        <th class="text-center">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -61,8 +63,17 @@
                                             <td>{{ patient.full_name }}</td>
                                             <td>{{ patient.age }}</td>
                                             <td>{{ patient.mobile_number }}</td>
-                                            <td>{{ patient.email or 'Not provided' }}</td>
+                                            <td>{{ patient.email }}</td>
                                             <td>{{ patient.appointments|length }}</td>
+                                            <td>
+                                                {% if patient.appointments %}
+                                                    {% set last_appointment = patient.appointments|sort(attribute='appointment_date', reverse=True)|first %}
+                                                    {{ last_appointment.appointment_date.strftime('%b %d, %Y') }}
+                                                {% else %}
+                                                    {{ patient.created_at.strftime('%b %d, %Y') }}
+                                                {% endif %}
+                                            </td>
+                                            <td>₹500</td>
                                             <td>
                                                 <a href="{{ url_for('admin_patient_view', patient_id=patient.id) }}" class="btn btn-sm btn-primary">
                                                     <i class="fas fa-eye me-1"></i> View
@@ -88,10 +99,10 @@
         const searchInput = document.getElementById('patientSearch');
         const table = document.getElementById('patientsTable');
         const rows = table.querySelectorAll('tbody tr');
-        
+
         searchInput.addEventListener('keyup', function(e) {
             const searchText = e.target.value.toLowerCase();
-            
+
             rows.forEach(row => {
                 const rowText = row.textContent.toLowerCase();
                 if (rowText.includes(searchText)) {
