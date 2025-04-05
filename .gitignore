@@ -1,0 +1,33 @@
+﻿# Python/Django
+healthconnect-venv/
+__pycache__/
+*.py[cod]
+db.sqlite3
+.env
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Local development
+local_settings.py
+media/
+
+# Database
+*.sqlite3
+
+# Static files
+staticfiles/
+
+# Environment variables
+.env
+.env.local
+
+# Logs
+*.log
+
+# System files
+.DS_Store
+Thumbs.db
