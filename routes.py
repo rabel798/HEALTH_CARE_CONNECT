@@ -630,10 +630,7 @@ def doctor_login():
             flash('Welcome back, Dr. Richa!', 'success')
             return redirect(url_for('admin_dashboard'))
         else:
-            if form.username.data == "drricha" or form.username.data == "dr.richa":
-                flash('Doctor login failed. Please try username "drricha" with password "admin123"', 'danger')
-            else:
-                flash('Invalid credentials. Please check your username and password.', 'danger')
+            flash('Invalid credentials. Please check your username and password.', 'danger')
     
     return render_template('doctor/login.html', form=form)
 
