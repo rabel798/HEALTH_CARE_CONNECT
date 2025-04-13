@@ -554,12 +554,13 @@ def doctor_login():
         
         if doctor and doctor.check_password(form.password.data):
             login_user(doctor)
+            # Set session variable to indicate doctor role
+            session['user_role'] = 'doctor'
             flash('Welcome back, Dr. Richa!', 'success')
             return redirect(url_for('admin_dashboard'))
         else:
             if form.username.data == "drricha" or form.username.data == "dr.richa":
-                # Show more helpful message for doctor login
-                flash('Doctor login failed. Please try username "dr.richa" with password "admin123"', 'danger')
+                flash('Doctor login failed. Please try username "drricha" with password "admin123"', 'danger')
             else:
                 flash('Invalid credentials. Please check your username and password.', 'danger')
     
@@ -705,8 +706,8 @@ def admin_logout():
 @login_required
 def admin_dashboard():
     """Admin/Doctor dashboard route"""
-    # Ensure only admins or assistants can access this page
-    if not (isinstance(current_user, Admin) or isinstance(current_user, Assistant)):
+    # Ensure only admins, doctors or assistants can access this page
+    if not (isinstance(current_user, Admin) or isinstance(current_user, Doctor) or isinstance(current_user, Assistant)):
         flash('Access denied. Staff privileges required.', 'danger')
         return redirect(url_for('index'))
 
