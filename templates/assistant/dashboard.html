@@ -372,9 +372,15 @@
                                                 <tbody>
                                                     {% for salary in salary_records %}
                                                         <tr>
-                                                            <td>{{ salary.payment_date.strftime('%b %d, %Y') }}</td>
+                                                            <td>{{ salary.payment_date.strftime('%b %d, %Y') }}<br>
+                                                                <small class="text-muted">{{ salary.created_at.strftime('%I:%M %p') }}</small>
+                                                            </td>
                                                             <td>₹{{ "%.2f"|format(salary.amount) }}</td>
-                                                            <td>{{ salary.payment_method }}</td>
+                                                            <td>{{ salary.payment_method }}<br>
+                                                                {% if salary.transaction_id %}
+                                                                <small class="text-muted">ID: {{ salary.transaction_id }}</small>
+                                                                {% endif %}
+                                                            </td>
                                                             <td>
                                                                 {% if salary.status == 'completed' %}
                                                                     <span class="badge bg-success">Completed</span>

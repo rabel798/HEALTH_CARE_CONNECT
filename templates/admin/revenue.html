@@ -8,44 +8,55 @@
     <div class="row">
         <div class="col-12">
             <div class="card shadow">
-                <div class="card-header">
+                <div class="card-header d-flex justify-content-between align-items-center">
                     <h4 class="mb-0">Revenue Management</h4>
+                    <div class="alert alert-info mb-0 py-2">
+                        <strong>Total Revenue:</strong> ₹{{ "%.2f"|format(total_revenue) }}
+                    </div>
                 </div>
                 <div class="card-body">
-                    <div class="alert alert-info">
-                        <h5>Total Revenue: ₹{{ "%.2f"|format(total_revenue) }}</h5>
-                    </div>
-                    
                     <div class="table-responsive">
-                        <table class="table table-striped">
+                        <table class="table table-hover">
                             <thead>
                                 <tr>
                                     <th>Date & Time</th>
-                                    <th>Patient Name</th>
+                                    <th>Patient Details</th>
                                     <th>Amount</th>
                                     <th>Payment Method</th>
-                                    <th>Transaction ID</th>
                                     <th>Status</th>
+                                    <th>Transaction ID</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {% for payment, patient in payments %}
                                 <tr>
-                                    <td>{{ payment.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</td>
-                                    <td>{{ patient.full_name }}</td>
+                                    <td>
+                                        {{ payment.created_at.strftime('%b %d, %Y') }}<br>
+                                        <small class="text-muted">{{ payment.created_at.strftime('%I:%M %p') }}</small>
+                                    </td>
+                                    <td>
+                                        <strong>{{ patient.full_name }}</strong><br>
+                                        <small class="text-muted">Age: {{ patient.age }} | {{ patient.mobile_number }}</small>
+                                    </td>
                                     <td>₹{{ "%.2f"|format(payment.amount) }}</td>
                                     <td>{{ payment.payment_method }}</td>
                                     <td>
-                                        {% if payment.razorpay_payment_id %}
-                                            {{ payment.razorpay_payment_id }}
+                                        {% if payment.status == 'completed' %}
+                                            <span class="badge bg-success">Completed</span>
+                                        {% elif payment.status == 'pending' %}
+                                            <span class="badge bg-warning">Pending</span>
                                         {% else %}
-                                            {{ payment.transaction_id }}
+                                            <span class="badge bg-danger">Failed</span>
                                         {% endif %}
                                     </td>
                                     <td>
-                                        <span class="badge {% if payment.status == 'completed' %}bg-success{% else %}bg-warning{% endif %}">
-                                            {{ payment.status }}
-                                        </span>
+                                        {% if payment.razorpay_payment_id %}
+                                            {{ payment.razorpay_payment_id }}
+                                        {% elif payment.transaction_id %}
+                                            {{ payment.transaction_id }}
+                                        {% else %}
+                                            -
+                                        {% endif %}
                                     </td>
                                 </tr>
                                 {% endfor %}
