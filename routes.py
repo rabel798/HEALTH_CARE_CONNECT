@@ -888,6 +888,57 @@ def admin_add_prescription(appointment_id):
     return render_template('admin/add_prescription.html', form=form, appointment=appointment, is_edit=is_edit)
 
 
+@app.route('/admin/assistant-salary', methods=['GET', 'POST'])
+@login_required
+def admin_assistant_salary():
+    """Doctor's route to manage assistant salaries"""
+    if not isinstance(current_user, Doctor):
+        flash('Access denied. Doctor privileges required.', 'danger')
+        return redirect(url_for('index'))
+    
+    form = SalaryForm()
+    if form.validate_on_submit():
+        assistant = Assistant.query.filter_by(email='rabel798679@gmail.com').first()
+        if assistant:
+            new_salary = Salary(
+                assistant_id=assistant.id,
+                amount=float(form.amount.data),
+                payment_date=form.payment_date.data,
+                payment_method=form.payment_method.data,
+                description=form.description.data,
+                status='completed'
+            )
+            db.session.add(new_salary)
+            
+            try:
+                db.session.commit()
+                # Send email notification
+                subject = "Salary Payment Notification"
+                message = f"""
+                Dear {assistant.full_name},
+                
+                Your salary payment has been processed:
+                Amount: ₹{form.amount.data}
+                Date: {form.payment_date.data}
+                Payment Method: {form.payment_method.data}
+                Description: {form.description.data}
+                
+                Best regards,
+                Dr. Richa's Eye Clinic
+                """
+                send_email_notification('rabel798679@gmail.com', subject, message)
+                flash('Salary payment processed and notification sent!', 'success')
+                return redirect(url_for('admin_assistant_salary'))
+            except Exception as e:
+                db.session.rollback()
+                flash(f'Error processing salary: {str(e)}', 'danger')
+    
+    # Get all salary records
+    assistant = Assistant.query.filter_by(email='rabel798679@gmail.com').first()
+    salary_records = Salary.query.filter_by(assistant_id=assistant.id).order_by(desc(Salary.payment_date)).all() if assistant else []
+    
+    return render_template('admin/assistant_salary.html', form=form, salary_records=salary_records)
+
 @app.route('/admin/reviews')
 @login_required
 def admin_reviews():
