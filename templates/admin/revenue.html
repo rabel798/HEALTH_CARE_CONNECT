@@ -1,0 +1,60 @@
+
+{% extends 'layout.html' %}
+
+{% block title %}Revenue Management - Dr. Richa's Eye Clinic{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header">
+                    <h4 class="mb-0">Revenue Management</h4>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <h5>Total Revenue: ₹{{ "%.2f"|format(total_revenue) }}</h5>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Date & Time</th>
+                                    <th>Patient Name</th>
+                                    <th>Amount</th>
+                                    <th>Payment Method</th>
+                                    <th>Transaction ID</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for payment, patient in payments %}
+                                <tr>
+                                    <td>{{ payment.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                                    <td>{{ patient.full_name }}</td>
+                                    <td>₹{{ "%.2f"|format(payment.amount) }}</td>
+                                    <td>{{ payment.payment_method }}</td>
+                                    <td>
+                                        {% if payment.razorpay_payment_id %}
+                                            {{ payment.razorpay_payment_id }}
+                                        {% else %}
+                                            {{ payment.transaction_id }}
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <span class="badge {% if payment.status == 'completed' %}bg-success{% else %}bg-warning{% endif %}">
+                                            {{ payment.status }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

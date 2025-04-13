@@ -1,0 +1,68 @@
+
+{% extends 'layout.html' %}
+
+{% block title %}Process Salary Payment - Dr. Richa's Eye Clinic{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h3 class="card-title text-center mb-4">Process Salary Payment</h3>
+                    <div class="text-center mb-4">
+                        <h5>Amount to Pay: ₹{{ amount }}</h5>
+                        <p class="text-muted">Salary Payment for {{ assistant.full_name }}</p>
+                    </div>
+                    <button id="rzp-button" class="btn btn-primary btn-lg w-100">Process Payment</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+var options = {
+    "key": "{{ razorpay_key }}",
+    "amount": "{{ amount * 100 }}",
+    "currency": "INR",
+    "name": "Dr. Richa's Eye Clinic",
+    "description": "Salary Payment",
+    "order_id": "{{ order_id }}",
+    "handler": function (response) {
+        fetch('/admin/verify-salary-payment', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: new URLSearchParams({
+                'razorpay_payment_id': response.razorpay_payment_id,
+                'razorpay_order_id': response.razorpay_order_id,
+                'razorpay_signature': response.razorpay_signature
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                window.location.href = data.redirect_url;
+            } else {
+                alert('Payment verification failed: ' + data.message);
+            }
+        });
+    },
+    "prefill": {
+        "name": "Dr. Richa Sharma",
+        "email": "drricha@eyeclinic.com"
+    },
+    "theme": {
+        "color": "#007bff"
+    }
+};
+var rzp = new Razorpay(options);
+document.getElementById('rzp-button').onclick = function(e){
+    rzp.open();
+    e.preventDefault();
+}
+</script>
+{% endblock %}
