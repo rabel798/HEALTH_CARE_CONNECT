@@ -549,21 +549,8 @@ def doctor_login():
     form = DoctorLoginForm()
     
     if form.validate_on_submit():
-        # Since we had two versions of the username (drricha and dr.richa) we need to check both
-        username = form.username.data.replace('.', '').lower()  # Normalize the input
-        
-        # First try direct match
-        doctor = Doctor.query.filter_by(username=form.username.data).first()
-        
-        # If not found, try with a more flexible approach
-        if not doctor:
-            doctors = Doctor.query.all()
-            for doc in doctors:
-                # Normalize the stored username by removing dots
-                normalized_username = doc.username.replace('.', '').lower()
-                if normalized_username == username:
-                    doctor = doc
-                    break
+        # Get the doctor with username 'drricha'
+        doctor = Doctor.query.filter_by(username='drricha').first()
         
         if doctor and doctor.check_password(form.password.data):
             login_user(doctor)
