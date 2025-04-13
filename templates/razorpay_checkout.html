@@ -1,0 +1,70 @@
+
+{% extends 'layout.html' %}
+
+{% block title %}Complete Payment - Dr. Richa's Eye Clinic{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h3 class="card-title text-center mb-4">Complete Your Payment</h3>
+                    <div class="text-center mb-4">
+                        <h5>Amount to Pay: ₹{{ amount }}</h5>
+                        <p class="text-muted">Appointment for {{ appointment.patient.full_name }}</p>
+                    </div>
+                    <button id="rzp-button" class="btn btn-primary btn-lg w-100">Pay Now</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+var options = {
+    "key": "{{ razorpay_key }}",
+    "amount": "{{ amount * 100 }}",
+    "currency": "INR",
+    "name": "Dr. Richa's Eye Clinic",
+    "description": "Consultation Fee",
+    "order_id": "{{ order_id }}",
+    "handler": function (response) {
+        // Handle payment success
+        fetch('/payment/verify', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: new URLSearchParams({
+                'razorpay_payment_id': response.razorpay_payment_id,
+                'razorpay_order_id': response.razorpay_order_id,
+                'razorpay_signature': response.razorpay_signature
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                window.location.href = data.redirect_url;
+            } else {
+                alert('Payment verification failed: ' + data.message);
+            }
+        });
+    },
+    "prefill": {
+        "name": "{{ appointment.patient.full_name }}",
+        "email": "{{ appointment.patient.email }}",
+        "contact": "{{ appointment.patient.mobile_number }}"
+    },
+    "theme": {
+        "color": "#007bff"
+    }
+};
+var rzp = new Razorpay(options);
+document.getElementById('rzp-button').onclick = function(e){
+    rzp.open();
+    e.preventDefault();
+}
+</script>
+{% endblock %}

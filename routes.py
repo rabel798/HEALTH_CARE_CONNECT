@@ -126,40 +126,111 @@ def appointment():
 
     return render_template('appointment.html', form=form, default_date=default_date)
 
+import razorpay
+
 @app.route('/payment', methods=['GET', 'POST'])
 def payment():
     """Payment processing page route"""
-    # Check if there's an appointment in session
     appointment_id = session.get('appointment_id')
     if not appointment_id:
         flash('No active appointment found', 'warning')
         return redirect(url_for('appointment'))
 
-    # Get appointment details
     appointment = Appointment.query.get_or_404(appointment_id)
-
+    
+    # Initialize Razorpay client
+    client = razorpay.Client(auth=(app.config['RAZORPAY_KEY_ID'], app.config['RAZORPAY_KEY_SECRET']))
+    
     form = PaymentForm()
     if form.validate_on_submit():
-        # Create payment record
         consultation_fee = 500.00  # Default consultation fee
-        new_payment = Payment(
-            appointment_id=appointment_id,
-            amount=consultation_fee,
-            payment_method=form.payment_method.data,
-            transaction_id=f"TR{datetime.now().strftime('%Y%m%d%H%M%S')}",
-            status='completed'  # For demo, automatically mark as completed
-        )
-        db.session.add(new_payment)
+        
+        if form.payment_method.data in ['upi', 'bank_transfer']:
+            # Create Razorpay order
+            data = {
+                'amount': int(consultation_fee * 100),  # Amount in paise
+                'currency': 'INR',
+                'receipt': f'receipt_{appointment_id}',
+                'payment_capture': 1
+            }
+            try:
+                order = client.order.create(data=data)
+                
+                # Create payment record
+                new_payment = Payment(
+                    appointment_id=appointment_id,
+                    amount=consultation_fee,
+                    payment_method=form.payment_method.data,
+                    razorpay_order_id=order['id'],
+                    status='pending'
+                )
+                db.session.add(new_payment)
+                db.session.commit()
+                
+                return render_template(
+                    'razorpay_checkout.html',
+                    razorpay_key=app.config['RAZORPAY_KEY_ID'],
+                    order_id=order['id'],
+                    amount=consultation_fee,
+                    appointment=appointment
+                )
+            except Exception as e:
+                db.session.rollback()
+                flash(f'Error initiating online payment: {str(e)}', 'danger')
+                return redirect(url_for('payment'))
+        else:
+            # Handle cash payments as before
+            new_payment = Payment(
+                appointment_id=appointment_id,
+                amount=consultation_fee,
+                payment_method=form.payment_method.data,
+                transaction_id=f"TR{datetime.now().strftime('%Y%m%d%H%M%S')}",
+                status='completed'
+            )
+            db.session.add(new_payment)
+            try:
+                db.session.commit()
+                session.pop('appointment_id', None)
+                flash('Payment completed successfully!', 'success')
+                return redirect(url_for('success'))
+            except Exception as e:
+                db.session.rollback()
+                flash(f'Error processing payment: {str(e)}', 'danger')
 
-        try:
-            db.session.commit()
-            # Clear appointment from session
-            session.pop('appointment_id', None)
-            flash('Payment completed successfully!', 'success')
-            return redirect(url_for('success'))
-        except Exception as e:
-            db.session.rollback()
-            flash(f'Error processing payment: {str(e)}', 'danger')
+    return render_template('payment.html', form=form, appointment=appointment)
+
+@app.route('/payment/verify', methods=['POST'])
+def verify_payment():
+    """Verify Razorpay payment"""
+    try:
+        payment_id = request.form.get('razorpay_payment_id')
+        order_id = request.form.get('razorpay_order_id')
+        signature = request.form.get('razorpay_signature')
+        
+        # Get payment record
+        payment = Payment.query.filter_by(razorpay_order_id=order_id).first()
+        if not payment:
+            return jsonify({'status': 'error', 'message': 'Payment not found'}), 404
+        
+        # Verify signature
+        client = razorpay.Client(auth=(app.config['RAZORPAY_KEY_ID'], app.config['RAZORPAY_KEY_SECRET']))
+        params_dict = {
+            'razorpay_payment_id': payment_id,
+            'razorpay_order_id': order_id,
+            'razorpay_signature': signature
+        }
+        
+        client.utility.verify_payment_signature(params_dict)
+        
+        # Update payment record
+        payment.razorpay_payment_id = payment_id
+        payment.razorpay_signature = signature
+        payment.status = 'completed'
+        db.session.commit()
+        
+        return jsonify({'status': 'success', 'redirect_url': url_for('success')})
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 400
 
     return render_template('payment.html', form=form, appointment=appointment)
 
