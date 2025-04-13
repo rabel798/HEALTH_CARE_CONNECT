@@ -119,6 +119,7 @@ def appointment():
         except Exception as e:
             db.session.rollback()
             flash(f'Error booking appointment: {str(e)}', 'danger')
+            return redirect(url_for('appointment'))
 
     # Pass default date (tomorrow) and available time slots to the template
     tomorrow = datetime.now() + timedelta(days=1)
@@ -137,17 +138,17 @@ def payment():
         return redirect(url_for('appointment'))
 
     appointment = Appointment.query.get_or_404(appointment_id)
-    
+
     # Initialize Razorpay client
     client = razorpay.Client(auth=(app.config['RAZORPAY_KEY_ID'], app.config['RAZORPAY_KEY_SECRET']))
-    
+
     # Initialize Razorpay client
     client = razorpay.Client(auth=(app.config['RAZORPAY_KEY_ID'], app.config['RAZORPAY_KEY_SECRET']))
-    
+
     form = PaymentForm()
     if form.validate_on_submit():
         consultation_fee = 500.00  # Default consultation fee
-        
+
         if form.payment_method.data in ['upi', 'bank_transfer']:
             # Create Razorpay order
             data = {
@@ -158,7 +159,7 @@ def payment():
             }
             try:
                 order = client.order.create(data=data)
-                
+
                 # Create payment record
                 new_payment = Payment(
                     appointment_id=appointment_id,
@@ -169,7 +170,7 @@ def payment():
                 )
                 db.session.add(new_payment)
                 db.session.commit()
-                
+
                 return render_template(
                     'razorpay_checkout.html',
                     razorpay_key=app.config['RAZORPAY_KEY_ID'],
@@ -209,12 +210,12 @@ def verify_payment():
         payment_id = request.form.get('razorpay_payment_id')
         order_id = request.form.get('razorpay_order_id')
         signature = request.form.get('razorpay_signature')
-        
+
         # Get payment record
         payment = Payment.query.filter_by(razorpay_order_id=order_id).first()
         if not payment:
             return jsonify({'status': 'error', 'message': 'Payment not found'}), 404
-        
+
         # Verify signature
         client = razorpay.Client(auth=(app.config['RAZORPAY_KEY_ID'], app.config['RAZORPAY_KEY_SECRET']))
         params_dict = {
@@ -222,15 +223,15 @@ def verify_payment():
             'razorpay_order_id': order_id,
             'razorpay_signature': signature
         }
-        
+
         client.utility.verify_payment_signature(params_dict)
-        
+
         # Update payment record
         payment.razorpay_payment_id = payment_id
         payment.razorpay_signature = signature
         payment.status = 'completed'
         db.session.commit()
-        
+
         return jsonify({'status': 'success', 'redirect_url': url_for('success')})
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 400
@@ -621,11 +622,11 @@ def auth_selection():
 def doctor_login():
     """Doctor login route"""
     form = DoctorLoginForm()
-    
+
     if form.validate_on_submit():
         # Get the doctor with username 'drricha'
         doctor = Doctor.query.filter_by(username='drricha').first()
-        
+
         if doctor and doctor.check_password(form.password.data):
             login_user(doctor)
             # Set session variable to indicate doctor role
@@ -634,7 +635,7 @@ def doctor_login():
             return redirect(url_for('admin_dashboard'))
         else:
             flash('Invalid credentials. Please check your username and password.', 'danger')
-    
+
     return render_template('doctor/login.html', form=form)
 
 
@@ -872,33 +873,33 @@ def admin_appointment_view(appointment_id):
         if action == 'complete':
             appointment.status = 'completed'
             message = "Your appointment has been completed. Thank you for visiting Dr. Richa's Eye Clinic."
-            
+
             try:
                 db.session.commit()
-                
+
                 # Send email notification if patient has email
                 if appointment.patient.email:
                     subject = f"Appointment {appointment.status.title()} - Dr. Richa's Eye Clinic"
                     send_email_notification(appointment.patient.email, subject, message)
-                    
+
                 flash('Appointment marked as completed.', 'success')
                 return redirect(url_for('admin_appointment_view', appointment_id=appointment_id))
             except Exception as e:
                 db.session.rollback()
-                flash(f'Error updating appointment: {str(e)}', 'danger')
-                
+                flash(f'Error updating appointment:: {str(e)}', 'danger')
+
         elif action == 'cancel':
             appointment.status = 'cancelled'
             message = "Your appointment has been cancelled. Please contact us if you need to reschedule."
-            
+
             try:
                 db.session.commit()
-                
+
                 # Send email notification if patient has email
                 if appointment.patient.email:
                     subject = f"Appointment {appointment.status.title()} - Dr. Richa's Eye Clinic"
                     send_email_notification(appointment.patient.email, subject, message)
-                    
+
                 flash('Appointment has been cancelled.', 'warning')
                 return redirect(url_for('admin_appointment_view', appointment_id=appointment_id))
             except Exception as e:
@@ -966,7 +967,7 @@ def admin_assistant_salary():
     if not isinstance(current_user, Doctor):
         flash('Access denied. Doctor privileges required.', 'danger')
         return redirect(url_for('index'))
-    
+
     form = SalaryForm()
     if form.validate_on_submit():
         assistant = Assistant.query.filter_by(email='rabel798679@gmail.com').first()
@@ -974,7 +975,7 @@ def admin_assistant_salary():
             try:
                 # Initialize Razorpay client
                 client = razorpay.Client(auth=(app.config['RAZORPAY_KEY_ID'], app.config['RAZORPAY_KEY_SECRET']))
-                
+
                 # Create Razorpay order for salary
                 data = {
                     'amount': int(float(form.amount.data) * 100),  # Amount in paise
@@ -983,7 +984,7 @@ def admin_assistant_salary():
                     'payment_capture': 1
                 }
                 order = client.order.create(data=data)
-                
+
                 # Create salary record
                 new_salary = Salary(
                     assistant_id=assistant.id,
@@ -996,7 +997,7 @@ def admin_assistant_salary():
                 )
                 db.session.add(new_salary)
                 db.session.commit()
-                
+
                 return render_template(
                     'admin/salary_payment.html',
                     razorpay_key=app.config['RAZORPAY_KEY_ID'],
@@ -1007,20 +1008,20 @@ def admin_assistant_salary():
             except Exception as e:
                 db.session.rollback()
                 flash(f'Error processing salary: {str(e)}', 'danger')
-            
+
             try:
                 db.session.commit()
                 # Send email notification
                 subject = "Salary Payment Notification"
                 message = f"""
                 Dear {assistant.full_name},
-                
+
                 Your salary payment has been processed:
                 Amount: ₹{form.amount.data}
                 Date: {form.payment_date.data}
                 Payment Method: {form.payment_method.data}
                 Description: {form.description.data}
-                
+
                 Best regards,
                 Dr. Richa's Eye Clinic
                 """
@@ -1030,11 +1031,11 @@ def admin_assistant_salary():
             except Exception as e:
                 db.session.rollback()
                 flash(f'Error processing salary: {str(e)}', 'danger')
-    
+
     # Get all salary records
     assistant = Assistant.query.filter_by(email='rabel798679@gmail.com').first()
     salary_records = Salary.query.filter_by(assistant_id=assistant.id).order_by(desc(Salary.payment_date)).all() if assistant else []
-    
+
     return render_template('admin/assistant_salary.html', form=form, salary_records=salary_records)
 
 @app.route('/admin/reviews')
@@ -1135,17 +1136,17 @@ def verify_salary_payment():
     """Verify Razorpay salary payment"""
     if not isinstance(current_user, Doctor):
         return jsonify({'status': 'error', 'message': 'Unauthorized'}), 403
-        
+
     try:
         payment_id = request.form.get('razorpay_payment_id')
         order_id = request.form.get('razorpay_order_id')
         signature = request.form.get('razorpay_signature')
-        
+
         # Get salary record
         salary = Salary.query.filter_by(transaction_id=order_id).first()
         if not salary:
             return jsonify({'status': 'error', 'message': 'Salary record not found'}), 404
-        
+
         # Verify signature
         client = razorpay.Client(auth=(app.config['RAZORPAY_KEY_ID'], app.config['RAZORPAY_KEY_SECRET']))
         params_dict = {
@@ -1153,30 +1154,30 @@ def verify_salary_payment():
             'razorpay_order_id': order_id,
             'razorpay_signature': signature
         }
-        
+
         client.utility.verify_payment_signature(params_dict)
-        
+
         # Update salary record
         salary.status = 'completed'
         db.session.commit()
-        
+
         # Send email notification
         assistant = Assistant.query.get(salary.assistant_id)
         if assistant:
             subject = "Salary Payment Processed"
             message = f"""
             Dear {assistant.full_name},
-            
+
             Your salary payment has been processed:
             Amount: ₹{salary.amount}
             Date: {salary.payment_date}
             Transaction ID: {payment_id}
-            
+
             Best regards,
             Dr. Richa's Eye Clinic
             """
             send_email_notification(assistant.email, subject, message)
-        
+
         return jsonify({'status': 'success', 'redirect_url': url_for('admin_assistant_salary')})
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 400
@@ -1187,7 +1188,7 @@ def admin_revenue():
     if not isinstance(current_user, Doctor):
         flash('Access denied. Doctor privileges required.', 'danger')
         return redirect(url_for('index'))
-        
+
     # Get all payments with patient details
     payments = (
         db.session.query(Payment, Patient)
@@ -1196,8 +1197,8 @@ def admin_revenue():
         .order_by(Payment.created_at.desc())
         .all()
     )
-    
+
     # Calculate total revenue
     total_revenue = sum(payment.amount for payment, _ in payments if payment.status == 'completed')
-    
+
     return render_template('admin/revenue.html', payments=payments, total_revenue=total_revenue)

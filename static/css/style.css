@@ -217,6 +217,44 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--primary-color);
 }
 
+/* Dashboard Styles */
+.dashboard-card {
+    transition: transform 0.2s;
+    border: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.dashboard-card:hover {
+    transform: translateY(-5px);
+}
+
+.sidebar .nav-link {
+    padding: 0.8rem 1rem;
+    color: #333;
+    border-radius: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.sidebar .nav-link:hover {
+    background-color: rgba(0,123,255,0.1);
+}
+
+.sidebar .nav-link.active {
+    background-color: #007bff;
+    color: white;
+}
+
+.stats-card {
+    padding: 1.5rem;
+    border-radius: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.table td, .table th {
+    padding: 1rem;
+    vertical-align: middle;
+}
+
 /* Appointment Form */
 .appointment-form {
   background-color: var(--white);
