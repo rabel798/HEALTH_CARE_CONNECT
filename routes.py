@@ -738,8 +738,8 @@ def admin_dashboard():
 @login_required
 def admin_appointments():
     """Admin appointments management route"""
-    # Ensure only admins or assistants can access this page
-    if not (isinstance(current_user, Admin) or isinstance(current_user, Assistant)):
+    # Ensure only admins, doctors or assistants can access this page
+    if not (isinstance(current_user, Admin) or isinstance(current_user, Doctor) or isinstance(current_user, Assistant)):
         flash('Access denied. Staff privileges required.', 'danger')
         return redirect(url_for('index'))
 
@@ -753,8 +753,8 @@ def admin_appointments():
 @login_required
 def admin_patients():
     """Admin patients management route"""
-    # Ensure only admins or assistants can access this page
-    if not (isinstance(current_user, Admin) or isinstance(current_user, Assistant)):
+    # Ensure only admins, doctors or assistants can access this page
+    if not (isinstance(current_user, Admin) or isinstance(current_user, Doctor) or isinstance(current_user, Assistant)):
         flash('Access denied. Staff privileges required.', 'danger')
         return redirect(url_for('index'))
 
@@ -892,8 +892,8 @@ def admin_add_prescription(appointment_id):
 @login_required
 def admin_reviews():
     """Admin reviews management route"""
-    # Ensure only admins or assistants can access this page
-    if not (isinstance(current_user, Admin) or isinstance(current_user, Assistant)):
+    # Ensure only admins, doctors or assistants can access this page
+    if not (isinstance(current_user, Admin) or isinstance(current_user, Doctor) or isinstance(current_user, Assistant)):
         flash('Access denied. Staff privileges required.', 'danger')
         return redirect(url_for('index'))
 
