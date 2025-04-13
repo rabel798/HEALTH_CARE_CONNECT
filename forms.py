@@ -19,7 +19,6 @@ class PaymentForm(FlaskForm):
         ('upi', 'UPI'),
         ('credit_card', 'Credit Card'),
         ('debit_card', 'Debit Card'),
-        ('cash', 'Cash')
     ], validators=[DataRequired()])
     submit = SubmitField('Proceed to Payment')
 

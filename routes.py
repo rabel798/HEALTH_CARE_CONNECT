@@ -137,71 +137,44 @@ def payment():
         flash('No active appointment found', 'warning')
         return redirect(url_for('appointment'))
 
-    appointment = Appointment.query.get_or_404(appointment_id)
-
-    # Initialize Razorpay client
-    client = razorpay.Client(auth=(app.config['RAZORPAY_KEY_ID'], app.config['RAZORPAY_KEY_SECRET']))
-
-    # Initialize Razorpay client
-    client = razorpay.Client(auth=(app.config['RAZORPAY_KEY_ID'], app.config['RAZORPAY_KEY_SECRET']))
-
-    form = PaymentForm()
-    if form.validate_on_submit():
+    try:
+        appointment = Appointment.query.get_or_404(appointment_id)
         consultation_fee = 500.00  # Default consultation fee
 
-        if form.payment_method.data in ['upi', 'bank_transfer']:
-            # Create Razorpay order
-            data = {
-                'amount': int(consultation_fee * 100),  # Amount in paise
-                'currency': 'INR',
-                'receipt': f'receipt_{appointment_id}',
-                'payment_capture': 1
-            }
-            try:
-                order = client.order.create(data=data)
+        # Initialize Razorpay client
+        client = razorpay.Client(auth=(app.config['RAZORPAY_KEY_ID'], app.config['RAZORPAY_KEY_SECRET']))
 
-                # Create payment record
-                new_payment = Payment(
-                    appointment_id=appointment_id,
-                    amount=consultation_fee,
-                    payment_method=form.payment_method.data,
-                    razorpay_order_id=order['id'],
-                    status='pending'
-                )
-                db.session.add(new_payment)
-                db.session.commit()
+        # Create Razorpay order immediately when page loads
+        data = {
+            'amount': int(consultation_fee * 100),  # Amount in paise
+            'currency': 'INR',
+            'receipt': f'receipt_{appointment_id}',
+            'payment_capture': 1
+        }
+        order = client.order.create(data=data)
 
-                return render_template(
-                    'razorpay_checkout.html',
-                    razorpay_key=app.config['RAZORPAY_KEY_ID'],
-                    order_id=order['id'],
-                    amount=consultation_fee,
-                    appointment=appointment
-                )
-            except Exception as e:
-                db.session.rollback()
-                flash(f'Error initiating online payment: {str(e)}', 'danger')
-                return redirect(url_for('payment'))
-        else:
-            # Handle cash payments as before
-            new_payment = Payment(
-                appointment_id=appointment_id,
-                amount=consultation_fee,
-                payment_method=form.payment_method.data,
-                transaction_id=f"TR{datetime.now().strftime('%Y%m%d%H%M%S')}",
-                status='completed'
-            )
-            db.session.add(new_payment)
-            try:
-                db.session.commit()
-                session.pop('appointment_id', None)
-                flash('Payment completed successfully!', 'success')
-                return redirect(url_for('success'))
-            except Exception as e:
-                db.session.rollback()
-                flash(f'Error processing payment: {str(e)}', 'danger')
+        # Create payment record
+        new_payment = Payment(
+            appointment_id=appointment_id,
+            amount=consultation_fee,
+            payment_method='online',
+            razorpay_order_id=order['id'],
+            status='pending'
+        )
+        db.session.add(new_payment)
+        db.session.commit()
 
-    return render_template('payment.html', form=form, appointment=appointment)
+        return render_template(
+            'payment.html',
+            appointment=appointment,
+            razorpay_key=app.config['RAZORPAY_KEY_ID'],
+            order_id=order['id'],
+            amount=consultation_fee
+        )
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Error processing payment: {str(e)}', 'danger')
+        return redirect(url_for('appointment'))
 
 @app.route('/payment/verify', methods=['POST'])
 def verify_payment():
@@ -914,7 +887,6 @@ def admin_appointment_view(appointment_id):
                            appointment=appointment, 
                            medical_record=medical_record, 
                            has_medical_record=has_medical_record)
-
 
 @app.route('/admin/prescription/<int:appointment_id>', methods=['GET', 'POST'])
 @login_required
