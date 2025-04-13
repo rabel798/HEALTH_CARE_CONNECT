@@ -23,9 +23,11 @@ login_manager = LoginManager()
 app = Flask(__name__)
 app.secret_key = os.environ.get("SESSION_SECRET", "dev-secret-key")
 
-# Razorpay configuration
-app.config['RAZORPAY_KEY_ID'] = os.environ.get('RAZORPAY_KEY_ID', 'your_test_key_id')
-app.config['RAZORPAY_KEY_SECRET'] = os.environ.get('RAZORPAY_KEY_SECRET', 'your_test_key_secret')
+# Razorpay configuration 
+app.config['RAZORPAY_KEY_ID'] = os.environ.get('RAZORPAY_KEY_ID')
+app.config['RAZORPAY_KEY_SECRET'] = os.environ.get('RAZORPAY_KEY_SECRET')
+if not app.config['RAZORPAY_KEY_ID'] or not app.config['RAZORPAY_KEY_SECRET']:
+    print("Warning: Razorpay keys not set. Please set RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET environment variables")
 
 # Configure the database
 app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL", "sqlite:///drricha.db")

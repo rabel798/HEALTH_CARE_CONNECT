@@ -814,7 +814,7 @@ def admin_patients():
 def admin_patient_view(patient_id):
     """Admin patient view route"""
     # Ensure only admins or assistants can access this page
-    if not (isinstance(current_user, Admin) or isinstance(current_user, Assistant)):
+    if not (isinstance(current_user, Admin) or isinstance(current_user, Assistant) or isinstance(current_user, Doctor)):
         flash('Access denied. Staff privileges required.', 'danger')
         return redirect(url_for('index'))
 
@@ -832,7 +832,7 @@ def admin_patient_view(patient_id):
 def admin_appointment_view(appointment_id):
     """Admin appointment view route"""
     # Ensure only admins or assistants can access this page
-    if not (isinstance(current_user, Admin) or isinstance(current_user, Assistant)):
+    if not (isinstance(current_user, Admin) or isinstance(current_user, Assistant) or isinstance(current_user, Doctor)):
         flash('Access denied. Staff privileges required.', 'danger')
         return redirect(url_for('index'))
 
@@ -893,7 +893,7 @@ def admin_appointment_view(appointment_id):
 def admin_add_prescription(appointment_id):
     """Admin add/edit prescription route"""
     # Ensure only admins or assistants can access this page
-    if not (isinstance(current_user, Admin) or isinstance(current_user, Assistant)):
+    if not (isinstance(current_user, Admin) or isinstance(current_user, Assistant) or isinstance(current_user, Doctor)):
         flash('Access denied. Staff privileges required.', 'danger')
         return redirect(url_for('index'))
 
@@ -1033,7 +1033,7 @@ def admin_reviews():
 def admin_approve_review(review_id):
     """Admin approve review route"""
     # Ensure only admins or assistants can access this page
-    if not (isinstance(current_user, Admin) or isinstance(current_user, Assistant)):
+    if not (isinstance(current_user, Admin) or isinstance(current_user, Assistant) or isinstance(current_user, Doctor)):
         flash('Access denied. Staff privileges required.', 'danger')
         return redirect(url_for('index'))
 
