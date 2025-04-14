@@ -149,11 +149,11 @@ def payment():
             status='completed'
         )
         db.session.add(new_payment)
-        
+
         # Update appointment payment status
         appointment.payment_status = 'paid'
         db.session.commit()
-        
+
         return redirect(url_for('success'))
     except Exception as e:
         db.session.rollback()
@@ -179,7 +179,7 @@ def verify_payment():
         try:
             # Initialize Razorpay client
             client = razorpay.Client(auth=(app.config['RAZORPAY_KEY_ID'], app.config['RAZORPAY_KEY_SECRET']))
-            
+
             # Verify signature
             params_dict = {
                 'razorpay_payment_id': payment_id,
@@ -192,13 +192,13 @@ def verify_payment():
             payment.razorpay_payment_id = payment_id
             payment.razorpay_signature = signature
             payment.status = 'completed'
-            
+
             # Update appointment payment status
             appointment = payment.appointment
             appointment.payment_status = 'paid'
-            
+
             db.session.commit()
-            
+
             return jsonify({'status': 'success', 'redirect_url': url_for('success')})
         except Exception as e:
             db.session.rollback()
@@ -888,8 +888,7 @@ def admin_appointment_view(appointment_id):
     medical_record = MedicalRecord.query.filter_by(appointment_id=appointment_id).first()
     has_medical_record = medical_record is not None
 
-    return render_template('admin/appointment_view.html', 
-                           appointment=appointment, 
+    return render_template('admin/appointment_view.html',                            appointment=appointment, 
                            medical_record=medical_record, 
                            has_medical_record=has_medical_record)
 
@@ -961,10 +960,10 @@ def admin_assistant_salary():
                 )
                 db.session.add(new_salary)
                 db.session.commit()
-                
-                # Get updated salary records
+
+                # Get the assistant's updated salary records
                 salary_records = Salary.query.filter_by(assistant_id=assistant.id).order_by(desc(Salary.payment_date)).all()
-                
+
                 flash('Salary record added successfully!', 'success')
                 return render_template('admin/assistant_salary.html', form=form, salary_records=salary_records)
             except Exception as e:
