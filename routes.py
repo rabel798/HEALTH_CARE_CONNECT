@@ -27,6 +27,9 @@ def inject_now():
 @app.route('/')
 def index():
     """Home page route"""
+    if not current_user.is_authenticated:
+        return redirect(url_for('auth_selection'))
+        
     # Fetch 3 most recent approved reviews
     recent_reviews = Review.query.filter_by(is_approved=True).order_by(desc(Review.created_at)).limit(3).all()
     return render_template('index.html', reviews=recent_reviews)
@@ -575,8 +578,45 @@ def patient_appointments():
     """Patient appointments history route"""
     # Get patient's appointments
     appointments = Appointment.query.filter_by(patient_id=current_user.id).order_by(desc(Appointment.appointment_date)).all()
-
     return render_template('patient/appointments.html', appointments=appointments)
+
+@app.route('/patient/cancel-appointment/<int:appointment_id>', methods=['POST'])
+@login_required
+def patient_cancel_appointment(appointment_id):
+    """Patient appointment cancellation route"""
+    appointment = Appointment.query.get_or_404(appointment_id)
+    
+    # Verify this appointment belongs to the current user
+    if appointment.patient_id != current_user.id:
+        flash('Access denied.', 'danger')
+        return redirect(url_for('patient_appointments'))
+        
+    if appointment.status != 'scheduled':
+        flash('Only scheduled appointments can be cancelled.', 'warning')
+        return redirect(url_for('patient_appointments'))
+        
+    try:
+        appointment.status = 'cancelled'
+        db.session.commit()
+        
+        # Send email notification to clinic
+        clinic_message = f"""
+        Appointment Cancellation Notice
+        
+        Patient: {appointment.patient.full_name}
+        Date: {appointment.appointment_date}
+        Time: {appointment.appointment_time}
+        
+        The appointment has been cancelled by the patient.
+        """
+        send_email_notification(app.config['MAIL_USERNAME'], "Appointment Cancellation", clinic_message)
+        
+        flash('Appointment cancelled successfully.', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Error cancelling appointment: {str(e)}', 'danger')
+        
+    return redirect(url_for('patient_appointments'))
 
 
 @app.route('/patient/medical-records')
@@ -1073,11 +1113,10 @@ def admin_approve_review(review_id):
     return redirect(url_for('admin_reviews'))
 def send_email_notification(to_email, subject, message):
     try:
-        # Email configuration
-        smtp_server = "smtp.gmail.com"
-        smtp_port = 587
-        sender_email = "your-clinic-email@gmail.com"  # Update this
-        sender_password = "your-app-password"  # Update this
+        smtp_server = app.config['MAIL_SERVER']
+        smtp_port = app.config['MAIL_PORT']
+        sender_email = app.config['MAIL_USERNAME']
+        sender_password = app.config['MAIL_PASSWORD']
 
         # Create message
         msg = MIMEMultipart()
