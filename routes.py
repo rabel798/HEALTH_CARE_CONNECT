@@ -29,7 +29,7 @@ def index():
     """Home page route"""
     if not current_user.is_authenticated:
         return redirect(url_for('auth_selection'))
-        
+
     # Fetch 3 most recent approved reviews
     recent_reviews = Review.query.filter_by(is_approved=True).order_by(desc(Review.created_at)).limit(3).all()
     return render_template('index.html', reviews=recent_reviews)
@@ -142,7 +142,7 @@ def payment():
 
     try:
         appointment = Appointment.query.get_or_404(appointment_id)
-        
+
         # Get previous visits/payments count for this patient
         previous_payments = Payment.query.join(Appointment).filter(
             Appointment.patient_id == appointment.patient_id,
@@ -319,9 +319,22 @@ def patient_register():
                 'password': form.password.data
             }
 
-            # In a real app, we would send the OTP via email here
-            # For testing, we'll flash it
-            flash(f'For testing: Your OTP is {otp_code}', 'info')
+            # Send OTP via email
+            subject = "Your OTP for Dr. Richa's Eye Clinic Registration"
+            message = f"""
+            Dear {form.full_name.data},
+
+            Your OTP for registration is: {otp_code}
+
+            This OTP will expire in 30 minutes.
+
+            Best regards,
+            Dr. Richa's Eye Clinic
+            """
+            if send_email_notification(form.email.data, subject, message):
+                flash('OTP has been sent to your email address', 'success')
+            else:
+                flash('Error sending OTP. Please try again.', 'danger')
 
             # Redirect to OTP verification page
             return redirect(url_for('verify_otp', email=form.email.data))
@@ -451,9 +464,22 @@ def patient_gmail_login():
         try:
             db.session.commit()
 
-            # In a real app, we would send the OTP via email here
-            # For testing, we'll flash it
-            flash(f'For testing: Your OTP is {otp_code}', 'info')
+            # Send OTP via email
+            subject = "Your OTP for Dr. Richa's Eye Clinic Login"
+            message = f"""
+            Dear {patient.full_name if patient else "User"},
+
+            Your OTP for login is: {otp_code}
+
+            This OTP will expire in 30 minutes.
+
+            Best regards,
+            Dr. Richa's Eye Clinic
+            """
+            if send_email_notification(email, subject, message):
+                flash('OTP has been sent to your email address', 'success')
+            else:
+                flash('Error sending OTP. Please try again.', 'danger')
 
             # Redirect to OTP verification page
             return redirect(url_for('verify_login_otp', email=email))
@@ -585,37 +611,37 @@ def patient_appointments():
 def patient_cancel_appointment(appointment_id):
     """Patient appointment cancellation route"""
     appointment = Appointment.query.get_or_404(appointment_id)
-    
+
     # Verify this appointment belongs to the current user
     if appointment.patient_id != current_user.id:
         flash('Access denied.', 'danger')
         return redirect(url_for('patient_appointments'))
-        
+
     if appointment.status != 'scheduled':
         flash('Only scheduled appointments can be cancelled.', 'warning')
         return redirect(url_for('patient_appointments'))
-        
+
     try:
         appointment.status = 'cancelled'
         db.session.commit()
-        
+
         # Send email notification to clinic
         clinic_message = f"""
         Appointment Cancellation Notice
-        
+
         Patient: {appointment.patient.full_name}
         Date: {appointment.appointment_date}
         Time: {appointment.appointment_time}
-        
+
         The appointment has been cancelled by the patient.
         """
         send_email_notification(app.config['MAIL_USERNAME'], "Appointment Cancellation", clinic_message)
-        
+
         flash('Appointment cancelled successfully.', 'success')
     except Exception as e:
         db.session.rollback()
         flash(f'Error cancelling appointment: {str(e)}', 'danger')
-        
+
     return redirect(url_for('patient_appointments'))
 
 
@@ -935,9 +961,7 @@ def admin_appointment_view(appointment_id):
     medical_record = MedicalRecord.query.filter_by(appointment_id=appointment_id).first()
     has_medical_record = medical_record is not None
 
-    return render_template('admin/appointment_view.html',                            appointment=appointment, 
-                           medical_record=medical_record, 
-                           has_medical_record=has_medical_record)
+    return render_template('admin/appointment_view.html', appointment=appointment, medical_record=medical_record, has_medical_record=has_medical_record)
 
 @app.route('/admin/prescription/<int:appointment_id>', methods=['GET', 'POST'])
 @login_required
@@ -1044,15 +1068,21 @@ def admin_assistant_salary():
             try:
                 db.session.commit()
                 # Send email notification
-                subject = "Salary Payment Notification"
+                subject = "Salary Payment Receipt - Dr. Richa's Eye Clinic"
                 message = f"""
                 Dear {assistant.full_name},
 
                 Your salary payment has been processed:
+
                 Amount: ₹{form.amount.data}
                 Date: {form.payment_date.data}
                 Payment Method: {form.payment_method.data}
                 Description: {form.description.data}
+
+                A digital receipt has been generated for your records.
+                If you have any questions, please contact Dr. Richa.
+
+                Contact: {assistant.mobile_number}
 
                 Best regards,
                 Dr. Richa's Eye Clinic
@@ -1256,8 +1286,4 @@ def admin_revenue():
     # Get all patients for the treatment form
     patients = Patient.query.order_by(Patient.full_name).all()
 
-    return render_template('admin/revenue.html', 
-                         payments=payments, 
-                         treatments=treatments,
-                         patients=patients,
-                         total_revenue=total_revenue)
+    return render_template('admin/revenue.html', payments=payments, treatments=treatments, patients=patients, total_revenue=total_revenue)
