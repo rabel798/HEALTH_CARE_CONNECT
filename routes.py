@@ -12,7 +12,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired, Email
 from app import app, db
-from models import Patient, Appointment, MedicalRecord, Payment, Review, Admin, OTP, Doctor, Assistant, Salary
+from models import Patient, Appointment, MedicalRecord, Payment, Review, Admin, OTP, Doctor, Assistant, Salary, Treatment
 from forms import (
     AppointmentForm, PaymentForm, ReviewForm, AdminLoginForm,
     PatientLoginForm, PatientRegistrationForm, OTPVerificationForm,
@@ -962,8 +962,11 @@ def admin_assistant_salary():
                 db.session.add(new_salary)
                 db.session.commit()
                 
+                # Get updated salary records
+                salary_records = Salary.query.filter_by(assistant_id=assistant.id).order_by(desc(Salary.payment_date)).all()
+                
                 flash('Salary record added successfully!', 'success')
-                return redirect(url_for('admin_assistant_salary'))
+                return render_template('admin/assistant_salary.html', form=form, salary_records=salary_records)
             except Exception as e:
                 db.session.rollback()
                 flash(f'Error processing salary: {str(e)}', 'danger')
