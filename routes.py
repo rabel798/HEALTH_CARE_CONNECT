@@ -139,7 +139,14 @@ def payment():
 
     try:
         appointment = Appointment.query.get_or_404(appointment_id)
-        consultation_fee = 500.00  # Default consultation fee
+        
+        # Get previous visits/payments count for this patient
+        previous_payments = Payment.query.join(Appointment).filter(
+            Appointment.patient_id == appointment.patient_id,
+            Payment.status == 'completed'
+        ).count()
+
+        consultation_fee = 500.00  # Each visit costs 500
 
         # Create payment record
         new_payment = Payment(
