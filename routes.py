@@ -1025,48 +1025,12 @@ def admin_assistant_salary():
                     assistant_id=assistant.id,
                     amount=float(form.amount.data),
                     payment_date=form.payment_date.data,
-                    payment_method='bank_transfer',
+                    payment_method=form.payment_method.data,
                     description=form.description.data,
                     status='completed'
                 )
                 db.session.add(new_salary)
-                db.session.commit()
 
-                # Get the assistant's updated salary records
-                salary_records = Salary.query.filter_by(assistant_id=assistant.id).order_by(desc(Salary.payment_date)).all()
-
-                flash('Salary record added successfully!', 'success')
-                return render_template('admin/assistant_salary.html', form=form, salary_records=salary_records)
-            except Exception as e:
-                db.session.rollback()
-                flash(f'Error processing salary: {str(e)}', 'danger')
-
-                # Create salary record
-                new_salary = Salary(
-                    assistant_id=assistant.id,
-                    amount=float(form.amount.data),
-                    payment_date=form.payment_date.data,
-                    payment_method='razorpay',
-                    description=form.description.data,
-                    status='pending',
-                    transaction_id=order['id']
-                )
-                db.session.add(new_salary)
-                db.session.commit()
-
-                return render_template(
-                    'admin/salary_payment.html',
-                    razorpay_key=app.config['RAZORPAY_KEY_ID'],
-                    order_id=order['id'],
-                    amount=form.amount.data,
-                    assistant=assistant
-                )
-            except Exception as e:
-                db.session.rollback()
-                flash(f'Error processing salary: {str(e)}', 'danger')
-
-            try:
-                db.session.commit()
                 # Send email notification
                 subject = "Salary Payment Receipt - Dr. Richa's Eye Clinic"
                 message = f"""
@@ -1079,16 +1043,13 @@ def admin_assistant_salary():
                 Payment Method: {form.payment_method.data}
                 Description: {form.description.data}
 
-                A digital receipt has been generated for your records.
-                If you have any questions, please contact Dr. Richa.
-
-                Contact: {assistant.mobile_number}
-
                 Best regards,
                 Dr. Richa's Eye Clinic
                 """
                 send_email_notification('rabel798679@gmail.com', subject, message)
-                flash('Salary payment processed and notification sent!', 'success')
+
+                db.session.commit()
+                flash('Salary payment processed and email notification sent!', 'success')
                 return redirect(url_for('admin_assistant_salary'))
             except Exception as e:
                 db.session.rollback()
