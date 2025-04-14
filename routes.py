@@ -141,39 +141,23 @@ def payment():
         appointment = Appointment.query.get_or_404(appointment_id)
         consultation_fee = 500.00  # Default consultation fee
 
-        # Initialize Razorpay client
-        client = razorpay.Client(auth=(app.config['RAZORPAY_KEY_ID'], app.config['RAZORPAY_KEY_SECRET']))
-
-        # Create Razorpay order immediately when page loads
-        data = {
-            'amount': int(consultation_fee * 100),  # Amount in paise
-            'currency': 'INR',
-            'receipt': f'receipt_{appointment_id}',
-            'payment_capture': 1
-        }
-        order = client.order.create(data=data)
-
         # Create payment record
         new_payment = Payment(
             appointment_id=appointment_id,
             amount=consultation_fee,
-            payment_method='online',
-            razorpay_order_id=order['id'],
-            status='pending'
+            payment_method='free',
+            status='completed'
         )
         db.session.add(new_payment)
+        
+        # Update appointment payment status
+        appointment.payment_status = 'paid'
         db.session.commit()
-
-        return render_template(
-            'payment.html',
-            appointment=appointment,
-            razorpay_key=app.config['RAZORPAY_KEY_ID'],
-            order_id=order['id'],
-            amount=consultation_fee
-        )
+        
+        return redirect(url_for('success'))
     except Exception as e:
         db.session.rollback()
-        flash(f'Error processing payment: {str(e)}', 'danger')
+        flash(f'Error processing appointment: {str(e)}', 'danger')
         return redirect(url_for('appointment'))
 
 @app.route('/payment/verify', methods=['POST'])
@@ -966,17 +950,23 @@ def admin_assistant_salary():
         assistant = Assistant.query.filter_by(email='rabel798679@gmail.com').first()
         if assistant:
             try:
-                # Initialize Razorpay client
-                client = razorpay.Client(auth=(app.config['RAZORPAY_KEY_ID'], app.config['RAZORPAY_KEY_SECRET']))
-
-                # Create Razorpay order for salary
-                data = {
-                    'amount': int(float(form.amount.data) * 100),  # Amount in paise
-                    'currency': 'INR',
-                    'receipt': f'salary_{datetime.now().strftime("%Y%m%d%H%M%S")}',
-                    'payment_capture': 1
-                }
-                order = client.order.create(data=data)
+                # Create salary record
+                new_salary = Salary(
+                    assistant_id=assistant.id,
+                    amount=float(form.amount.data),
+                    payment_date=form.payment_date.data,
+                    payment_method='bank_transfer',
+                    description=form.description.data,
+                    status='completed'
+                )
+                db.session.add(new_salary)
+                db.session.commit()
+                
+                flash('Salary record added successfully!', 'success')
+                return redirect(url_for('admin_assistant_salary'))
+            except Exception as e:
+                db.session.rollback()
+                flash(f'Error processing salary: {str(e)}', 'danger')
 
                 # Create salary record
                 new_salary = Salary(
@@ -1174,13 +1164,29 @@ def verify_salary_payment():
         return jsonify({'status': 'success', 'redirect_url': url_for('admin_assistant_salary')})
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 400
-@app.route('/admin/revenue')
+@app.route('/admin/revenue', methods=['GET', 'POST'])
 @login_required
 def admin_revenue():
     """Revenue management route"""
     if not isinstance(current_user, Doctor):
         flash('Access denied. Doctor privileges required.', 'danger')
         return redirect(url_for('index'))
+
+    if request.method == 'POST':
+        try:
+            new_treatment = Treatment(
+                patient_id=request.form.get('patient_id'),
+                treatment_name=request.form.get('treatment_name'),
+                treatment_date=datetime.strptime(request.form.get('treatment_date'), '%Y-%m-%d').date(),
+                amount=float(request.form.get('amount')),
+                notes=request.form.get('notes')
+            )
+            db.session.add(new_treatment)
+            db.session.commit()
+            flash('Treatment record added successfully!', 'success')
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Error adding treatment: {str(e)}', 'danger')
 
     # Get all payments with patient details
     payments = (
@@ -1191,7 +1197,19 @@ def admin_revenue():
         .all()
     )
 
-    # Calculate total revenue
-    total_revenue = sum(payment.amount for payment, _ in payments if payment.status == 'completed')
+    # Get all treatments
+    treatments = Treatment.query.order_by(Treatment.treatment_date.desc()).all()
 
-    return render_template('admin/revenue.html', payments=payments, total_revenue=total_revenue)
+    # Calculate total revenue
+    appointment_revenue = sum(payment.amount for payment, _ in payments if payment.status == 'completed')
+    treatment_revenue = sum(treatment.amount for treatment in treatments)
+    total_revenue = appointment_revenue + treatment_revenue
+
+    # Get all patients for the treatment form
+    patients = Patient.query.order_by(Patient.full_name).all()
+
+    return render_template('admin/revenue.html', 
+                         payments=payments, 
+                         treatments=treatments,
+                         patients=patients,
+                         total_revenue=total_revenue)

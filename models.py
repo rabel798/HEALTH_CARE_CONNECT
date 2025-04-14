@@ -90,6 +90,16 @@ class Payment(db.Model):
     def __repr__(self):
         return f'<Payment {self.id} for Appointment {self.appointment_id}>'
 
+class Treatment(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    patient_id = db.Column(db.Integer, db.ForeignKey('patient.id'), nullable=False)
+    patient = db.relationship('Patient', backref='treatments')
+    treatment_name = db.Column(db.String(200), nullable=False)
+    treatment_date = db.Column(db.Date, nullable=False)
+    amount = db.Column(db.Float, nullable=False)
+    notes = db.Column(db.Text, nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
 class Review(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     patient_id = db.Column(db.Integer, db.ForeignKey('patient.id'), nullable=True)
