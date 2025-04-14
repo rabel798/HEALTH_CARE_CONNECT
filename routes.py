@@ -184,20 +184,41 @@ def verify_payment():
         order_id = request.form.get('razorpay_order_id')
         signature = request.form.get('razorpay_signature')
 
+        if not all([payment_id, order_id, signature]):
+            return jsonify({'status': 'error', 'message': 'Missing payment parameters'}), 400
+
         # Get payment record
         payment = Payment.query.filter_by(razorpay_order_id=order_id).first()
         if not payment:
             return jsonify({'status': 'error', 'message': 'Payment not found'}), 404
 
-        # Verify signature
-        client = razorpay.Client(auth=(app.config['RAZORPAY_KEY_ID'], app.config['RAZORPAY_KEY_SECRET']))
-        params_dict = {
-            'razorpay_payment_id': payment_id,
-            'razorpay_order_id': order_id,
-            'razorpay_signature': signature
-        }
+        try:
+            # Initialize Razorpay client
+            client = razorpay.Client(auth=(app.config['RAZORPAY_KEY_ID'], app.config['RAZORPAY_KEY_SECRET']))
+            
+            # Verify signature
+            params_dict = {
+                'razorpay_payment_id': payment_id,
+                'razorpay_order_id': order_id,
+                'razorpay_signature': signature
+            }
+            client.utility.verify_payment_signature(params_dict)
 
-        client.utility.verify_payment_signature(params_dict)
+            # Update payment record
+            payment.razorpay_payment_id = payment_id
+            payment.razorpay_signature = signature
+            payment.status = 'completed'
+            
+            # Update appointment payment status
+            appointment = payment.appointment
+            appointment.payment_status = 'paid'
+            
+            db.session.commit()
+            
+            return jsonify({'status': 'success', 'redirect_url': url_for('success')})
+        except Exception as e:
+            db.session.rollback()
+            return jsonify({'status': 'error', 'message': f'Payment verification failed: {str(e)}'}), 400
 
         # Update payment record
         payment.razorpay_payment_id = payment_id
