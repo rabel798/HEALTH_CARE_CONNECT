@@ -1058,7 +1058,7 @@ def admin_assistant_salary():
                     flash(f'Error processing salary: {str(e)}', 'danger')
                     return redirect(url_for('admin_assistant_salary'))
                 else:
-            flash('Assistant not found', 'danger')
+                flash('Assistant not found', 'danger')
 
     # Get all salary records
     assistant = Assistant.query.filter_by(email='rabel798679@gmail.com').first()
