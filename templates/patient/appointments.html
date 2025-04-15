@@ -73,6 +73,13 @@
                                                     {% endif %}
                                                 </td>
                                                 <td>{{ appointment.primary_issue or 'Not specified' }}</td>
+                                                <td>
+                                                    {% if appointment.status == 'scheduled' %}
+                                                        <form method="POST" action="{{ url_for('patient_cancel_appointment', appointment_id=appointment.id) }}" style="display: inline;">
+                                                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to cancel this appointment?')">Cancel</button>
+                                                        </form>
+                                                    {% endif %}
+                                                </td>
 <td>
     {% if appointment.status == 'scheduled' %}
     <form method="POST" action="{{ url_for('patient_cancel_appointment', appointment_id=appointment.id) }}" style="display: inline;">
