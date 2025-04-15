@@ -1020,45 +1020,44 @@ def admin_assistant_salary():
         assistant = Assistant.query.filter_by(email='rabel798679@gmail.com').first()
         if assistant:
             try:
-                try:
-                    # Create salary record
-                    new_salary = Salary(
-                        assistant_id=assistant.id,
-                        amount=float(form.amount.data),
-                        payment_date=form.payment_date.data,
-                        payment_method=form.payment_method.data,
-                        description=form.description.data,
-                        status='completed'
-                    )
-                    db.session.add(new_salary)
-                    db.session.commit()
+                # Create salary record
+                new_salary = Salary(
+                    assistant_id=assistant.id,
+                    amount=float(form.amount.data),
+                    payment_date=form.payment_date.data,
+                    payment_method=form.payment_method.data,
+                    description=form.description.data,
+                    status='completed'
+                )
+                db.session.add(new_salary)
+                db.session.commit()
 
-                    # Send email notification
-                    subject = "Salary Payment Receipt - Dr. Richa's Eye Clinic"
-                    message = f"""
-                Dear {assistant.full_name},
+                # Send email notification
+                subject = "Salary Payment Receipt - Dr. Richa's Eye Clinic"
+                message = f"""
+            Dear {assistant.full_name},
 
-                Your salary payment has been processed:
+            Your salary payment has been processed:
 
-                Amount: ₹{form.amount.data}
-                Date: {form.payment_date.data}
-                Payment Method: {form.payment_method.data}
-                Description: {form.description.data}
+            Amount: ₹{form.amount.data}
+            Date: {form.payment_date.data}
+            Payment Method: {form.payment_method.data}
+            Description: {form.description.data}
 
-                Best regards,
-                Dr. Richa's Eye Clinic
-                """
-                    if send_email_notification('rabel798679@gmail.com', subject, message):
-                        flash('Salary payment processed and email notification sent!', 'success')
-                    else:
-                        flash('Salary payment processed but email notification failed.', 'warning')
-                    return redirect(url_for('admin_assistant_salary'))
-                except Exception as e:
-                    db.session.rollback()
-                    flash(f'Error processing salary: {str(e)}', 'danger')
-                    return redirect(url_for('admin_assistant_salary'))
+            Best regards,
+            Dr. Richa's Eye Clinic
+            """
+                if send_email_notification('rabel798679@gmail.com', subject, message):
+                    flash('Salary payment processed and email notification sent!', 'success')
                 else:
-                flash('Assistant not found', 'danger')
+                    flash('Salary payment processed but email notification failed.', 'warning')
+                return redirect(url_for('admin_assistant_salary'))
+            except Exception as e:
+                db.session.rollback()
+                flash(f'Error processing salary: {str(e)}', 'danger')
+                return redirect(url_for('admin_assistant_salary'))
+        else:
+            flash('Assistant not found', 'danger')
 
     # Get all salary records
     assistant = Assistant.query.filter_by(email='rabel798679@gmail.com').first()
