@@ -146,7 +146,7 @@ class Doctor(Staff):
 class Assistant(Staff):
     __tablename__ = 'assistant'
 
-    position = db.Column(db.String(100), nullable=True)
+    position = db.Column(db.String(100), nullable=True, default='Optometrist')
     joining_date = db.Column(db.Date, nullable=True)
 
     # Relationship with salary records

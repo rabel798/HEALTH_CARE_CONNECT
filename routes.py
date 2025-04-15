@@ -1041,9 +1041,9 @@ def admin_assistant_salary():
                 # Send email notification
                 subject = "Salary Payment Receipt - Dr. Richa's Eye Clinic"
                 message = f"""
-            Dear {assistant.full_name},
+            Dear Dr. {assistant.full_name},
 
-            Your salary payment has been processed:
+            Your optometrist salary payment has been processed:
 
             Amount: ₹{form.amount.data}
             Date: {form.payment_date.data}
