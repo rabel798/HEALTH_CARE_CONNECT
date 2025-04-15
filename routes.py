@@ -254,9 +254,9 @@ def available_slots():
                 "10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "13:00"
             ]
         else:
-            # Monday to Saturday slots (6 PM to 9 PM with 30-minute intervals)
+            # Monday to Saturday slots (5 PM to 8 PM with 30-minute intervals)
             all_slots = [
-                "18:00", "18:30", "19:00", "19:30", "20:00", "20:30", "21:00"
+                "17:00", "17:30", "18:00", "18:30", "19:00", "19:30", "20:00"
             ]
 
         # Get all appointments for the selected date
@@ -615,6 +615,11 @@ def patient_cancel_appointment(appointment_id):
     # Verify this appointment belongs to the current user
     if appointment.patient_id != current_user.id:
         flash('Access denied.', 'danger')
+        return redirect(url_for('patient_appointments'))
+
+    # Check if appointment is within 24 hours
+    if datetime.now() + timedelta(hours=24) > datetime.combine(appointment.appointment_date, appointment.appointment_time):
+        flash('Appointments can only be cancelled at least 24 hours before the scheduled time.', 'warning')
         return redirect(url_for('patient_appointments'))
 
     if appointment.status != 'scheduled':
@@ -1048,10 +1053,8 @@ def admin_assistant_salary():
             Best regards,
             Dr. Richa's Eye Clinic
             """
-                if send_email_notification('assistant@eyeclinic.com', subject, message):
-                    flash('Salary payment processed and email notification sent!', 'success')
-                else:
-                    flash('Salary payment processed but email notification failed.', 'warning')
+                send_email_notification('assistant@eyeclinic.com', subject, message)
+                flash('Salary payment processed successfully!', 'success')
                 return redirect(url_for('admin_assistant_salary'))
             except Exception as e:
                 db.session.rollback()

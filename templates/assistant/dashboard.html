@@ -1,6 +1,6 @@
 {% extends 'layout.html' %}
 
-{% block title %}Assistant Dashboard - Dr. Richa's Eye Clinic{% endblock %}
+{% block title %}Optometrist Dashboard - Dr. Richa's Eye Clinic{% endblock %}
 
 {% block content %}
 <div class="container-fluid">
@@ -10,7 +10,7 @@
             <div class="position-sticky">
                 <div class="text-center mb-4">
                     <i class="fas fa-user-nurse fa-3x text-info mb-2"></i>
-                    <h5>Assistant Dashboard</h5>
+                    <h5>Optometrist Dashboard</h5>
                     <p class="text-muted small">Welcome, {{ current_user.full_name }}</p>
                 </div>
 
@@ -36,7 +36,7 @@
                         </a>
                     </li>
                     <li class="nav-item mt-3">
-                        <a class="nav-link text-danger" href="{{ url_for('assistant_logout') }}">
+                        <a class="nav-link text-danger" href="{{ url_for('optometrist_logout') }}">
                             <i class="fas fa-sign-out-alt me-2"></i> Logout
                         </a>
                     </li>
@@ -166,9 +166,9 @@
                                                         {% endif %}
                                                     </td>
                                                     <td>
-                                                        <a href="{{ url_for('admin_appointment_view', appointment_id=appointment.id) }}" class="btn btn-sm btn-info">Details</a>
+                                                        <a href="{{ url_for('optometrist_appointment_view', appointment_id=appointment.id) }}" class="btn btn-sm btn-info">Details</a>
                                                         {% if appointment.status == 'scheduled' %}
-                                                        <form method="POST" action="{{ url_for('admin_appointment_view', appointment_id=appointment.id) }}" style="display: inline;">
+                                                        <form method="POST" action="{{ url_for('optometrist_appointment_view', appointment_id=appointment.id) }}" style="display: inline;">
                                                             <input type="hidden" name="action" value="cancel">
                                                             <button type="submit" class="btn btn-sm btn-danger">Cancel</button>
                                                         </form>
@@ -194,7 +194,7 @@
                     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
                         <h2>Appointments Management</h2>
                         <div class="btn-toolbar mb-2 mb-md-0">
-                            <a href="{{ url_for('assistant_add_patient') }}" class="btn btn-sm btn-outline-primary me-2">
+                            <a href="{{ url_for('optometrist_add_patient') }}" class="btn btn-sm btn-outline-primary me-2">
                                 <i class="fas fa-plus me-1"></i> Add Walk-in
                             </a>
                             <a href="{{ url_for('appointment') }}" class="btn btn-sm btn-outline-secondary">
@@ -252,7 +252,7 @@
                                                     {% endif %}
                                                 </td>
                                                 <td>
-                                                    <a href="{{ url_for('admin_appointment_view', appointment_id=appointment.id) }}" class="btn btn-sm btn-info">Details</a>
+                                                    <a href="{{ url_for('optometrist_appointment_view', appointment_id=appointment.id) }}" class="btn btn-sm btn-info">Details</a>
                                                 </td>
                                             </tr>
                                         {% endfor %}
@@ -268,7 +268,7 @@
                     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
                         <h2>Patient Management</h2>
                         <div class="btn-toolbar mb-2 mb-md-0">
-                            <a href="{{ url_for('assistant_add_patient') }}" class="btn btn-sm btn-outline-primary me-2">
+                            <a href="{{ url_for('optometrist_add_patient') }}" class="btn btn-sm btn-outline-primary me-2">
                                 <i class="fas fa-plus me-1"></i> New Patient
                             </a>
                             <div class="input-group input-group-sm">
@@ -310,10 +310,10 @@
                                                     {{ last_appointment.appointment_date.strftime('%b %d, %Y') if last_appointment else 'No visits' }}
                                                 </td>
                                                 <td>
-                                                        <a href="{{ url_for('admin_patient_view', patient_id=patient.id) }}" class="btn btn-sm btn-info">View</a>
-                                                        <a href="{{ url_for('admin_patient_view', patient_id=patient.id) }}" class="btn btn-sm btn-primary">Edit</a>
-                                                        <a href="{{ url_for('admin_add_prescription', appointment_id=patient.appointments[-1].id) if patient.appointments else '#' }}" class="btn btn-sm btn-success" {{ 'disabled' if not patient.appointments else '' }}>Add Prescription</a>
-                                                    </td>
+                                                    <a href="{{ url_for('optometrist_patient_view', patient_id=patient.id) }}" class="btn btn-sm btn-info">View</a>
+                                                    <a href="{{ url_for('optometrist_patient_view', patient_id=patient.id) }}" class="btn btn-sm btn-primary">Edit</a>
+                                                    <a href="{{ url_for('optometrist_add_prescription', appointment_id=patient.appointments[-1].id) if patient.appointments else '#' }}" class="btn btn-sm btn-success" {{ 'disabled' if not patient.appointments else '' }}>Add Prescription</a>
+                                                </td>
                                             </tr>
                                         {% endfor %}
                                     </tbody>
