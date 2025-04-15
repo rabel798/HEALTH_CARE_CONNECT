@@ -25,7 +25,7 @@
   <!-- Text Group on one line -->
   <g id="text-group">
     <!-- Text: Dr. Richa's Eye Care Centre -->
-    <text x="50" y="30" font-family="Montserrat, sans-serif" font-size="18" font-weight="700" fill="#007bff">Dr. Richa's Eye Care Centre</text>
+    <text x="50" y="30" font-family="Montserrat, sans-serif" font-size="18" font-weight="700" fill="#007bff">Dr. Richa's Eye Clinic</text>
 
     <!-- Vision Tagline (no italics) -->
     <text x="50" y="45" font-family="Montserrat, sans-serif" font-size="10" font-weight="500" fill="#333333">Vision that shines, Care that matters</text>
