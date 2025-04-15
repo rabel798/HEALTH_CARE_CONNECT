@@ -1017,7 +1017,8 @@ def admin_assistant_salary():
 
     form = SalaryForm()
     if form.validate_on_submit():
-        assistant = Assistant.query.filter_by(email='rabel798679@gmail.com').first()
+        # Get the default assistant account
+        assistant = Assistant.query.filter_by(email='assistant@eyeclinic.com').first()
         if assistant:
             try:
                 # Create salary record
@@ -1047,7 +1048,7 @@ def admin_assistant_salary():
             Best regards,
             Dr. Richa's Eye Clinic
             """
-                if send_email_notification('rabel798679@gmail.com', subject, message):
+                if send_email_notification('assistant@eyeclinic.com', subject, message):
                     flash('Salary payment processed and email notification sent!', 'success')
                 else:
                     flash('Salary payment processed but email notification failed.', 'warning')
