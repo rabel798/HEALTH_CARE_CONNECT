@@ -117,6 +117,25 @@ def appointment():
             db.session.commit()
             # Store appointment ID in session for payment process
             session['appointment_id'] = new_appointment.id
+
+            # Send confirmation email
+            subject = "Appointment Confirmation - Dr. Richa's Eye Clinic"
+            message = f"""
+            Dear {patient.full_name},
+
+            Your appointment has been confirmed for {new_appointment.appointment_date.strftime('%d %B, %Y')} at {new_appointment.appointment_time.strftime('%I:%M %p')}.
+
+            Primary Issue: {new_appointment.primary_issue}
+            Appointment ID: #{new_appointment.id}
+
+            Location: First floor, DVR Town Centre, near to IGUS private limited, 
+            Mandur, Budigere Road (New Airport Road), Bengaluru, Karnataka 560049
+
+            Best regards,
+            Dr. Richa's Eye Clinic
+            """
+            send_email_notification(patient.email, subject, message)
+
             flash('Appointment booked successfully!', 'success')
             return redirect(url_for('payment'))
         except Exception as e:
@@ -630,7 +649,7 @@ def patient_cancel_appointment(appointment_id):
         appointment.status = 'cancelled'
         db.session.commit()
 
-        # Send email notification to clinic
+        # Send email notification to clinic and patient
         clinic_message = f"""
         Appointment Cancellation Notice
 
@@ -640,7 +659,16 @@ def patient_cancel_appointment(appointment_id):
 
         The appointment has been cancelled by the patient.
         """
+        patient_message = f"""
+        Dear {appointment.patient.full_name},
+
+        Your appointment scheduled for {appointment.appointment_date.strftime('%d %B, %Y')} at {appointment.appointment_time.strftime('%I:%M %p')} has been cancelled.  We apologize for any inconvenience.
+
+        Best regards,
+        Dr. Richa's Eye Clinic
+        """
         send_email_notification(app.config['MAIL_USERNAME'], "Appointment Cancellation", clinic_message)
+        send_email_notification(appointment.patient.email, "Appointment Cancellation", patient_message)
 
         flash('Appointment cancelled successfully.', 'success')
     except Exception as e:
