@@ -778,6 +778,50 @@ def assistant_dashboard():
     if not isinstance(current_user, Assistant):
         flash('You do not have permission to access this page.', 'danger')
         return redirect(url_for('index'))
+        
+    try:
+        # Create form for CSRF token
+        form = FlaskForm()
+        
+        # Get all patients
+        all_patients = Patient.query.order_by(Patient.full_name).all()
+
+        # Get today's appointments
+        today = datetime.now().date()
+        today_appointments = Appointment.query.filter_by(appointment_date=today).all()
+
+        # Get all appointments
+        all_appointments = Appointment.query.order_by(desc(Appointment.appointment_date)).all()
+
+        # Get upcoming appointments count
+        upcoming_appointments = Appointment.query.filter(
+            Appointment.appointment_date >= today,
+            Appointment.status == 'scheduled'
+        ).count()
+
+        # Get total appointments
+        total_appointments = Appointment.query.count()
+
+        # Get total patients
+        total_patients = Patient.query.count()
+
+        # Get salary records
+        salary_records = Salary.query.filter_by(assistant_id=current_user.id).order_by(desc(Salary.payment_date)).all()
+
+        return render_template(
+            'assistant/dashboard.html',
+            form=form,
+            all_patients=all_patients,
+            today_appointments=today_appointments,
+            all_appointments=all_appointments,
+            upcoming_appointments=upcoming_appointments,
+            total_appointments=total_appointments,
+            total_patients=total_patients,
+            salary_records=salary_records
+        )
+    except Exception as e:
+        flash(f'Error loading dashboard: {str(e)}', 'danger')
+        return redirect(url_for('index'))
 
     try:
         # Get all patients

@@ -169,6 +169,7 @@
                                                         <a href="{{ url_for('admin_appointment_view', appointment_id=appointment.id) }}" class="btn btn-sm btn-info">Details</a>
                                                         {% if appointment.status == 'scheduled' %}
                                                         <form method="POST" action="{{ url_for('admin_appointment_view', appointment_id=appointment.id) }}" style="display: inline;">
+                                                            {{ form.csrf_token }}
                                                             <input type="hidden" name="action" value="cancel">
                                                             <button type="submit" class="btn btn-sm btn-danger">Cancel</button>
                                                         </form>
