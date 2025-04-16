@@ -1,4 +1,4 @@
-<div class="row mb-4">
+<div class="row">
     <div class="col">
         <a href="{{ url_for('doctor_prescriptions') }}" class="btn btn-primary">
             <i class="fas fa-prescription"></i> View Prescriptions
@@ -6,3 +6,15 @@
     </div>
 </div>
 <div class="row">
+    <!-- ... other elements ... -->
+</div>
+
+<!-- Assuming similar structure for optometrist's dashboard -->
+<div class="nav-item">
+    <a class="nav-link" href="{{ url_for('optometrist_appointments') }}">
+        <i class="fas fa-calendar-check"></i> Appointments
+    </a>
+    <a class="nav-link" href="{{ url_for('optometrist_prescriptions') }}">
+        <i class="fas fa-prescription"></i> Prescriptions
+    </a>
+</div>
