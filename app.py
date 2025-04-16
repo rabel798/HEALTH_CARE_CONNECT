@@ -95,9 +95,9 @@ with app.app_context():
         assistant = Assistant(
             username='assistant',
             email='assistant@eyeclinic.com',
-            full_name='Clinic Assistant',
+            full_name='Clinic Optometrist',
             mobile_number='9876543211',
-            position='Clinic Receptionist',
+            position='Optometrist',
             joining_date=date.today()
         )
         assistant.set_password('assistant123')
