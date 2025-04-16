@@ -623,7 +623,9 @@ def patient_appointments():
     """Patient appointments history route"""
     # Get patient's appointments
     appointments = Appointment.query.filter_by(patient_id=current_user.id).order_by(desc(Appointment.appointment_date)).all()
-    return render_template('patient/appointments.html', appointments=appointments)
+    # Create a minimal form for CSRF
+    form = FlaskForm()
+    return render_template('patient/appointments.html', appointments=appointments, form=form)
 
 @app.route('/patient/cancel-appointment/<int:appointment_id>', methods=['POST'])
 @login_required
