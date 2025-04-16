@@ -1,0 +1,30 @@
+
+{% extends 'layout.html' %}
+
+{% block title %}Add Doctor Prescription - Dr. Richa's Eye Clinic{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h2 class="mb-4">Add Doctor Prescription for {{ patient.full_name }}</h2>
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        <div class="mb-3">
+            <label class="form-label">{{ form.diagnosis.label }}</label>
+            {{ form.diagnosis(class="form-control") }}
+        </div>
+        <div class="mb-3">
+            <label class="form-label">{{ form.medications.label }}</label>
+            {{ form.medications(class="form-control") }}
+        </div>
+        <div class="mb-3">
+            <label class="form-label">{{ form.instructions.label }}</label>
+            {{ form.instructions(class="form-control") }}
+        </div>
+        <div class="mb-3">
+            <label class="form-label">{{ form.follow_up.label }}</label>
+            {{ form.follow_up(class="form-control") }}
+        </div>
+        {{ form.submit(class="btn btn-primary") }}
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,36 @@
+
+{% extends 'layout.html' %}
+
+{% block title %}Doctor Prescriptions - Dr. Richa's Eye Clinic{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h2 class="mb-4">Doctor Prescriptions</h2>
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Patient Name</th>
+                    <th>Diagnosis</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for prescription in prescriptions %}
+                <tr>
+                    <td>{{ prescription.prescription_date.strftime('%Y-%m-%d') }}</td>
+                    <td>{{ prescription.patient.full_name }}</td>
+                    <td>{{ prescription.diagnosis[:50] }}...</td>
+                    <td>
+                        <a href="{{ url_for('print_prescription', type='doctor', prescription_id=prescription.id) }}" class="btn btn-primary btn-sm" target="_blank">
+                            <i class="fas fa-print"></i> Print
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -90,6 +90,28 @@ class Payment(db.Model):
     def __repr__(self):
         return f'<Payment {self.id} for Appointment {self.appointment_id}>'
 
+class DoctorPrescription(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    patient_id = db.Column(db.Integer, db.ForeignKey('patient.id'), nullable=False)
+    doctor_id = db.Column(db.Integer, db.ForeignKey('doctor.id'), nullable=False)
+    prescription_date = db.Column(db.DateTime, default=datetime.utcnow)
+    diagnosis = db.Column(db.Text, nullable=True)
+    medications = db.Column(db.Text, nullable=True)
+    instructions = db.Column(db.Text, nullable=True)
+    follow_up = db.Column(db.Text, nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+class OptometristPrescription(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    patient_id = db.Column(db.Integer, db.ForeignKey('patient.id'), nullable=False)
+    assistant_id = db.Column(db.Integer, db.ForeignKey('assistant.id'), nullable=False)
+    prescription_date = db.Column(db.DateTime, default=datetime.utcnow)
+    vision_test = db.Column(db.Text, nullable=True)
+    eye_power = db.Column(db.Text, nullable=True)
+    recommendations = db.Column(db.Text, nullable=True)
+    notes = db.Column(db.Text, nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
 class Treatment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     patient_id = db.Column(db.Integer, db.ForeignKey('patient.id'), nullable=False)

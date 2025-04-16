@@ -1285,6 +1285,104 @@ def verify_salary_payment():
         return jsonify({'status': 'success', 'redirect_url': url_for('admin_assistant_salary')})
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 400
+@app.route('/doctor/prescriptions')
+@login_required
+def doctor_prescriptions():
+    if not isinstance(current_user, Doctor):
+        flash('Access denied', 'danger')
+        return redirect(url_for('index'))
+    
+    prescriptions = DoctorPrescription.query.filter_by(doctor_id=current_user.id).order_by(DoctorPrescription.created_at.desc()).all()
+    return render_template('doctor/prescriptions.html', prescriptions=prescriptions)
+
+@app.route('/doctor/add-prescription/<int:patient_id>', methods=['GET', 'POST'])
+@login_required
+def doctor_add_prescription(patient_id):
+    if not isinstance(current_user, Doctor):
+        flash('Access denied', 'danger')
+        return redirect(url_for('index'))
+    
+    form = DoctorPrescriptionForm()
+    patient = Patient.query.get_or_404(patient_id)
+    
+    if form.validate_on_submit():
+        prescription = DoctorPrescription(
+            patient_id=patient_id,
+            doctor_id=current_user.id,
+            diagnosis=form.diagnosis.data,
+            medications=form.medications.data,
+            instructions=form.instructions.data,
+            follow_up=form.follow_up.data
+        )
+        db.session.add(prescription)
+        try:
+            db.session.commit()
+            flash('Prescription added successfully', 'success')
+            return redirect(url_for('doctor_prescriptions'))
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Error adding prescription: {str(e)}', 'danger')
+    
+    return render_template('doctor/add_prescription.html', form=form, patient=patient)
+
+@app.route('/assistant/prescriptions')
+@login_required
+def assistant_prescriptions():
+    if not isinstance(current_user, Assistant):
+        flash('Access denied', 'danger')
+        return redirect(url_for('index'))
+    
+    prescriptions = OptometristPrescription.query.filter_by(assistant_id=current_user.id).order_by(OptometristPrescription.created_at.desc()).all()
+    return render_template('assistant/prescriptions.html', prescriptions=prescriptions)
+
+@app.route('/assistant/add-prescription/<int:patient_id>', methods=['GET', 'POST'])
+@login_required
+def assistant_add_prescription(patient_id):
+    if not isinstance(current_user, Assistant):
+        flash('Access denied', 'danger')
+        return redirect(url_for('index'))
+    
+    form = OptometristPrescriptionForm()
+    patient = Patient.query.get_or_404(patient_id)
+    
+    if form.validate_on_submit():
+        prescription = OptometristPrescription(
+            patient_id=patient_id,
+            assistant_id=current_user.id,
+            vision_test=form.vision_test.data,
+            eye_power=form.eye_power.data,
+            recommendations=form.recommendations.data,
+            notes=form.notes.data
+        )
+        db.session.add(prescription)
+        try:
+            db.session.commit()
+            flash('Prescription added successfully', 'success')
+            return redirect(url_for('assistant_prescriptions'))
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Error adding prescription: {str(e)}', 'danger')
+    
+    return render_template('assistant/add_prescription.html', form=form, patient=patient)
+
+@app.route('/print-prescription/<string:type>/<int:prescription_id>')
+@login_required
+def print_prescription(type, prescription_id):
+    if type == 'doctor':
+        if not isinstance(current_user, Doctor):
+            flash('Access denied', 'danger')
+            return redirect(url_for('index'))
+        prescription = DoctorPrescription.query.get_or_404(prescription_id)
+        template = 'doctor/print_prescription.html'
+    else:
+        if not isinstance(current_user, Assistant):
+            flash('Access denied', 'danger')
+            return redirect(url_for('index'))
+        prescription = OptometristPrescription.query.get_or_404(prescription_id)
+        template = 'assistant/print_prescription.html'
+    
+    return render_template(template, prescription=prescription)
+
 @app.route('/admin/revenue', methods=['GET', 'POST'])
 @login_required
 def admin_revenue():

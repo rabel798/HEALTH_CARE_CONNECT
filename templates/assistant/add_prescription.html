@@ -1,0 +1,30 @@
+
+{% extends 'layout.html' %}
+
+{% block title %}Add Optometrist Prescription - Dr. Richa's Eye Clinic{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h2 class="mb-4">Add Optometrist Prescription for {{ patient.full_name }}</h2>
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        <div class="mb-3">
+            <label class="form-label">{{ form.vision_test.label }}</label>
+            {{ form.vision_test(class="form-control") }}
+        </div>
+        <div class="mb-3">
+            <label class="form-label">{{ form.eye_power.label }}</label>
+            {{ form.eye_power(class="form-control") }}
+        </div>
+        <div class="mb-3">
+            <label class="form-label">{{ form.recommendations.label }}</label>
+            {{ form.recommendations(class="form-control") }}
+        </div>
+        <div class="mb-3">
+            <label class="form-label">{{ form.notes.label }}</label>
+            {{ form.notes(class="form-control") }}
+        </div>
+        {{ form.submit(class="btn btn-primary") }}
+    </form>
+</div>
+{% endblock %}

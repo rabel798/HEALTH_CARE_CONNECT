@@ -1,0 +1,32 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Optometrist Prescription - {{ prescription.patient.full_name }}</title>
+    <style>
+        @media print {
+            body { font-family: Arial, sans-serif; }
+            .header { text-align: center; margin-bottom: 20px; }
+            .content { margin: 20px; }
+            .footer { margin-top: 50px; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Dr. Richa's Eye Clinic</h1>
+        <p>Optometrist Prescription</p>
+    </div>
+    <div class="content">
+        <p><strong>Patient Name:</strong> {{ prescription.patient.full_name }}</p>
+        <p><strong>Date:</strong> {{ prescription.prescription_date.strftime('%Y-%m-%d') }}</p>
+        <p><strong>Vision Test Results:</strong> {{ prescription.vision_test }}</p>
+        <p><strong>Eye Power:</strong> {{ prescription.eye_power }}</p>
+        <p><strong>Recommendations:</strong> {{ prescription.recommendations }}</p>
+        <p><strong>Additional Notes:</strong> {{ prescription.notes }}</p>
+    </div>
+    <div class="footer">
+        <p>Clinic Optometrist<br>Dr. Richa's Eye Clinic</p>
+    </div>
+</body>
+</html>

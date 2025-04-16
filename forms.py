@@ -38,6 +38,20 @@ class AssistantLoginForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired(), Length(min=8, max=128)])
     submit = SubmitField('Login')
 
+class DoctorPrescriptionForm(FlaskForm):
+    diagnosis = TextAreaField('Diagnosis', validators=[DataRequired()])
+    medications = TextAreaField('Prescribed Medications', validators=[Optional()])
+    instructions = TextAreaField('Instructions', validators=[Optional()])
+    follow_up = TextAreaField('Follow-up Notes', validators=[Optional()])
+    submit = SubmitField('Save Prescription')
+
+class OptometristPrescriptionForm(FlaskForm):
+    vision_test = TextAreaField('Vision Test Results', validators=[DataRequired()])
+    eye_power = TextAreaField('Eye Power', validators=[Optional()])
+    recommendations = TextAreaField('Recommendations', validators=[Optional()])
+    notes = TextAreaField('Additional Notes', validators=[Optional()])
+    submit = SubmitField('Save Prescription')
+
 class SalaryForm(FlaskForm):
     amount = StringField('Salary Amount', validators=[DataRequired()])
     payment_date = DateField('Payment Date', validators=[DataRequired()])
