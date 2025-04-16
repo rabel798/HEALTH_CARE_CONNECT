@@ -98,3 +98,16 @@ class PrescriptionForm(FlaskForm):
     follow_up_instructions = TextAreaField('Follow-up Instructions', validators=[Optional()])
     next_appointment_recommendation = StringField('Next Appointment', validators=[Optional()])
     submit = SubmitField('Save Prescription')
+class DoctorPrescriptionForm(FlaskForm):
+    diagnosis = TextAreaField('Diagnosis', validators=[DataRequired()])
+    medications = TextAreaField('Medications', validators=[DataRequired()])
+    instructions = TextAreaField('Instructions', validators=[DataRequired()])
+    follow_up = TextAreaField('Follow Up', validators=[Optional()])
+    submit = SubmitField('Save Prescription')
+
+class OptometristPrescriptionForm(FlaskForm):
+    vision_test = TextAreaField('Vision Test Results', validators=[DataRequired()])
+    eye_power = TextAreaField('Eye Power', validators=[DataRequired()])
+    recommendations = TextAreaField('Recommendations', validators=[DataRequired()])
+    notes = TextAreaField('Additional Notes', validators=[Optional()])
+    submit = SubmitField('Save Prescription')

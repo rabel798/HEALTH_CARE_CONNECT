@@ -30,3 +30,53 @@
     </div>
 </body>
 </html>
+{% extends 'layout.html' %}
+
+{% block title %}Print Prescription - Dr. Richa's Eye Clinic{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="prescription-print">
+        <div class="clinic-header text-center mb-4">
+            <h2>Dr. Richa's Eye Clinic</h2>
+            <p>First floor, DVR Town Centre, Mandur, Budigere Road</p>
+            <p>Bengaluru, Karnataka 560049</p>
+        </div>
+
+        <div class="prescription-details">
+            <div class="row mb-4">
+                <div class="col-6">
+                    <p><strong>Patient:</strong> {{ prescription.patient.full_name }}</p>
+                    <p><strong>Age:</strong> {{ prescription.patient.age }}</p>
+                </div>
+                <div class="col-6 text-end">
+                    <p><strong>Date:</strong> {{ prescription.prescription_date.strftime('%d-%m-%Y') }}</p>
+                </div>
+            </div>
+
+            <div class="prescription-content">
+                <h5>Diagnosis:</h5>
+                <p class="mb-4">{{ prescription.diagnosis }}</p>
+
+                <h5>Medications:</h5>
+                <p class="mb-4">{{ prescription.medications }}</p>
+
+                <h5>Instructions:</h5>
+                <p class="mb-4">{{ prescription.instructions }}</p>
+
+                <h5>Follow Up:</h5>
+                <p>{{ prescription.follow_up }}</p>
+            </div>
+
+            <div class="doctor-signature text-end mt-5">
+                <p>Dr. Richa Sharma</p>
+                <p class="small">MBBS, MS, FPOS</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="text-center mt-4">
+        <button onclick="window.print()" class="btn btn-primary">Print Prescription</button>
+    </div>
+</div>
+{% endblock %}
