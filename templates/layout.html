@@ -135,15 +135,22 @@
                         {% else %}
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <i class="fas fa-user-md me-1"></i> Dr. Richa
+                                    <i class="fas fa-user-md me-1"></i> {{ current_user.full_name }}
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                    <li><a class="dropdown-item" href="{{ url_for('admin_dashboard') }}">Dashboard</a></li>
-                                    <li><a class="dropdown-item" href="{{ url_for('admin_appointments') }}">Manage Appointments</a></li>
-                                    <li><a class="dropdown-item" href="{{ url_for('admin_patients') }}">Patients</a></li>
-                                    <li><a class="dropdown-item" href="{{ url_for('admin_reviews') }}">Reviews</a></li>
-                                    <li><hr class="dropdown-divider"></li>
-                                    <li><a class="dropdown-item" href="{{ url_for('admin_logout') }}">Logout</a></li>
+                                    {% if current_user.__class__.__name__ == 'Assistant' %}
+                                        <li><a class="dropdown-item" href="{{ url_for('assistant_dashboard') }}">Dashboard</a></li>
+                                        <li><a class="dropdown-item" href="{{ url_for('assistant_prescriptions') }}">Prescriptions</a></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li><a class="dropdown-item" href="{{ url_for('assistant_logout') }}">Logout</a></li>
+                                    {% elif current_user.__class__.__name__ == 'Doctor' %}
+                                        <li><a class="dropdown-item" href="{{ url_for('admin_dashboard') }}">Dashboard</a></li>
+                                        <li><a class="dropdown-item" href="{{ url_for('admin_appointments') }}">Manage Appointments</a></li>
+                                        <li><a class="dropdown-item" href="{{ url_for('admin_patients') }}">Patients</a></li>
+                                        <li><a class="dropdown-item" href="{{ url_for('admin_reviews') }}">Reviews</a></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li><a class="dropdown-item" href="{{ url_for('doctor_logout') }}">Logout</a></li>
+                                    {% endif %}
                                 </ul>
                             </li>
                         {% endif %}
