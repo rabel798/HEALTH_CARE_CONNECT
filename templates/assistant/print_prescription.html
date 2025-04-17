@@ -25,6 +25,9 @@
             }
             .patient-info {
                 margin-bottom: 30px;
+                border: 1px solid #ccc;
+                padding: 15px;
+                background-color: #f9f9f9;
             }
             .prescription-details {
                 margin: 20px 0;
@@ -44,59 +47,58 @@
                 size: A4;
                 margin: 2cm;
             }
+            .no-print {
+                display: none;
+            }
         }
     </style>
 </head>
 <body>
     <div class="header">
         <h1>Dr. Richa's Eye Clinic</h1>
-        <div class="clinic-info">
-            First floor, DVR Town Centre, near to IGUS private limited,<br>
-            Mandur, Budigere Road (New Airport Road),<br>
-            Bengaluru, Karnataka 560049
-        </div>
+        <p>First floor, DVR Town Centre, near to IGUS private limited,<br>
+           Mandur, Budigere Road (New Airport Road),<br>
+           Bengaluru, Karnataka 560049</p>
     </div>
 
-    <div class="content">
-        <div class="patient-info">
-            <p><strong>Patient Name:</strong> {{ prescription.patient.full_name }}</p>
-            <p><strong>Age:</strong> {{ prescription.patient.age }} years</p>
-            <p><strong>Date:</strong> {{ prescription.prescription_date.strftime('%d-%m-%Y') }}</p>
+    <div class="patient-info">
+        <h3>Patient Information</h3>
+        <p><strong>Name:</strong> {{ prescription.patient.full_name }}</p>
+        <p><strong>Age:</strong> {{ prescription.patient.age }}</p>
+        <p><strong>Contact:</strong> {{ prescription.patient.mobile_number }}</p>
+        <p><strong>Date:</strong> {{ prescription.prescription_date.strftime('%d-%m-%Y') }}</p>
+    </div>
+
+    <div class="prescription-details">
+        <div class="section">
+            <div class="section-title">Vision Test Results:</div>
+            <p>{{ prescription.vision_test }}</p>
         </div>
 
-        <div class="prescription-details">
-            <div class="section">
-                <div class="section-title">Vision Test Results:</div>
-                <p>{{ prescription.vision_test }}</p>
-            </div>
+        <div class="section">
+            <div class="section-title">Eye Power:</div>
+            <p>{{ prescription.eye_power }}</p>
+        </div>
 
-            <div class="section">
-                <div class="section-title">Eye Power:</div>
-                <p>{{ prescription.eye_power }}</p>
-            </div>
+        <div class="section">
+            <div class="section-title">Recommendations:</div>
+            <p>{{ prescription.recommendations }}</p>
+        </div>
 
-            <div class="section">
-                <div class="section-title">Recommendations:</div>
-                <p>{{ prescription.recommendations }}</p>
-            </div>
-
-            <div class="section">
-                <div class="section-title">Additional Notes:</div>
-                <p>{{ prescription.notes }}</p>
-            </div>
+        <div class="section">
+            <div class="section-title">Additional Notes:</div>
+            <p>{{ prescription.notes }}</p>
         </div>
     </div>
 
     <div class="footer">
-        <p>____________________<br>
-        Clinic Optometrist<br>
-        Dr. Richa's Eye Clinic</p>
+        <p>Signature<br>
+        {{ current_user.full_name }}<br>
+        Optometrist</p>
     </div>
 
-    <script>
-        window.onload = function() {
-            window.print();
-        }
-    </script>
+    <div class="no-print text-center mt-4">
+        <button onclick="window.print()" class="btn btn-primary">Print Prescription</button>
+    </div>
 </body>
 </html>

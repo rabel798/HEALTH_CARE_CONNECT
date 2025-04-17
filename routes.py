@@ -908,8 +908,8 @@ def admin_logout():
 @login_required
 def admin_dashboard():
     """Admin/Doctor dashboard route"""
-    # Ensure only admins or doctors can access this page
-    if not (isinstance(current_user, Admin) or isinstance(current_user, Doctor)):
+    # Ensure only admins, doctors or assistants can access this page
+    if not (isinstance(current_user, Admin) or isinstance(current_user, Doctor) or isinstance(current_user, Assistant)):
         flash('Access denied. Staff privileges required.', 'danger')
         return redirect(url_for('index'))
 

@@ -8,7 +8,7 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>Optometrist Prescriptions</h2>
         <div class="d-flex gap-2">
-            <input type="text" id="searchInput" class="form-control" placeholder="Search patients..." onkeyup="searchTable()">
+            <input type="text" id="searchInput" class="form-control" placeholder="Search by name, email or phone..." onkeyup="searchTable()">
             <a href="{{ url_for('admin_patients') }}" class="btn btn-primary">
                 <i class="fas fa-plus"></i> New Prescription
             </a>
@@ -21,6 +21,8 @@
                 <tr>
                     <th>Date</th>
                     <th>Patient Name</th>
+                    <th>Contact</th>
+                    <th>Email</th>
                     <th>Vision Test</th>
                     <th>Eye Power</th>
                     <th>Actions</th>
@@ -31,14 +33,29 @@
                 <tr>
                     <td>{{ prescription.prescription_date.strftime('%Y-%m-%d') }}</td>
                     <td>{{ prescription.patient.full_name }}</td>
+                    <td>{{ prescription.patient.mobile_number }}</td>
+                    <td>{{ prescription.patient.email }}</td>
                     <td>{{ prescription.vision_test[:50] }}...</td>
                     <td>{{ prescription.eye_power[:50] }}...</td>
                     <td>
                         <div class="btn-group">
-                            <a href="{{ url_for('print_prescription', type='optometrist', prescription_id=prescription.id) }}" 
-                               class="btn btn-primary btn-sm" target="_blank">
+                            <button type="button" class="btn btn-primary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
                                 <i class="fas fa-print"></i> Print
-                            </a>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <a href="{{ url_for('print_prescription', type='optometrist', prescription_id=prescription.id, format='pdf') }}" 
+                                       class="dropdown-item" target="_blank">
+                                        <i class="fas fa-file-pdf"></i> PDF Format
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ url_for('print_prescription', type='optometrist', prescription_id=prescription.id, format='receipt') }}" 
+                                       class="dropdown-item" target="_blank">
+                                        <i class="fas fa-receipt"></i> Receipt Format
+                                    </a>
+                                </li>
+                            </ul>
                             <a href="{{ url_for('assistant_add_prescription', patient_id=prescription.patient_id) }}" 
                                class="btn btn-info btn-sm">
                                 <i class="fas fa-edit"></i> Edit
@@ -60,9 +77,12 @@ function searchTable() {
     var tr = table.getElementsByTagName("tr");
 
     for (var i = 1; i < tr.length; i++) {
-        var td = tr[i].getElementsByTagName("td")[1]; // Patient Name column
-        if (td) {
-            var txtValue = td.textContent || td.innerText;
+        var td_name = tr[i].getElementsByTagName("td")[1];
+        var td_contact = tr[i].getElementsByTagName("td")[2];
+        var td_email = tr[i].getElementsByTagName("td")[3];
+        
+        if (td_name && td_contact && td_email) {
+            var txtValue = td_name.textContent + td_contact.textContent + td_email.textContent;
             if (txtValue.toLowerCase().indexOf(filter) > -1) {
                 tr[i].style.display = "";
             } else {
