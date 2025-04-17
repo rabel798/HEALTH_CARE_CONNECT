@@ -742,8 +742,10 @@ def doctor_logout():
 def assistant_login():
     """Assistant login route"""
     # If already logged in as assistant, redirect to dashboard
-    if current_user.is_authenticated and isinstance(current_user, Assistant):
-        return redirect(url_for('assistant_dashboard'))
+    if current_user.is_authenticated:
+        if isinstance(current_user, Assistant):
+            return redirect(url_for('assistant_dashboard'))
+        logout_user()
 
     form = AssistantLoginForm()
     if form.validate_on_submit():
@@ -752,6 +754,7 @@ def assistant_login():
 
         if assistant and assistant.check_password(form.password.data):
             login_user(assistant)
+            session['user_role'] = 'assistant'  # Set role in session
             flash('Login successful! Welcome, ' + assistant.full_name, 'success')
             return redirect(url_for('assistant_dashboard'))
         else:
@@ -778,6 +781,30 @@ def assistant_dashboard():
     # Ensure user is an assistant
     if not isinstance(current_user, Assistant):
         flash('You do not have permission to access this page.', 'danger')
+        return redirect(url_for('index'))
+    try:
+        # Create form for CSRF token
+        form = FlaskForm()
+        
+        # Get today's appointments
+        today = datetime.now().date()
+        today_appointments = Appointment.query.filter_by(appointment_date=today).all()
+
+        # Get all appointments
+        all_appointments = Appointment.query.order_by(desc(Appointment.appointment_date)).all()
+
+        # Get all patients
+        all_patients = Patient.query.order_by(Patient.full_name).all()
+
+        return render_template(
+            'assistant/dashboard.html',
+            form=form,
+            all_patients=all_patients,
+            today_appointments=today_appointments,
+            all_appointments=all_appointments
+        )
+    except Exception as e:
+        flash(f'Error loading dashboard: {str(e)}', 'danger')
         return redirect(url_for('index'))
         
     try:
