@@ -1,3 +1,4 @@
+
 {% extends 'layout.html' %}
 
 {% block title %}Optometrist Prescriptions - Dr. Richa's Eye Clinic{% endblock %}
@@ -34,15 +35,15 @@
                                 <i class="fas fa-plus"></i> Add Prescription
                             </a>
                             {% if patient.optometrist_prescriptions %}
-                            <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
-                                <i class="fas fa-print"></i> Print Previous
+                            <button type="button" class="btn btn-info btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+                                <i class="fas fa-print"></i> Print Prescription
                             </button>
                             <ul class="dropdown-menu">
                                 {% for prescription in patient.optometrist_prescriptions %}
                                 <li>
                                     <a href="{{ url_for('print_prescription', type='optometrist', prescription_id=prescription.id) }}" 
                                        class="dropdown-item" target="_blank">
-                                        {{ prescription.prescription_date.strftime('%Y-%m-%d') }}
+                                        <i class="fas fa-file-pdf"></i> {{ prescription.prescription_date.strftime('%Y-%m-%d') }}
                                     </a>
                                 </li>
                                 {% endfor %}

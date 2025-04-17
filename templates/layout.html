@@ -7,31 +7,31 @@
     <meta name="keywords" content="eye clinic, eye doctor, ophthalmologist, eye care, vision, Dr. Richa, Banglore, Karnataka, India">
     <meta name="theme-color" content="#007bff" id="theme-color-meta">
     <meta name="color-scheme" content="light dark">
-    
+
     <title>{% block title %}Dr. Richa's Eye Care Centre{% endblock %}</title>
-    
+
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='assets/logo.svg') }}">
-    
+
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Flatpickr CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    
+
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
-    
+
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
-    
+
     <!-- Leaflet CSS (for maps) -->
     {% block extra_css %}{% endblock %}
-    
+
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    
+
     <!-- Schema.org markup for local business -->
     <script type="application/ld+json">
     {
@@ -89,7 +89,7 @@
                 // Add click handler for authentication selection
                 document.addEventListener('DOMContentLoaded', function() {
                     const logo = document.getElementById('clinic-logo');
-                    
+
                     logo.addEventListener('click', function(e) {
                         e.preventDefault();
                         window.location.href = "{{ url_for('auth_selection') }}";
@@ -114,9 +114,12 @@
                         <a class="nav-link {% if request.path == url_for('reviews') %}active{% endif %}" href="{{ url_for('reviews') }}">Reviews</a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link {% if request.path == url_for('prescriptions') %}active{% endif %}" href="{{ url_for('prescriptions') }}">Prescriptions</a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link btn btn-primary text-white px-3 ms-lg-2" href="{{ url_for('appointment') }}">Book Appointment</a>
                     </li>
-                    
+
                     {% if current_user.is_authenticated %}
                         {% if current_user.__class__.__name__ == 'Patient' %}
                             <li class="nav-item dropdown">
@@ -202,6 +205,7 @@
                         <li><a href="{{ url_for('services') }}">Services</a></li>
                         <li><a href="{{ url_for('location') }}">Location</a></li>
                         <li><a href="{{ url_for('reviews') }}">Reviews</a></li>
+                        <li><a href="{{ url_for('prescriptions') }}">Prescriptions</a></li>
                         <li><a href="{{ url_for('appointment') }}">Book Appointment</a></li>
                     </ul>
                 </div>
@@ -235,13 +239,13 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Flatpickr JS -->
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-    
+
     <!-- Custom JS -->
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
-    
+
     <!-- Interactive Logo JS -->
     <script src="{{ url_for('static', filename='js/logo-interactive.js') }}"></script>
-    
+
     <!-- Extra JavaScript -->
     {% block extra_js %}{% endblock %}
 </body>
