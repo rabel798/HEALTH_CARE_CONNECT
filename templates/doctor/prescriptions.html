@@ -37,14 +37,14 @@
                     <td>{{ prescription.diagnosis[:50] }}...</td>
                     <td>
                         <div class="btn-group">
-                            <button type="button" class="btn btn-primary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+                            <button type="button" class="btn btn-sm btn-secondary dropdown-toggle" data-bs-toggle="dropdown">
                                 <i class="fas fa-print"></i> Print
                             </button>
                             <ul class="dropdown-menu">
                                 <li>
-                                    <a href="{{ url_for('print_prescription', type='doctor', prescription_id=prescription.id, format='pdf') }}" 
+                                    <a href="{{ url_for('print_prescription', type='doctor', prescription_id=prescription.id) }}" 
                                        class="dropdown-item" target="_blank">
-                                        <i class="fas fa-file-pdf"></i> PDF Format
+                                        <i class="fas fa-file-pdf"></i> Full Page
                                     </a>
                                 </li>
                                 <li>
@@ -54,6 +54,10 @@
                                     </a>
                                 </li>
                             </ul>
+                            <a href="{{ url_for('doctor_add_prescription', patient_id=prescription.patient_id) }}" 
+                               class="btn btn-info btn-sm">
+                                <i class="fas fa-edit"></i> Edit
+                            </a>
                         </div>
                     </td>
                 </tr>
