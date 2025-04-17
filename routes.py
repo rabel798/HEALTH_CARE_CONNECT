@@ -16,7 +16,8 @@ from models import Patient, Appointment, MedicalRecord, Payment, Review, Admin, 
 from forms import (
     AppointmentForm, PaymentForm, ReviewForm, AdminLoginForm,
     PatientLoginForm, PatientRegistrationForm, OTPVerificationForm,
-    PrescriptionForm, DoctorLoginForm, AssistantLoginForm, SalaryForm
+    PrescriptionForm, DoctorLoginForm, AssistantLoginForm, SalaryForm,
+    DoctorPrescriptionForm, OptometristPrescriptionForm
 )
 
 # Add context processor to make current datetime available to all templates

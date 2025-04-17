@@ -1,3 +1,4 @@
+
 {% extends 'layout.html' %}
 
 {% block title %}Medical Records - Dr. Richa's Eye Care Centre{% endblock %}
@@ -6,6 +7,7 @@
 <section class="py-5 bg-light">
     <div class="container">
         <div class="row">
+            <!-- Sidebar -->
             <div class="col-lg-3 mb-4">
                 <div class="card shadow-sm mb-4">
                     <div class="card-body text-center">
@@ -34,75 +36,62 @@
                 </div>
             </div>
             
+            <!-- Main Content -->
             <div class="col-lg-9">
+                <!-- Doctor Prescriptions -->
                 <div class="card shadow-sm mb-4">
-                    <div class="card-header">
-                        <h5 class="mb-0">Your Medical Records</h5>
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0"><i class="fas fa-user-md me-2"></i>Doctor Prescriptions</h5>
                     </div>
                     <div class="card-body">
-                        {% if appointments %}
-                            <div class="accordion" id="medicalRecordsAccordion">
-                                {% for appointment in appointments %}
-                                    {% if appointment.medical_record %}
-                                        <div class="accordion-item mb-3 border">
-                                            <h2 class="accordion-header" id="heading{{ appointment.id }}">
-                                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ appointment.id }}" aria-expanded="false" aria-controls="collapse{{ appointment.id }}">
-                                                    <div class="d-flex w-100 justify-content-between align-items-center">
-                                                        <span>
-                                                            <strong>Appointment: {{ appointment.appointment_date.strftime('%d-%b-%Y') }}</strong>
-                                                        </span>
-                                                        <span class="badge bg-success me-2">Completed</span>
-                                                    </div>
-                                                </button>
-                                            </h2>
-                                            <div id="collapse{{ appointment.id }}" class="accordion-collapse collapse" aria-labelledby="heading{{ appointment.id }}" data-bs-parent="#medicalRecordsAccordion">
-                                                <div class="accordion-body">
-                                                    <div class="mb-4">
-                                                        <h5 class="border-bottom pb-2 mb-3">Diagnosis</h5>
-                                                        <p>{{ appointment.medical_record[0].diagnosis or 'No diagnosis recorded.' }}</p>
-                                                    </div>
-                                                    
-                                                    <div class="row mb-4">
-                                                        <div class="col-md-6">
-                                                            <h5 class="border-bottom pb-2 mb-3">Left Eye Findings</h5>
-                                                            <p>{{ appointment.medical_record[0].left_eye_findings or 'No findings recorded.' }}</p>
-                                                        </div>
-                                                        <div class="col-md-6">
-                                                            <h5 class="border-bottom pb-2 mb-3">Right Eye Findings</h5>
-                                                            <p>{{ appointment.medical_record[0].right_eye_findings or 'No findings recorded.' }}</p>
-                                                        </div>
-                                                    </div>
-                                                    
-                                                    <div class="mb-4">
-                                                        <h5 class="border-bottom pb-2 mb-3">Prescribed Medications</h5>
-                                                        <p>{{ appointment.medical_record[0].prescribed_medications or 'No medications prescribed.' }}</p>
-                                                    </div>
-                                                    
-                                                    <div class="mb-4">
-                                                        <h5 class="border-bottom pb-2 mb-3">Prescribed Eyewear</h5>
-                                                        <p>{{ appointment.medical_record[0].prescribed_eyewear or 'No eyewear prescribed.' }}</p>
-                                                    </div>
-                                                    
-                                                    <div class="mb-4">
-                                                        <h5 class="border-bottom pb-2 mb-3">Follow-up Instructions</h5>
-                                                        <p>{{ appointment.medical_record[0].follow_up_instructions or 'No follow-up instructions provided.' }}</p>
-                                                    </div>
-                                                    
-                                                    <div>
-                                                        <h5 class="border-bottom pb-2 mb-3">Next Appointment Recommendation</h5>
-                                                        <p>{{ appointment.medical_record[0].next_appointment_recommendation or 'No recommendation for next appointment.' }}</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    {% endif %}
+                        {% if current_user.doctor_prescriptions %}
+                            <div class="list-group">
+                                {% for prescription in current_user.doctor_prescriptions|sort(attribute='prescription_date', reverse=true) %}
+                                <div class="list-group-item">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-1">{{ prescription.prescription_date.strftime('%d %B, %Y') }}</h6>
+                                        <a href="{{ url_for('print_prescription', type='doctor', prescription_id=prescription.id) }}" 
+                                           class="btn btn-sm btn-outline-primary" target="_blank">
+                                            <i class="fas fa-print"></i> Print
+                                        </a>
+                                    </div>
+                                    <p class="mb-1"><strong>Diagnosis:</strong> {{ prescription.diagnosis }}</p>
+                                    <p class="mb-1"><strong>Medications:</strong> {{ prescription.medications }}</p>
+                                    <small class="text-muted"><strong>Follow-up:</strong> {{ prescription.follow_up }}</small>
+                                </div>
                                 {% endfor %}
                             </div>
                         {% else %}
-                            <div class="text-center p-4">
-                                <p class="text-muted">You don't have any medical records yet.</p>
-                                <p class="text-muted">Records will appear here after your appointments are completed.</p>
+                            <p class="text-muted text-center my-3">No doctor prescriptions available.</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Optometrist Prescriptions -->
+                <div class="card shadow-sm">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0"><i class="fas fa-glasses me-2"></i>Optometrist Prescriptions</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if current_user.optometrist_prescriptions %}
+                            <div class="list-group">
+                                {% for prescription in current_user.optometrist_prescriptions|sort(attribute='prescription_date', reverse=true) %}
+                                <div class="list-group-item">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-1">{{ prescription.prescription_date.strftime('%d %B, %Y') }}</h6>
+                                        <a href="{{ url_for('print_prescription', type='optometrist', prescription_id=prescription.id) }}" 
+                                           class="btn btn-sm btn-outline-info" target="_blank">
+                                            <i class="fas fa-print"></i> Print
+                                        </a>
+                                    </div>
+                                    <p class="mb-1"><strong>Vision Test:</strong> {{ prescription.vision_test }}</p>
+                                    <p class="mb-1"><strong>Eye Power:</strong> {{ prescription.eye_power }}</p>
+                                    <small class="text-muted"><strong>Recommendations:</strong> {{ prescription.recommendations }}</small>
+                                </div>
+                                {% endfor %}
                             </div>
+                        {% else %}
+                            <p class="text-muted text-center my-3">No optometrist prescriptions available.</p>
                         {% endif %}
                     </div>
                 </div>

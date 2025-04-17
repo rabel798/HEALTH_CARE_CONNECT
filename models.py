@@ -13,6 +13,8 @@ class Patient(UserMixin, db.Model):
     is_registered = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     appointments = db.relationship('Appointment', backref='patient', lazy=True)
+    doctor_prescriptions = db.relationship('DoctorPrescription', backref='patient', lazy=True)
+    optometrist_prescriptions = db.relationship('OptometristPrescription', backref='patient', lazy=True)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
