@@ -139,6 +139,9 @@
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                                     {% if current_user.__class__.__name__ == 'Assistant' %}
+                                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class="fas fa-user-nurse me-1"></i> {{ current_user.full_name }}
+                                        </a>
                                         <li><a class="dropdown-item" href="{{ url_for('assistant_dashboard') }}">Dashboard</a></li>
                                         <li><a class="dropdown-item" href="{{ url_for('assistant_prescriptions') }}">Prescriptions</a></li>
                                         <li><hr class="dropdown-divider"></li>
