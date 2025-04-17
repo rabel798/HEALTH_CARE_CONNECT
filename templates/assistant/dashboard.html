@@ -21,7 +21,7 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('assistant_prescriptions') }}">
+                        <a class="nav-link" href="{{ url_for('optometrist_prescriptions') }}">
                             <i class="fas fa-prescription"></i> Prescriptions
                         </a>
                     </li>
@@ -41,7 +41,7 @@
                         </a>
                     </li>
                     <li class="nav-item mt-3">
-                        <a class="nav-link text-danger" href="{{ url_for('assistant_logout') }}">
+                        <a class="nav-link text-danger" href="{{ url_for('optometrist_logout') }}">
                             <i class="fas fa-sign-out-alt me-2"></i> Logout
                         </a>
                     </li>
@@ -200,7 +200,7 @@
                     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
                         <h2>Appointments Management</h2>
                         <div class="btn-toolbar mb-2 mb-md-0">
-                            <a href="{{ url_for('assistant_add_patient') }}" class="btn btn-sm btn-outline-primary me-2">
+                            <a href="{{ url_for('optometrist_add_patient') }}" class="btn btn-sm btn-outline-primary me-2">
                                 <i class="fas fa-plus me-1"></i> Add Walk-in
                             </a>
                             <a href="{{ url_for('appointment') }}" class="btn btn-sm btn-outline-secondary">
@@ -272,7 +272,7 @@
                     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
                         <h2>Patient Management</h2>
                         <div class="btn-toolbar mb-2 mb-md-0">
-                            <a href="{{ url_for('assistant_add_patient') }}" class="btn btn-sm btn-outline-primary me-2">
+                            <a href="{{ url_for('optometrist_add_patient') }}" class="btn btn-sm btn-outline-primary me-2">
                                 <i class="fas fa-plus me-1"></i> New Patient
                             </a>
                             <div class="input-group input-group-sm">
