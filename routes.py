@@ -777,31 +777,35 @@ def assistant_logout():
 @app.route('/assistant/dashboard')
 @login_required
 def assistant_dashboard():
-    """Assistant dashboard route"""
-    # Ensure user is an assistant
+    """Assistant/Optometrist dashboard route"""
     if not isinstance(current_user, Assistant):
         flash('You do not have permission to access this page.', 'danger')
         return redirect(url_for('index'))
+    
     try:
-        # Create form for CSRF token
-        form = FlaskForm()
-        
-        # Get today's appointments
+        # Get statistics
         today = datetime.now().date()
-        today_appointments = Appointment.query.filter_by(appointment_date=today).all()
-
-        # Get all appointments
-        all_appointments = Appointment.query.order_by(desc(Appointment.appointment_date)).all()
-
-        # Get all patients
-        all_patients = Patient.query.order_by(Patient.full_name).all()
-
+        upcoming_appointments = Appointment.query.filter(
+            Appointment.appointment_date >= today,
+            Appointment.status == 'scheduled'
+        ).count()
+        
+        total_appointments = Appointment.query.count()
+        total_patients = Patient.query.count()
+        prescriptions_count = OptometristPrescription.query.filter_by(assistant_id=current_user.id).count()
+        
+        # Get salary records
+        salary_records = Salary.query.filter_by(
+            assistant_id=current_user.id
+        ).order_by(desc(Salary.payment_date)).all()
+        
         return render_template(
-            'assistant/dashboard.html',
-            form=form,
-            all_patients=all_patients,
-            today_appointments=today_appointments,
-            all_appointments=all_appointments
+            'assistant/optometrist_dashboard.html',
+            upcoming_appointments=upcoming_appointments,
+            total_appointments=total_appointments,
+            total_patients=total_patients,
+            prescriptions_count=prescriptions_count,
+            salary_records=salary_records
         )
     except Exception as e:
         flash(f'Error loading dashboard: {str(e)}', 'danger')

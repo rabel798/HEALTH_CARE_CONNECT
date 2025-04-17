@@ -141,6 +141,8 @@
                                     {% if current_user.__class__.__name__ == 'Assistant' %}
                                         <li><a class="dropdown-item" href="{{ url_for('assistant_dashboard') }}">Dashboard</a></li>
                                         <li><a class="dropdown-item" href="{{ url_for('assistant_prescriptions') }}">Prescriptions</a></li>
+                                        <li><a class="dropdown-item" href="{{ url_for('admin_appointments') }}">Appointments</a></li>
+                                        <li><a class="dropdown-item" href="{{ url_for('admin_patients') }}">Patients</a></li>
                                         <li><hr class="dropdown-divider"></li>
                                         <li><a class="dropdown-item" href="{{ url_for('assistant_logout') }}">Logout</a></li>
                                     {% elif current_user.__class__.__name__ == 'Doctor' %}
