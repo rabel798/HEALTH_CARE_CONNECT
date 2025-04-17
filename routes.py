@@ -1292,8 +1292,8 @@ def doctor_prescriptions():
         flash('Access denied', 'danger')
         return redirect(url_for('index'))
     
-    prescriptions = DoctorPrescription.query.filter_by(doctor_id=current_user.id).order_by(DoctorPrescription.created_at.desc()).all()
-    return render_template('doctor/prescriptions.html', prescriptions=prescriptions)
+    all_patients = Patient.query.order_by(Patient.full_name).all()
+    return render_template('doctor/prescriptions.html', all_patients=all_patients)
 
 @app.route('/doctor/add-prescription/<int:patient_id>', methods=['GET', 'POST'])
 @login_required
@@ -1332,8 +1332,8 @@ def assistant_prescriptions():
         flash('Access denied', 'danger')
         return redirect(url_for('index'))
     
-    prescriptions = OptometristPrescription.query.filter_by(assistant_id=current_user.id).order_by(OptometristPrescription.created_at.desc()).all()
-    return render_template('assistant/prescriptions.html', prescriptions=prescriptions)
+    all_patients = Patient.query.order_by(Patient.full_name).all()
+    return render_template('assistant/prescriptions.html', all_patients=all_patients)
 
 @app.route('/assistant/add-prescription/<int:patient_id>', methods=['GET', 'POST'])
 @login_required
