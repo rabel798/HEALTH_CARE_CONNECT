@@ -3,37 +3,86 @@
 {% block title %}Patient Details - Dr. Richa's Eye Clinic{% endblock %}
 
 {% block content %}
-<section class="py-5 bg-light">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-3 mb-4">
-                <div class="card shadow-sm mb-4">
-                    <div class="card-body text-center">
-                        <div class="avatar-circle bg-primary text-white mb-3">
-                            <i class="fas fa-user-md fa-2x"></i>
-                        </div>
-                        <h5 class="card-title">Dr. Richa</h5>
-                        <p class="card-text text-muted">Ophthalmologist</p>
-                    </div>
-                </div>
-                
-                <div class="list-group shadow-sm">
-                    <a href="{{ url_for('admin_dashboard') }}" class="list-group-item list-group-item-action">
-                        <i class="fas fa-home me-2"></i> Dashboard
-                    </a>
-                    <a href="{{ url_for('admin_appointments') }}" class="list-group-item list-group-item-action">
-                        <i class="fas fa-calendar-check me-2"></i> Appointments
-                    </a>
-                    <a href="{{ url_for('admin_patients') }}" class="list-group-item list-group-item-action active">
-                        <i class="fas fa-users me-2"></i> Patients
-                    </a>
-                    <a href="{{ url_for('admin_reviews') }}" class="list-group-item list-group-item-action">
-                        <i class="fas fa-star me-2"></i> Reviews
-                    </a>
+<div class="container py-5">
+    <div class="row">
+        <!-- Patient Info Card -->
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h3>{{ patient.full_name }}</h3>
+                    <p><strong>Age:</strong> {{ patient.age }}</p>
+                    <p><strong>Mobile:</strong> {{ patient.mobile_number }}</p>
+                    <p><strong>Email:</strong> {{ patient.email }}</p>
                 </div>
             </div>
-            
-            <div class="col-lg-9">
+        </div>
+
+        <!-- Prescriptions Section -->
+        <div class="col-md-8">
+            <!-- Doctor Prescriptions -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Doctor Prescriptions</h5>
+                </div>
+                <div class="card-body">
+                    {% if patient.doctor_prescriptions %}
+                        <div class="list-group">
+                            {% for prescription in patient.doctor_prescriptions|sort(attribute='prescription_date', reverse=true) %}
+                            <div class="list-group-item">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-1">{{ prescription.prescription_date.strftime('%d %B, %Y') }}</h6>
+                                    <a href="{{ url_for('print_prescription', type='doctor', prescription_id=prescription.id) }}" 
+                                       class="btn btn-sm btn-outline-primary" target="_blank">
+                                        <i class="fas fa-print"></i> Print
+                                    </a>
+                                </div>
+                                <p class="mb-1"><strong>Diagnosis:</strong> {{ prescription.diagnosis }}</p>
+                                <p class="mb-1"><strong>Medications:</strong> {{ prescription.medications }}</p>
+                                <p class="mb-1"><strong>Instructions:</strong> {{ prescription.instructions }}</p>
+                                <small class="text-muted"><strong>Follow-up:</strong> {{ prescription.follow_up }}</small>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted text-center my-3">No doctor prescriptions available.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Optometrist Prescriptions -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">Optometrist Prescriptions</h5>
+                </div>
+                <div class="card-body">
+                    {% if patient.optometrist_prescriptions %}
+                        <div class="list-group">
+                            {% for prescription in patient.optometrist_prescriptions|sort(attribute='prescription_date', reverse=true) %}
+                            <div class="list-group-item">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-1">{{ prescription.prescription_date.strftime('%d %B, %Y') }}</h6>
+                                    <a href="{{ url_for('print_prescription', type='optometrist', prescription_id=prescription.id) }}" 
+                                       class="btn btn-sm btn-outline-info" target="_blank">
+                                        <i class="fas fa-print"></i> Print
+                                    </a>
+                                </div>
+                                <p class="mb-1"><strong>Vision Test:</strong> {{ prescription.vision_test }}</p>
+                                <p class="mb-1"><strong>Eye Power:</strong> {{ prescription.eye_power }}</p>
+                                <p class="mb-1"><strong>Recommendations:</strong> {{ prescription.recommendations }}</p>
+                                <small class="text-muted"><strong>Notes:</strong> {{ prescription.notes }}</small>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted text-center my-3">No optometrist prescriptions available.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="col-lg-9">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <a href="{{ url_for('admin_patients') }}" class="btn btn-outline-secondary">
                         <i class="fas fa-arrow-left me-1"></i> Back to Patients
