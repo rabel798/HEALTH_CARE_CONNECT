@@ -89,7 +89,7 @@ with app.app_context():
         db.session.add(doctor)
         print('Default doctor account created')
 
-    # Create optometrist account
+    # Create assistant account
     assistant = Assistant.query.filter_by(username='assistant').first()
     if not assistant:
         assistant = Assistant(
@@ -102,7 +102,7 @@ with app.app_context():
         )
         assistant.set_password('assistant123')
         db.session.add(assistant)
-        print('Default optometrist account created')
+        print('Default assistant account created')
 
     try:
         db.session.commit()
