@@ -6,46 +6,63 @@
     <style>
         @media print {
             body { 
-                font-family: Arial, sans-serif;
-                margin: 20px;
+                font-family: 'Arial', sans-serif;
+                margin: 0;
+                padding: 20px;
                 line-height: 1.6;
+                color: #333;
             }
             .header {
                 text-align: center;
+                padding: 20px 0;
+                border-bottom: 2px solid #1a73e8;
                 margin-bottom: 30px;
-                border-bottom: 2px solid #000;
-                padding-bottom: 10px;
+            }
+            .header h1 {
+                color: #1a73e8;
+                margin: 0;
+                font-size: 24px;
             }
             .clinic-info {
                 font-size: 14px;
-                margin-bottom: 20px;
-            }
-            .content {
-                margin: 20px 0;
+                color: #666;
+                margin-top: 10px;
             }
             .patient-info {
+                background: #f8f9fa;
+                padding: 20px;
+                border-radius: 8px;
                 margin-bottom: 30px;
-                border: 1px solid #ccc;
-                padding: 15px;
-                background-color: #f9f9f9;
             }
-            .prescription-details {
+            .findings-section {
+                display: flex;
+                justify-content: space-between;
                 margin: 20px 0;
+                gap: 20px;
+            }
+            .eye-findings {
+                flex: 1;
+                border: 1px solid #dee2e6;
+                padding: 15px;
+                border-radius: 8px;
+            }
+            .section-title {
+                color: #1a73e8;
+                font-size: 16px;
+                font-weight: bold;
+                margin-bottom: 10px;
+                border-bottom: 1px solid #dee2e6;
+                padding-bottom: 5px;
             }
             .footer {
                 margin-top: 50px;
                 text-align: right;
+                border-top: 1px solid #dee2e6;
+                padding-top: 20px;
             }
-            .section {
-                margin: 15px 0;
-            }
-            .section-title {
+            .signature {
                 font-weight: bold;
-                margin-bottom: 5px;
-            }
-            @page {
-                size: A4;
-                margin: 2cm;
+                color: #1a73e8;
             }
             .no-print {
                 display: none;
@@ -56,45 +73,42 @@
 <body>
     <div class="header">
         <h1>Dr. Richa's Eye Clinic</h1>
-        <p>First floor, DVR Town Centre, near to IGUS private limited,<br>
-           Mandur, Budigere Road (New Airport Road),<br>
-           Bengaluru, Karnataka 560049</p>
+        <div class="clinic-info">
+            First floor, DVR Town Centre, near to IGUS private limited,<br>
+            Mandur, Budigere Road (New Airport Road),<br>
+            Bengaluru, Karnataka 560049
+        </div>
     </div>
 
     <div class="patient-info">
-        <h3>Patient Information</h3>
+        <div class="section-title">Patient Information</div>
         <p><strong>Name:</strong> {{ prescription.patient.full_name }}</p>
-        <p><strong>Age:</strong> {{ prescription.patient.age }}</p>
+        <p><strong>Age:</strong> {{ prescription.patient.age }} years</p>
         <p><strong>Contact:</strong> {{ prescription.patient.mobile_number }}</p>
-        <p><strong>Date:</strong> {{ prescription.prescription_date.strftime('%d-%m-%Y') }}</p>
+        <p><strong>Date:</strong> {{ prescription.prescription_date.strftime('%d %B, %Y') }}</p>
+        <p><strong>Issue/Complaint:</strong> {{ prescription.vision_test }}</p>
     </div>
 
-    <div class="prescription-details">
-        <div class="section">
-            <div class="section-title">Vision Test Results:</div>
-            <p>{{ prescription.vision_test }}</p>
-        </div>
-
-        <div class="section">
-            <div class="section-title">Eye Power:</div>
+    <div class="findings-section">
+        <div class="eye-findings">
+            <div class="section-title">Left Eye Findings</div>
             <p>{{ prescription.eye_power }}</p>
         </div>
-
-        <div class="section">
-            <div class="section-title">Recommendations:</div>
+        <div class="eye-findings">
+            <div class="section-title">Right Eye Findings</div>
             <p>{{ prescription.recommendations }}</p>
         </div>
+    </div>
 
-        <div class="section">
-            <div class="section-title">Additional Notes:</div>
-            <p>{{ prescription.notes }}</p>
-        </div>
+    <div class="additional-notes">
+        <div class="section-title">Additional Notes</div>
+        <p>{{ prescription.notes }}</p>
     </div>
 
     <div class="footer">
-        <p>Signature<br>
-        {{ current_user.full_name }}<br>
-        Optometrist</p>
+        <p class="signature">{{ current_user.full_name }}</p>
+        <p>Optometrist<br>
+        Dr. Richa's Eye Clinic</p>
     </div>
 
     <div class="no-print text-center mt-4">

@@ -5,26 +5,53 @@
 
 {% block content %}
 <div class="container py-5">
-    <h2 class="mb-4">Add Optometrist Prescription for {{ patient.full_name }}</h2>
-    <form method="POST">
-        {{ form.hidden_tag() }}
-        <div class="mb-3">
-            <label class="form-label">{{ form.vision_test.label }}</label>
-            {{ form.vision_test(class="form-control") }}
+    <div class="card shadow-lg">
+        <div class="card-header bg-primary text-white">
+            <h3 class="mb-0">Add Prescription for {{ patient.full_name }}</h3>
         </div>
-        <div class="mb-3">
-            <label class="form-label">{{ form.eye_power.label }}</label>
-            {{ form.eye_power(class="form-control") }}
+        <div class="card-body">
+            <form method="POST" class="needs-validation" novalidate>
+                {{ form.hidden_tag() }}
+                
+                <div class="mb-4">
+                    <label class="form-label fw-bold">Issue/Complaint</label>
+                    {{ form.vision_test(class="form-control", placeholder="Enter patient's main issue or complaint") }}
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-header bg-light">
+                                <h5 class="mb-0">Left Eye Findings</h5>
+                            </div>
+                            <div class="card-body">
+                                {{ form.eye_power(class="form-control", rows="4", placeholder="Enter left eye examination findings") }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-header bg-light">
+                                <h5 class="mb-0">Right Eye Findings</h5>
+                            </div>
+                            <div class="card-body">
+                                {{ form.recommendations(class="form-control", rows="4", placeholder="Enter right eye examination findings") }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label fw-bold">Additional Notes</label>
+                    {{ form.notes(class="form-control", rows="3", placeholder="Any additional notes or recommendations") }}
+                </div>
+
+                <div class="text-end">
+                    <a href="{{ url_for('assistant_prescriptions') }}" class="btn btn-secondary me-2">Cancel</a>
+                    {{ form.submit(class="btn btn-primary px-4") }}
+                </div>
+            </form>
         </div>
-        <div class="mb-3">
-            <label class="form-label">{{ form.recommendations.label }}</label>
-            {{ form.recommendations(class="form-control") }}
-        </div>
-        <div class="mb-3">
-            <label class="form-label">{{ form.notes.label }}</label>
-            {{ form.notes(class="form-control") }}
-        </div>
-        {{ form.submit(class="btn btn-primary") }}
-    </form>
+    </div>
 </div>
 {% endblock %}
