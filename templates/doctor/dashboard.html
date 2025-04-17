@@ -20,13 +20,18 @@
                         </a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('admin_patients') }}">
+                            <i class="fas fa-users"></i> Patients
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('doctor_prescriptions') }}">
                             <i class="fas fa-prescription"></i> Prescriptions
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('admin_patients') }}">
-                            <i class="fas fa-users"></i> Patients
+                        <a class="nav-link" href="{{ url_for('admin_revenue') }}">
+                            <i class="fas fa-money-bill"></i> Revenue
                         </a>
                     </li>
                 </ul>
