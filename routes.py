@@ -975,6 +975,14 @@ def admin_patient_view(patient_id):
     if not (isinstance(current_user, Admin) or isinstance(current_user, Assistant) or isinstance(current_user, Doctor)):
         flash('Access denied. Staff privileges required.', 'danger')
         return redirect(url_for('index'))
+        
+    # Set return URL based on user role
+    if isinstance(current_user, Assistant):
+        return_url = url_for('assistant_dashboard')
+    elif isinstance(current_user, Doctor):
+        return_url = url_for('admin_dashboard')
+    else:
+        return_url = url_for('admin_dashboard')
 
     # Get patient details
     patient = Patient.query.get_or_404(patient_id)

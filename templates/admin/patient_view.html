@@ -66,9 +66,9 @@
                                         <i class="fas fa-print"></i> Print
                                     </a>
                                 </div>
-                                <p class="mb-1"><strong>Vision Test:</strong> {{ prescription.vision_test }}</p>
-                                <p class="mb-1"><strong>Eye Power:</strong> {{ prescription.eye_power }}</p>
-                                <p class="mb-1"><strong>Recommendations:</strong> {{ prescription.recommendations }}</p>
+                                <p class="mb-1"><strong>Issue:</strong> {{ prescription.vision_test }}</p>
+                                <p class="mb-1"><strong>Left Eye Findings:</strong> {{ prescription.eye_power }}</p>
+                                <p class="mb-1"><strong>Right Eye Findings:</strong> {{ prescription.recommendations }}</p>
                                 <small class="text-muted"><strong>Notes:</strong> {{ prescription.notes }}</small>
                             </div>
                             {% endfor %}
@@ -84,11 +84,11 @@
 
 <div class="col-lg-9">
                 <div class="d-flex justify-content-between align-items-center mb-4">
-                    <a href="{{ url_for('admin_patients') }}" class="btn btn-outline-secondary">
-                        <i class="fas fa-arrow-left me-1"></i> Back to Patients
+                    <a href="{{ return_url }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-1"></i> Back
                     </a>
                 </div>
-                
+
                 <div class="card shadow-sm mb-4">
                     <div class="card-header">
                         <h5 class="mb-0">Patient Information</h5>
@@ -136,7 +136,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="card shadow-sm mb-4">
                     <div class="card-header">
                         <h5 class="mb-0">Appointment History</h5>
@@ -193,7 +193,7 @@
                         {% endif %}
                     </div>
                 </div>
-                
+
                 <div class="card shadow-sm">
                     <div class="card-header">
                         <h5 class="mb-0">Medical Records Summary</h5>
@@ -205,7 +205,7 @@
                                 {% set has_records = true %}
                             {% endif %}
                         {% endfor %}
-                        
+
                         {% if has_records %}
                             <div class="accordion" id="medicalRecordsAccordion">
                                 {% for appointment in patient.appointments|sort(attribute='appointment_date', reverse=true) %}
@@ -226,7 +226,7 @@
                                                         <h6 class="border-bottom pb-2 mb-3">Diagnosis</h6>
                                                         <p>{{ appointment.medical_record[0].diagnosis or 'No diagnosis recorded.' }}</p>
                                                     </div>
-                                                    
+
                                                     <div class="row mb-4">
                                                         <div class="col-md-6">
                                                             <h6 class="border-bottom pb-2 mb-3">Left Eye Findings</h6>
@@ -237,22 +237,22 @@
                                                             <p>{{ appointment.medical_record[0].right_eye_findings or 'No findings recorded.' }}</p>
                                                         </div>
                                                     </div>
-                                                    
+
                                                     <div class="mb-4">
                                                         <h6 class="border-bottom pb-2 mb-3">Prescribed Medications</h6>
                                                         <p>{{ appointment.medical_record[0].prescribed_medications or 'No medications prescribed.' }}</p>
                                                     </div>
-                                                    
+
                                                     <div class="mb-4">
                                                         <h6 class="border-bottom pb-2 mb-3">Prescribed Eyewear</h6>
                                                         <p>{{ appointment.medical_record[0].prescribed_eyewear or 'No eyewear prescribed.' }}</p>
                                                     </div>
-                                                    
+
                                                     <div class="mb-4">
                                                         <h6 class="border-bottom pb-2 mb-3">Follow-up Instructions</h6>
                                                         <p>{{ appointment.medical_record[0].follow_up_instructions or 'No follow-up instructions provided.' }}</p>
                                                     </div>
-                                                    
+
                                                     <div>
                                                         <h6 class="border-bottom pb-2 mb-3">Next Appointment Recommendation</h6>
                                                         <p>{{ appointment.medical_record[0].next_appointment_recommendation or 'No recommendation for next appointment.' }}</p>
