@@ -1,3 +1,4 @@
+
 {% extends 'layout.html' %}
 
 {% block title %}Doctor Dashboard - Dr. Richa's Eye Clinic{% endblock %}
@@ -10,19 +11,27 @@
             <div class="position-sticky">
                 <ul class="nav flex-column">
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('admin_dashboard') }}">
+                        <a class="nav-link active" href="{{ url_for('admin_dashboard') }}">
                             <i class="fas fa-home"></i> Dashboard
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('admin_appointments') }}">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
                             <i class="fas fa-calendar"></i> Appointments
                         </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{{ url_for('admin_appointments') }}">View All</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('appointment') }}">Add New</a></li>
+                        </ul>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('admin_patients') }}">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
                             <i class="fas fa-users"></i> Patients
                         </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{{ url_for('admin_patients') }}">View All</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('assistant_add_patient') }}">Add Walk-in</a></li>
+                        </ul>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('doctor_prescriptions') }}">
@@ -45,7 +54,10 @@
 
         <!-- Main Content -->
         <main class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
-            </main>
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">Doctor Dashboard</h1>
+            </div>
+        </main>
     </div>
 </div>
 {% endblock %}
