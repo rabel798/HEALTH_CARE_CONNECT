@@ -1410,7 +1410,7 @@ def print_prescription(type, prescription_id):
             return redirect(url_for('index'))
         prescription = DoctorPrescription.query.get_or_404(prescription_id)
         template = 'doctor/print_prescription.html'
-    else:
+    elif type == 'optometrist':
         if not isinstance(current_user, Assistant):
             flash('Access denied', 'danger')
             return redirect(url_for('index'))
