@@ -70,11 +70,12 @@ class PatientRegistrationForm(FlaskForm):
     primary_issue = TextAreaField('Primary Eye Issue', validators=[Optional(), Length(max=500)])
     consultation_fee = DecimalField('Consultation Fee', validators=[Optional()], default=500.00)
     payment_method = SelectField('Payment Method', choices=[('cash', 'Cash'), ('gpay', 'Google Pay')], validators=[Optional()])
-    password = PasswordField('Password', validators=[Optional(), Length(min=8, max=128)])
+    password = PasswordField('Password', validators=[DataRequired(), Length(min=8, max=128)])
+    confirm_password = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('password', message='Passwords must match')])
     submit = SubmitField('Add Patient')
 
 class OTPVerificationForm(FlaskForm):
-    email = HiddenField('Email')
+    email = StringField('Email', validators=[DataRequired(), Email()])
     otp = StringField('OTP Code', validators=[DataRequired(), Length(min=6, max=6)])
     submit = SubmitField('Verify OTP')
 

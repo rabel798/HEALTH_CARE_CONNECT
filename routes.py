@@ -256,9 +256,22 @@ def patient_register():
                 'password': form.password.data
             }
 
-            # In a real app, we would send the OTP via email here
-            # For testing, we'll flash it
-            flash(f'For testing: Your OTP is {otp_code}', 'info')
+            # Send OTP via email
+            subject = "Your OTP for Dr. Richa's Eye Clinic Registration"
+            message = f"""
+            <p>Dear {form.full_name.data},</p>
+            <p>Thank you for registering with Dr. Richa's Eye Clinic. Your OTP for completing the registration is:</p>
+            <h2 style="color: #2c3e50; text-align: center; padding: 10px; background-color: #f8f9fa; border-radius: 5px;">{otp_code}</h2>
+            <p>This OTP will expire in 30 minutes.</p>
+            <p>If you did not request this OTP, please ignore this email.</p>
+            <p>Best regards,<br>Dr. Richa's Eye Clinic Team</p>
+            """
+            
+            if send_email_notification(form.email.data, subject, message):
+                flash('OTP has been sent to your email address.', 'success')
+            else:
+                flash('Error sending OTP. Please try again.', 'danger')
+                return redirect(url_for('patient_register'))
 
             # Redirect to OTP verification page
             return redirect(url_for('verify_otp', email=form.email.data))
@@ -283,12 +296,13 @@ def verify_otp(email):
         return redirect(url_for('patient_register'))
 
     form = OTPVerificationForm()
-    form.email.data = email
+    if request.method == 'GET':
+        form.email.data = email
 
     if form.validate_on_submit():
         # Find the most recent OTP for this email
         otp_record = OTP.query.filter_by(
-            email=email,
+            email=form.email.data,
             is_verified=False
         ).order_by(desc(OTP.created_at)).first()
 
@@ -302,7 +316,7 @@ def verify_otp(email):
 
         if otp_record.otp_code != form.otp.data:
             flash('Invalid OTP. Please try again.', 'danger')
-            return redirect(url_for('verify_otp', email=email))
+            return redirect(url_for('verify_otp', email=form.email.data))
 
         # OTP verified, create patient account
         registration_data = session['registration_data']
@@ -941,20 +955,38 @@ def admin_approve_review(review_id):
         flash(f'Error approving review: {str(e)}', 'danger')
 
     return redirect(url_for('admin_reviews'))
+
 def send_email_notification(to_email, subject, message):
     try:
         # Email configuration
         smtp_server = "smtp.gmail.com"
         smtp_port = 587
-        sender_email = "your-clinic-email@gmail.com"  # Update this
-        sender_password = "your-app-password"  # Update this
+        sender_email = "drrichaeyeclinic@gmail.com"
+        sender_password = "your-app-password"  # You'll need to replace this with an App Password from your Google Account
 
         # Create message
         msg = MIMEMultipart()
-        msg['From'] = sender_email
+        msg['From'] = f"Dr. Richa's Eye Clinic <{sender_email}>"
         msg['To'] = to_email
         msg['Subject'] = subject
-        msg.attach(MIMEText(message, 'plain'))
+
+        # Create HTML message
+        html_message = f"""
+        <html>
+            <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+                <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+                    <h2 style="color: #2c3e50;">Dr. Richa's Eye Clinic</h2>
+                    <div style="background-color: #f8f9fa; padding: 20px; border-radius: 5px;">
+                        {message}
+                    </div>
+                    <p style="margin-top: 20px; font-size: 12px; color: #666;">
+                        This is an automated message. Please do not reply to this email.
+                    </p>
+                </div>
+            </body>
+        </html>
+        """
+        msg.attach(MIMEText(html_message, 'html'))
 
         # Send email
         with smtplib.SMTP(smtp_server, smtp_port) as server:

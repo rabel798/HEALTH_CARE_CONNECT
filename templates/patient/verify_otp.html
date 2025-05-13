@@ -14,7 +14,7 @@
                         
                         <form method="POST" action="{{ url_for('verify_otp', email=email) }}">
                             {{ form.hidden_tag() }}
-                            {{ form.email }}
+                            <input type="hidden" name="email" value="{{ email }}">
                             
                             <div class="mb-4">
                                 {{ form.otp.label(class="form-label") }}

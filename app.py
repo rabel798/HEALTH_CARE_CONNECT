@@ -1,4 +1,3 @@
-
 import os
 import logging
 from flask import Flask, render_template
@@ -6,6 +5,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase
 from flask_wtf.csrf import CSRFProtect
 from flask_login import LoginManager
+from config import config
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
@@ -21,15 +21,10 @@ login_manager = LoginManager()
 
 # Create the Flask application
 app = Flask(__name__)
-app.secret_key = os.environ.get("SESSION_SECRET", "dev-secret-key")
 
-# Configure the database
-app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL", "sqlite:///drricha.db")
-app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
-    "pool_recycle": 300,
-    "pool_pre_ping": True,
-}
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+# Load config
+env = os.environ.get('FLASK_ENV', 'development')
+app.config.from_object(config[env])
 
 # Initialize extensions with app
 db.init_app(app)
@@ -55,10 +50,19 @@ def load_user(user_id):
     except (ValueError, AttributeError):
         return None
 
+# Register error handlers
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'), 404
+
+@app.errorhandler(500)
+def internal_server_error(e):
+    return render_template('500.html'), 500
+
 # Import routes after app is created to avoid circular imports
 from routes import *
 
-# Create database tables
+# Create database tables and default accounts
 with app.app_context():
     db.create_all()
     
@@ -120,11 +124,5 @@ with app.app_context():
         db.session.rollback()
         print(f'Error creating default accounts: {str(e)}')
 
-# Register error handlers
-@app.errorhandler(404)
-def page_not_found(e):
-    return render_template('404.html'), 404
-
-@app.errorhandler(500)
-def internal_server_error(e):
-    return render_template('500.html'), 500
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000, debug=True)
